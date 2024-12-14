@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <springProperty scope="context" name="spring.application.name" source="spring.application.name"/>
-    <property name="LOG_DIR" value="./${spring.application.name}/logs/"/>
+    <property name="LOG_DIR" value="${spring.application.name}/logs/"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -29,9 +29,7 @@
     <springProfile name="local,dev">
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
-            <springProfile name="dev">
-                <appender-ref ref="FILE"/>
-            </springProfile>
+            <appender-ref ref="FILE"/>
         </root>
         <logger name="jdbc.sqltiming" level="DEBUG"/>
         <logger name="jdbc.resultsettable" level="DEBUG"/>

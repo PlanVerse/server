@@ -1,4 +1,4 @@
-package com.planverse.server.team.entity
+package com.planverse.server.project.entity
 
 import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
@@ -7,12 +7,16 @@ import jakarta.validation.constraints.Size
 import org.hibernate.annotations.ColumnDefault
 
 @Entity
-@Table(name = "team_info")
-class TeamInfoEntity(
+@Table(name = "project_info")
+class ProjectInfoEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     @Column(name = "id", nullable = false)
     var id: Long? = null,
+
+    @NotNull
+    @Column(name = "no", nullable = false)
+    var no: Long,
 
     @Size(max = 255)
     @NotNull
@@ -28,4 +32,8 @@ class TeamInfoEntity(
     @Size(max = 255)
     @Column(name = "description")
     var description: String? = null,
+
+    @Size(max = 500)
+    @Column(name = "project_logo_url", length = 500)
+    var projectLogoUrl: String? = null,
 ) : BaseEntity()
