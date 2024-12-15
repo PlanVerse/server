@@ -1,18 +1,15 @@
 package com.planverse.server.project.entity
 
 import com.planverse.server.common.entity.BaseEntity
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 
 @Entity
-@Table(name = "assign_info")
+@Table(name = "assign_info", schema = "public")
 class AssignInfoEntity(
     @Id
-    @NotNull
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     var id: Long? = null,
 
     @NotNull

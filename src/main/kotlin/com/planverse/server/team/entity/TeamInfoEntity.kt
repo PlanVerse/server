@@ -7,11 +7,11 @@ import jakarta.validation.constraints.Size
 import org.hibernate.annotations.ColumnDefault
 
 @Entity
-@Table(name = "team_info")
+@Table(name = "team_info", schema = "public")
 class TeamInfoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     var id: Long? = null,
 
     @Size(max = 255)

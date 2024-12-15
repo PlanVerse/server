@@ -7,11 +7,11 @@ import jakarta.validation.constraints.Size
 import org.hibernate.annotations.ColumnDefault
 
 @Entity
-@Table(name = "project_info")
+@Table(name = "project_info", schema = "public")
 class ProjectInfoEntity(
     @Id
-    @NotNull
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     var id: Long? = null,
 
     @NotNull

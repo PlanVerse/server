@@ -5,11 +5,11 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 
 @Entity
-@Table(name = "team_member_info")
+@Table(name = "team_member_info", schema = "public")
 class TeamMemberInfoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     var id: Long? = null,
 
     @NotNull

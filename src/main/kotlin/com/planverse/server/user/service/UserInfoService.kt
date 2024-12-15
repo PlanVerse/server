@@ -5,6 +5,7 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.util.RedisUtil
+import com.planverse.server.mail.service.MailService
 import com.planverse.server.user.dto.SignInDTO
 import com.planverse.server.user.dto.SignUpDTO
 import com.planverse.server.user.repository.UserInfoRepository
@@ -24,6 +25,7 @@ class UserInfoService(
     val passwordEncoder: PasswordEncoder,
     val authenticationManagerBuilder: AuthenticationManagerBuilder,
     val redisUtil: RedisUtil,
+    val mailService: MailService,
 ) {
     @Transactional
     fun signUp(signUpDto: SignUpDTO) {
@@ -33,6 +35,8 @@ class UserInfoService(
 
         val encodedPassword = passwordEncoder.encode(signUpDto.pwd)
         userInfoRepository.save(signUpDto.toEntity(encodedPassword))
+
+        mailService.sendAuthMail(signUpDto.email)
     }
 
     fun signIn(signInDTO: SignInDTO): Jwt {

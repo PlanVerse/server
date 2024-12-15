@@ -8,6 +8,7 @@ data class UserInfoDTO(
     var nickname: String,
     var email: String,
     var password: String,
+    var authentication: Boolean,
 ) {
     fun toEntity(): UserInfoEntity {
         return UserInfoEntity(
@@ -16,6 +17,7 @@ data class UserInfoDTO(
             nickname,
             email,
             password,
+            authentication
         )
     }
 
@@ -26,7 +28,8 @@ data class UserInfoDTO(
                 userInfoEntity.name,
                 userInfoEntity.nickname,
                 userInfoEntity.email,
-                userInfoEntity.password
+                userInfoEntity.password,
+                userInfoEntity.authentication
             )
         }
     }

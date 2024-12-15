@@ -8,11 +8,11 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
-@Table(name = "user_info")
+@Table(name = "user_info", schema = "public")
 class UserInfoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "id")
     var id: Long? = null,
 
     @NotNull
@@ -32,8 +32,12 @@ class UserInfoEntity(
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "password", nullable = false)
+    @Column(name = "pwd", nullable = false)
     var pwd: String,
+
+    @NotNull
+    @Column(name = "authentication", nullable = false)
+    var authentication: Boolean,
 
     ) : BaseEntity(), UserDetails {
     override fun getAuthorities(): MutableCollection<out GrantedAuthority>? {

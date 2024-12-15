@@ -6,11 +6,11 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 @Entity
-@Table(name = "role_info")
+@Table(name = "role_info", schema = "public")
 class RoleInfoEntity(
     @Id
-    @NotNull
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     var id: Long? = null,
 
     @Size(max = 255)

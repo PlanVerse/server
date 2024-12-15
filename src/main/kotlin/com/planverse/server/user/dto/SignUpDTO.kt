@@ -23,6 +23,6 @@ data class SignUpDTO(
     val pwd: String,
 ) {
     fun toEntity(encodedPassword: String): UserInfoEntity {
-        return UserInfoEntity(name = name, nickname = nickname, email = email, pwd = encodedPassword)
+        return UserInfoEntity(name = name, nickname = nickname, email = email, pwd = encodedPassword, authentication = false)
     }
 }
