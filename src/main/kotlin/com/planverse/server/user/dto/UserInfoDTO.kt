@@ -1,13 +1,14 @@
 package com.planverse.server.user.dto
 
 import com.planverse.server.user.entity.UserInfoEntity
+import org.springframework.security.core.userdetails.UserDetails
 
 data class UserInfoDTO(
     var id: Long? = null,
     var name: String,
     var nickname: String,
     var email: String,
-    var password: String,
+    var pwd: String,
     var authentication: Boolean,
 ) {
     fun toEntity(): UserInfoEntity {
@@ -16,7 +17,7 @@ data class UserInfoDTO(
             name,
             nickname,
             email,
-            password,
+            pwd,
             authentication
         )
     }

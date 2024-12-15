@@ -15,6 +15,12 @@ class MailController(
         return BaseResponse.success()
     }
 
+    @GetMapping("/auth/re/{email}")
+    fun mailReAuth(@PathVariable("email") email: String): BaseResponse<Unit> {
+        mailService.sendAuthMail(email)
+        return BaseResponse.success()
+    }
+
     // 인증번호 일치여부 확인
     @PostMapping("/auth-check/{email}/{authNumber}")
     fun mailAuthCheck(@PathVariable("email") email: String, @PathVariable("authNumber") authNumber: String): BaseResponse<Unit> {

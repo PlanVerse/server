@@ -5,6 +5,7 @@ import com.planverse.server.common.dto.Jwt
 import com.planverse.server.user.dto.SignInDTO
 import com.planverse.server.user.dto.SignUpDTO
 import com.planverse.server.user.service.UserInfoService
+import jakarta.validation.Valid
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

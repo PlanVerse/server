@@ -3,13 +3,18 @@ package com.planverse.server.mail.service
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.util.RedisUtil
+import com.planverse.server.user.service.UserDetailService
 import jakarta.mail.MessagingException
 import jakarta.mail.internet.MimeMessage
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
 @Service
+@Transactional(readOnly = true)
 class MailService(
     @Value("\${spring.mail.sender.noreply}")
     val senderNoreply: String,
@@ -18,8 +23,10 @@ class MailService(
 
     val javaMailSender: JavaMailSender,
     val redisUtil: RedisUtil,
+    val userDetailService: UserDetailService
 ) {
-    private fun createAuthMail(email: String): MimeMessage {
+    @Transactional
+    fun createAuthMail(email: String): MimeMessage {
         val number = ((Math.random() * (90000)).toInt() + 100000).toString()
         redisUtil.setWithExpiryMin(email, number, 10)
 
@@ -51,10 +58,21 @@ class MailService(
         }
     }
 
+    fun sendAuthReMail(email: String) {
+        if (redisUtil.has(email)) {
+            val message: MimeMessage = createAuthMail(email)
+            javaMailSender.send(message)
+        } else {
+            throw BaseException(StatusCode.ALREADY_SENT_EMAIL)
+        }
+    }
+
     fun mailAuthCheck(email: String, authNumber: String) {
         val redisNumber = redisUtil.get(email)
         if (redisNumber == authNumber) {
-            // TODO 임시권한 유저 권한 수정
+            val userDetails: UserDetails = userDetailService.loadUserByUsername(email)
+            val authentication = UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
+            println(1232)
         }
     }
 }

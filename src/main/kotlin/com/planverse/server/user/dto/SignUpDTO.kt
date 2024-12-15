@@ -7,19 +7,19 @@ import jakarta.validation.constraints.Pattern
 import jakarta.validation.constraints.Size
 
 data class SignUpDTO(
-    @NotBlank
+    @field:NotBlank
     val name: String,
 
-    @NotBlank
-    @Size(min = 3, max = 50)
+    @field:NotBlank
+    @field:Size(min = 3, max = 50)
     val nickname: String,
 
-    @Email
-    @NotBlank
+    @field:Email
+    @field:NotBlank
     val email: String,
 
-    @NotBlank
-    @Pattern(regexp = "^[A-Z]+(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$", message = "영문 숫자 특수기호 조합 8자리 이상 20자리 이하여야 합니다.")
+    @field:NotBlank
+    @field:Pattern(regexp = "^[A-Z]+(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$", message = "영문 숫자 특수기호 조합 8자리 이상 20자리 이하여야 합니다.")
     val pwd: String,
 ) {
     fun toEntity(encodedPassword: String): UserInfoEntity {

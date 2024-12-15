@@ -16,7 +16,7 @@ class BaseExceptionHandler {
      * 미확인 오류 핸들링
      */
     @ExceptionHandler(RuntimeException::class, Exception::class)
-    fun handleRuntimeException(ex: RuntimeException?): ResponseEntity<BaseResponse<Void>> {
+    fun handleRuntimeException(ex: RuntimeException?): ResponseEntity<BaseResponse<Map<String, String>>> {
         val statusInfo = StatusCode.FAIL
         return ResponseEntity(BaseResponse.error(status = StatusCode.FAIL), statusInfo.httpStatus)
     }
@@ -49,7 +49,7 @@ class BaseExceptionHandler {
      * 전범위적 오류 핸들링
      */
     @ExceptionHandler(BaseException::class)
-    fun handleBaseException(be: BaseException): ResponseEntity<BaseResponse<Void>> {
+    fun handleBaseException(be: BaseException): ResponseEntity<BaseResponse<Map<String, String>>> {
         val statusInfo = StatusCode[be.status.code]
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
