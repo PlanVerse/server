@@ -9,6 +9,8 @@ plugins {
 
     id("org.springframework.boot") version "3.4.0"
     id("io.spring.dependency-management") version "1.1.6"
+
+    id("com.google.cloud.tools.jib") version "3.4.4"
 }
 
 group = "com.planverse"
@@ -34,6 +36,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jdbc")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.session:spring-session-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -79,12 +82,6 @@ noArg {
     annotation("jakarta.persistence.Embeddable")
 }
 
-//kotlin {
-//    compilerOptions {
-//        freeCompilerArgs.addAll("-Xjsr305=strict")
-//    }
-//}
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -94,4 +91,27 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+jib {
+    val env = project.properties["env"] ?: "dev"
+
+    from {
+        image = "amazoncorretto:17"
+    }
+    to {
+        image = System.getenv("JIB_IMAGE")
+        tags = setOf("latest")
+        auth {
+            username = System.getenv("TOKEN_USER")
+            password = System.getenv("TOKEN_PWD")
+        }
+    }
+    container {
+        jvmFlags = listOf(
+            "-Dspring.profiles.active=$env",
+            "-Djasypt.encryptor.password=\${JASYPT_ENCRYPTOR_PASSWORD}",
+        )
+        ports = listOf("50051")
+    }
 }

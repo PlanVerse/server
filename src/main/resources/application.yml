@@ -49,10 +49,12 @@ management:
   endpoint:
     shutdown:
       access: none
+    health:
+      show-details: always
   endpoints:
     web:
       exposure:
-        include: health, refresh
+        include: "*"
   health:
     db:
       enabled: false

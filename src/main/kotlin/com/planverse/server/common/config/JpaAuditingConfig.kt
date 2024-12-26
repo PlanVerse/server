@@ -1,5 +1,8 @@
 package com.planverse.server.common.config
 
+import com.planverse.server.common.constant.Constant
+import com.planverse.server.common.constant.StatusCode
+import com.planverse.server.common.exception.BaseException
 import com.planverse.server.user.dto.UserInfoDTO
 import com.planverse.server.user.entity.UserInfoEntity
 import org.springframework.context.annotation.Bean
@@ -25,9 +28,9 @@ class AuditorAwareConfig : AuditorAware<Long> {
         val authentication: Authentication? = SecurityContextHolder.getContext().authentication
 
         if (authentication == null || !authentication.isAuthenticated) {
-            return Optional.of(-1)
+            throw BaseException(StatusCode.FAIL)
         } else if (authentication.principal.equals("anonymousUser")) {
-            return Optional.of(0)
+            return Optional.of(Constant.SYSTEM_USER)
         } else {
             val userInfo: UserInfoDTO = UserInfoDTO.toDto(authentication.principal as UserInfoEntity)
             return Optional.of(userInfo.id!!)

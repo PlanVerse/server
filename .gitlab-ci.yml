@@ -1,0 +1,44 @@
+image: gradle:7.6.0-jdk17
+
+variables:
+  GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
+  JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+
+stages:
+  - build
+  - deploy
+
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - .gradle/wrapper/
+    - .gradle/caches/
+
+build:
+  stage: build
+  script:
+    - ./gradlew clean jib
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  needs:
+    - job: build
+  variables:
+    DOCKER_LATEST_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
+    DOCKER_TAG_NAME: $CI_PROJECT_NAME:latest
+  before_script:
+    - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
+  script:
+    - docker rmi $DOCKER_LATEST_IMAGE_NAME;echo $?
+    - docker pull $DOCKER_LATEST_IMAGE_NAME
+    - docker tag $DOCKER_LATEST_IMAGE_NAME $DOCKER_TAG_NAME
+    - docker stop $CI_PROJECT_NAME;echo $?
+    - docker run -d -p 50050:50050 -e JASYPT_ENCRYPTOR_PASSWORD=$DEV_ENC_PWD --rm --name $CI_PROJECT_NAME $DOCKER_TAG_NAME
+  after_script:
+    - docker logout
+  tags:
+    - winos
+  only:
+    - main

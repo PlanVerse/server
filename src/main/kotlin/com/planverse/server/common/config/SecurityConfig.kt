@@ -1,11 +1,16 @@
 package com.planverse.server.common.config
 
+import com.planverse.server.common.config.security.JwtAccessDeniedHandler
+import com.planverse.server.common.config.security.JwtAuthenticationEntryPoint
 import com.planverse.server.common.config.security.JwtAuthenticationFilter
 import com.planverse.server.common.config.security.JwtTokenProvider
+import com.planverse.server.common.constant.SystemRole
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -17,25 +22,39 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 class SecurityConfig(
-    val jwtTokenProvider: JwtTokenProvider
+    private val jwtTokenProvider: JwtTokenProvider,
 ) {
+
     @Bean
     fun securityFilterChain(
-        http: HttpSecurity
+        http: HttpSecurity,
+        jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
+        jwtAccessDeniedHandler: JwtAccessDeniedHandler
     ): SecurityFilterChain {
         return http
             .formLogin { it.disable() }
             .csrf { it.disable() }
             .cors { it.disable() }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-            .addFilterBefore(JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter::class.java)
             .authorizeHttpRequests {
-                it.requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/mail/**").permitAll() // TODO 임시 유저 권한 허용
-                    .requestMatchers("/actuator/**").permitAll() // TODO 관리자 권한 허용
-                    .anyRequest().authenticated()
+                it
+                    .requestMatchers(
+                        "/auth/**",
+                    ).anonymous()
+                    .requestMatchers(
+                        "/actuator/**"
+                    ).hasAuthority(SystemRole.ROLE_ADMIN.name)
+                    .anyRequest().hasAnyAuthority(SystemRole.ROLE_ADMIN.name, SystemRole.ROLE_USER.name)
             }
+            .exceptionHandling(Customizer.withDefaults())
+            .exceptionHandling {
+                it
+                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                    .accessDeniedHandler(jwtAccessDeniedHandler)
+            }
+            .addFilterBefore(JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter::class.java)
             .build()
     }
 

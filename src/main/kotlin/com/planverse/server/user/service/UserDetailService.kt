@@ -17,5 +17,15 @@ class UserDetailService(
         return userInfoRepository.findByEmail(email).orElseThrow {
             BaseException(StatusCode.USER_NOT_FOUND)
         }
+
+//        val user: UserInfoEntity = userInfoRepository.findByEmail(email).orElseThrow {
+//            BaseException(StatusCode.USER_NOT_FOUND)
+//        }
+//        return User.builder()
+//            .username(user.email)
+//            .password(user.password)
+//            .authorities(user.authorities)
+//            .roles(user.role)
+//            .build()
     }
 }

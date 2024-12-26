@@ -4,9 +4,8 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.util.RedisUtil
-import io.jsonwebtoken.Claims
-import io.jsonwebtoken.ExpiredJwtException
-import io.jsonwebtoken.Jwts
+import io.jsonwebtoken.*
+import mu.KotlinLogging
 import org.apache.commons.lang3.time.DateUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -22,14 +21,15 @@ import java.util.*
 import java.util.stream.Collectors
 import javax.crypto.spec.SecretKeySpec
 
+private val logger = KotlinLogging.logger {}
+
 @Component
 class JwtTokenProvider(
-    @Value("\${spring.jwt.secret}")
-    private val secret: String,
     val userDetailsService: UserDetailsService,
-    val redisUtil: RedisUtil
 ) {
-    var secretKey: SecretKeySpec = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().algorithm)
+    @Value("\${spring.jwt.secret}")
+    private lateinit var secret: String
+    private val secretKey: SecretKeySpec by lazy { SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().algorithm) }
 
     /**
      * User 정보로 AccessToken, RefreshToken 생성
@@ -62,7 +62,7 @@ class JwtTokenProvider(
             .compact()
 
         // Refresh Token Redis에 저장 및 자동 파기
-        redisUtil.setWithExpiryDay(
+        RedisUtil.setWithExpiryDay(
             authentication.name,
             refreshToken,
             7
@@ -102,7 +102,7 @@ class JwtTokenProvider(
      */
     fun getRefreshAuthentication(refreshToken: String): Authentication {
         try {
-            val claims = this.parseClaims(refreshToken)
+            val claims: Claims = this.parseClaims(refreshToken)
             val userDetails: UserDetails = userDetailsService.loadUserByUsername(claims.subject)
             return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
         } catch (e: Exception) {
@@ -113,26 +113,48 @@ class JwtTokenProvider(
     /**
      * 토큰 정보를 검증하는
      */
-    fun validateToken(token: String?): Boolean {
-        Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseSignedClaims(token)
-        return true
+    fun validateToken(token: String): Boolean {
+        try {
+            this.parseClaims(token)
+            return true
+        } catch (e: Exception) {
+            when (e) {
+                is SecurityException -> {
+                    logger.info("Invalid JWT Token", e)
+                }
+
+                is MalformedJwtException -> {
+                    logger.info("Invalid JWT Token", e)
+                }
+
+                is ExpiredJwtException -> {
+                    logger.info("Expired JWT Token", e)
+                }
+
+                is UnsupportedJwtException -> {
+                    logger.info("Unsupported JWT Token", e)
+                }
+
+                is IllegalArgumentException -> {
+                    logger.info("JWT claims string is empty.", e)
+                }
+
+                else -> {
+                    logger.info("JWT Else.", e)
+                }
+            }
+        }
+        return false
     }
 
     /**
      * accessToken 복호화
      */
     fun parseClaims(accessToken: String): Claims {
-        return try {
-            Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(accessToken)
-                .payload
-        } catch (e: ExpiredJwtException) {
-            e.claims
-        }
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(accessToken)
+            .payload
     }
 }

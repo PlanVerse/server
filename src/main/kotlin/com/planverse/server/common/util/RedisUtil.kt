@@ -1,52 +1,59 @@
 package com.planverse.server.common.util
 
-import com.planverse.server.common.constant.StatusCode
-import com.planverse.server.common.exception.BaseException
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
 
 @Component
 class RedisUtil(
-    private val redisTemplate: RedisTemplate<String, Any>
+    redisTemplate: RedisTemplate<String, Any>
 ) {
-    // 데이터 저장
-    fun set(key: String, value: Any) {
-        redisTemplate.opsForValue().set(key, value)
+    init {
+        Companion.redisTemplate = redisTemplate
     }
 
-    // 만료시간이 있는 데이터 저장
-    fun setWithExpiryMs(key: String, value: Any, timeout: Long) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MILLISECONDS)
-    }
+    companion object {
+        private lateinit var redisTemplate: RedisTemplate<String, Any>
 
-    fun setWithExpirySec(key: String, value: Any, timeout: Long) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS)
-    }
+        // 데이터 저장
+        fun set(key: String, value: Any) {
+            redisTemplate.opsForValue().set(key, value)
+        }
 
-    fun setWithExpiryMin(key: String, value: Any, timeout: Long) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES)
-    }
+        // 만료시간이 있는 데이터 저장
+        fun setWithExpiryMs(key: String, value: Any, timeout: Long) {
+            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MILLISECONDS)
+        }
 
-    fun setWithExpiryHour(key: String, value: Any, timeout: Long) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.HOURS)
-    }
+        fun setWithExpirySec(key: String, value: Any, timeout: Long) {
+            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.SECONDS)
+        }
 
-    fun setWithExpiryDay(key: String, value: Any, timeout: Long) {
-        redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.DAYS)
-    }
+        fun setWithExpiryMin(key: String, value: Any, timeout: Long) {
+            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.MINUTES)
+        }
 
-    // 데이터 조회
-    fun get(key: String): String {
-        return redisTemplate.opsForValue().get(key)?.toString() ?: throw BaseException(StatusCode.NOT_FOUND)
-    }
+        fun setWithExpiryHour(key: String, value: Any, timeout: Long) {
+            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.HOURS)
+        }
 
-    fun has(key: String): Boolean {
-        return redisTemplate.hasKey(key)
-    }
+        fun setWithExpiryDay(key: String, value: Any, timeout: Long) {
+            redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.DAYS)
+        }
 
-    // 데이터 삭제
-    fun delete(key: String): Boolean {
-        return redisTemplate.delete(key)
+        // 데이터 조회
+        fun get(key: String): Any? {
+            return redisTemplate.opsForValue().get(key)
+        }
+
+        // 키 존재 확인
+        fun has(key: String): Boolean {
+            return redisTemplate.hasKey(key)
+        }
+
+        // 데이터 삭제
+        fun delete(key: String): Boolean {
+            return redisTemplate.delete(key)
+        }
     }
 }

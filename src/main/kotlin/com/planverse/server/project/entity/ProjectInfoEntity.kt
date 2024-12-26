@@ -16,24 +16,24 @@ class ProjectInfoEntity(
 
     @NotNull
     @Column(name = "no", nullable = false)
-    var no: Long,
+    val no: Long,
 
     @Size(max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
-    var name: String,
+    val name: String,
 
     @Size(max = 255)
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
-    var key: String,
+    val key: String,
 
     @Size(max = 255)
     @Column(name = "description")
-    var description: String? = null,
+    val description: String? = null,
 
     @Size(max = 500)
     @Column(name = "project_logo_url", length = 500)
-    var projectLogoUrl: String? = null,
+    val projectLogoUrl: String? = null,
 ) : BaseEntity()
