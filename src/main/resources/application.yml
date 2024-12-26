@@ -25,7 +25,7 @@ spring:
   application:
     name: planverse
   config:
-    import: optional:configserver:http://localhost:50050
+    import: optional:configserver:http://home.seoeungi.work:50050
 
 logging:
   config: classpath:spring-logback.xml
@@ -44,20 +44,25 @@ jasypt:
     key-obtention-iterations: 10000
     pool-size: 1
 
-
 management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
   endpoint:
     shutdown:
       access: none
     health:
       show-details: always
-  endpoints:
-    web:
-      exposure:
-        include: "*"
   health:
     db:
       enabled: false
       ignore-routing-data-sources: false
+    influxdb:
+      enabled: false
     redis:
+      enabled: false
+    mail:
+      enabled: false
+    ssl:
       enabled: false

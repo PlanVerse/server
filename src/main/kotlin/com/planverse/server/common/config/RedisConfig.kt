@@ -16,7 +16,6 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
-import org.springframework.session.data.redis.config.ConfigureRedisAction
 import java.time.Duration
 
 @Configuration
@@ -33,10 +32,6 @@ class RedisConfig(
     @Value("\${spring.data.redis.database}")
     val database: Int,
 ) {
-    @Bean
-    fun configureRedisAction(): ConfigureRedisAction {
-        return ConfigureRedisAction.NO_OP
-    }
 
     @Bean("lettuceConnectionFactory")
     fun lettuceConnectionFactory(): LettuceConnectionFactory {
@@ -57,8 +52,9 @@ class RedisConfig(
             this.connectionFactory = redisConnectionFactory
             this.isEnableDefaultSerializer = true
             this.keySerializer = StringRedisSerializer()
+            this.valueSerializer = GenericJackson2JsonRedisSerializer()
             this.hashKeySerializer = StringRedisSerializer()
-            this.valueSerializer = StringRedisSerializer()
+            this.hashValueSerializer = StringRedisSerializer()
         }
     }
 
