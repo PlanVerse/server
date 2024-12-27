@@ -93,8 +93,6 @@ tasks.withType<Test> {
 }
 
 jib {
-    val env = project.properties["env"] ?: "dev"
-
     from {
         image = "amazoncorretto:17"
     }
@@ -108,7 +106,8 @@ jib {
     }
     container {
         jvmFlags = listOf(
-            "-Dspring.profiles.active=$env",
+            "-Dspring.profiles.active=\${RUN_PROFILE}",
+            "-Dspring.jwt.secret=\${JWT_ENC_PWD}",
             "-Djasypt.encryptor.password=\${JASYPT_ENCRYPTOR_PASSWORD}",
         )
         ports = listOf("50051")

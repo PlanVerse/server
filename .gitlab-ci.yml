@@ -1,8 +1,9 @@
-image: gradle:7.6.0-jdk17
+image: gradle:8.11.1-jdk17
 
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
   JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  RUN_PROFILE: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
 stages:
   - build
@@ -20,6 +21,7 @@ build:
     - ./gradlew clean jib
   only:
     - main
+    - dev
 
 deploy:
   stage: deploy
@@ -28,17 +30,24 @@ deploy:
   variables:
     DOCKER_LATEST_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
     DOCKER_TAG_NAME: $CI_PROJECT_NAME:latest
+    CONTAINER_NAME: $CI_PROJECT_NAME-$CI_MERGE_REQUEST_TARGET_BRANCH_NAME
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
     - docker rmi $DOCKER_LATEST_IMAGE_NAME;echo $?
     - docker pull $DOCKER_LATEST_IMAGE_NAME
     - docker tag $DOCKER_LATEST_IMAGE_NAME $DOCKER_TAG_NAME
-    - docker stop $CI_PROJECT_NAME;echo $?
-    - docker run -d -p 50050:50050 -e JASYPT_ENCRYPTOR_PASSWORD=$DEV_ENC_PWD --rm --name $CI_PROJECT_NAME $DOCKER_TAG_NAME
+    - docker stop $CONTAINER_NAME;echo $?
+    - >
+      docker run -d -p 50051:50051 --rm --name $CONTAINER_NAME $DOCKER_TAG_NAME
+      -e RUN_PROFILE=$RUN_PROFILE
+      -e JWT_ENC_PWD=$JWT_ENC_PWD
+      -e JASYPT_ENCRYPTOR_PASSWORD=$DEV_ENC_PWD
+      -v C:\Service\logs\planverse:/planverse/logs
   after_script:
     - docker logout
   tags:
     - winos
   only:
     - main
+    - dev
