@@ -25,7 +25,7 @@ spring:
   application:
     name: planverse
   config:
-    import: optional:configserver:http://home.seoeungi.work:50050
+    import: optional:configserver:https://cloud.seoeungi.work
 
 logging:
   config: classpath:spring-logback.xml
