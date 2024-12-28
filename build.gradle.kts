@@ -107,8 +107,8 @@ jib {
     container {
         jvmFlags = listOf(
             "-Dspring.profiles.active=" + System.getenv("PROFILE_ACTIVE"),
-            "-Dspring.jwt.secret=\${JWT_ENC_PWD}",
-            "-Djasypt.encryptor.password=\${JASYPT_ENCRYPTOR_PASSWORD}",
+            "-Dspring.jwt.secret=" + System.getenv("JWT_ENC_PWD"),
+            "-Djasypt.encryptor.password=" + System.getenv("JASYPT_ENCRYPTOR_PASSWORD"),
         )
         ports = listOf("50051")
     }

@@ -4,6 +4,8 @@ variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
   JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   PROFILE_ACTIVE: $CI_COMMIT_REF_NAME
+  JWT_ENC_PWD: $JWT_ENC_PWD
+  JASYPT_ENCRYPTOR_PASSWORD: $DEV_ENC_PWD
 
 stages:
   - build
@@ -41,8 +43,6 @@ deploy:
     - docker rm -f $CONTAINER_NAME;echo $?
     - >
       docker run -d -p 50051:50051 --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_TAG_NAME
-      -e JWT_ENC_PWD=$JWT_ENC_PWD
-      -e JASYPT_ENCRYPTOR_PASSWORD=$DEV_ENC_PWD
       -v C:\Service\logs\planverse:/planverse/logs
   after_script:
     - docker logout
