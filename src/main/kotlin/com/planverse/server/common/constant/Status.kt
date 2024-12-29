@@ -9,6 +9,7 @@ enum class StatusCode(
 ) {
     SUCCESS("0000", "성공", HttpStatus.OK),
 
+    // API
     BAD_REQUEST("1000", "잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
     ALREADY_USE_EMAIL("1001", "이미 사용 중인 이메일 입니다.", HttpStatus.BAD_REQUEST),
     NOT_FOUND("1002", "찾을 수 없는 정보입니다.", HttpStatus.BAD_REQUEST),
@@ -17,8 +18,12 @@ enum class StatusCode(
     CANNOT_FIND_EMAIL("1005", "인증요청되지 않은 이메일입니다.", HttpStatus.BAD_REQUEST),
     EXPIRED_AUTH_EMAIL_REQUEST("1006", "인증 요청이 만료되었습니다. 재시도 부탁드립니다.", HttpStatus.BAD_REQUEST),
     ALREADY_AUTH_EMAIL("1007", "이미 인증된 사용자 입니다.", HttpStatus.BAD_REQUEST),
-    NOT_EXPECT("1009", "예상결과과 다릅니다.", HttpStatus.BAD_REQUEST),
+    NOT_EXPECT("1008", "예상결과과 다릅니다.", HttpStatus.BAD_REQUEST),
 
+    TEAM_NOT_FOUND("1010", "팀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    TEAM_MEMBER_NOT_FOUND("1010", "팀에 소속된 멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+    // AUTH
     NO_AUTHORITY("2000", "권한 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED("2001", "인증 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN("2002", "신뢰할 수 없는 정보입니다.", HttpStatus.UNAUTHORIZED),

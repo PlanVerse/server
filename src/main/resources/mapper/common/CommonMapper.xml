@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common">
+    <sql id="baseCol">
+        delete_yn,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at
+    </sql>
+
+    <sql id="createCol">
+        delete_yn,
+        created_by,
+        created_at,
+        updated_by,
+        updated_at
+    </sql>
+
+    <sql id="createSql">
+        delete_yn = 'N',
+        created_by = ${userId},
+        created_at = NOW(),
+        updated_by = ${userId},
+        updated_at = NOW()
+    </sql>
+
+    <sql id="updateCol">
+        updated_by,
+        updated_at
+    </sql>
+
+    <sql id="updateSql">
+        updated_by = ${userId},
+        updated_at = NOW()
+    </sql>
+</mapper>

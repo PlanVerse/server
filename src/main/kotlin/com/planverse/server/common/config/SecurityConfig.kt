@@ -42,11 +42,21 @@ class SecurityConfig(
                 it
                     .requestMatchers(
                         "/auth/**",
-                    ).anonymous()
+                    ).permitAll()
+                    .requestMatchers(
+                        "/admin/**"
+                    ).hasAnyAuthority(SystemRole.ROLE_ADMIN.name)
                     .requestMatchers(
                         "/actuator/**"
-                    ).hasAuthority(SystemRole.ROLE_ADMIN.name)
-                    .anyRequest().hasAnyAuthority(SystemRole.ROLE_ADMIN.name, SystemRole.ROLE_USER.name)
+                    ).hasAnyAuthority(
+                        SystemRole.ROLE_ADMIN.name,
+                        SystemRole.ROLE_DEVELOPER.name
+                    )
+                    .anyRequest().hasAnyAuthority(
+                        SystemRole.ROLE_ADMIN.name,
+                        SystemRole.ROLE_DEVELOPER.name,
+                        SystemRole.ROLE_USER.name
+                    )
             }
             .exceptionHandling(Customizer.withDefaults())
             .exceptionHandling {

@@ -13,19 +13,6 @@ data class UserInfoDTO(
     var authentication: Boolean,
     var role: SystemRole,
 ) {
-    fun toEntity(): UserInfoEntity {
-        return UserInfoEntity(
-            id,
-            key,
-            name,
-            nickname,
-            email,
-            pwd,
-            authentication,
-            role
-        )
-    }
-
     companion object {
         fun toDto(userInfoEntity: UserInfoEntity): UserInfoDTO {
             return UserInfoDTO(

@@ -3,7 +3,10 @@ package com.planverse.server.common.config.security
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
+import com.planverse.server.user.dto.UserInfo
+import com.planverse.server.user.entity.UserInfoEntity
 import io.jsonwebtoken.*
+import io.jsonwebtoken.security.SignatureException
 import mu.KotlinLogging
 import org.apache.commons.lang3.time.DateUtils
 import org.springframework.beans.factory.annotation.Value
@@ -48,7 +51,12 @@ class JwtTokenProvider(
         // Access Token 생성
         val accessToken = Jwts.builder()
             .subject(authentication.name)
-            .claim("auth", authorities)
+            .claims(
+                mutableMapOf<String, String>(
+                    "auth" to authorities,
+                    "identity" to authentication.principal.let { principal -> principal as UserInfoEntity }.id!!.toString()
+                )
+            )
             .expiration(accessTokenExpr)
             .signWith(secretKey)
             .compact()
@@ -86,7 +94,7 @@ class JwtTokenProvider(
         // UserDetails 객체를 만들어서 Authentication return
         // UserDetails: interface, User: UserDetails를 구현한 class
         val principal: UserDetails = User(claims.subject, "", authorities)
-        return UsernamePasswordAuthenticationToken(principal, "", authorities)
+        return UsernamePasswordAuthenticationToken(UserInfo.toDto(claims), "", authorities)
     }
 
     /**
@@ -125,6 +133,10 @@ class JwtTokenProvider(
 
                 is UnsupportedJwtException -> {
                     logger.info("Unsupported JWT Token", e)
+                }
+
+                is SignatureException -> {
+                    logger.info("Cannot Trust Token", e)
                 }
 
                 is IllegalArgumentException -> {

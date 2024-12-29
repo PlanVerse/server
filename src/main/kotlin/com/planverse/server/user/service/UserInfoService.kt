@@ -1,6 +1,7 @@
 package com.planverse.server.user.service
 
 import com.planverse.server.common.config.security.JwtTokenProvider
+import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.common.dto.Jwt
@@ -33,7 +34,7 @@ class UserInfoService(
     private val mailService: MailService,
 ) {
     internal fun getUserByEmail(email: String): UserInfoEntity {
-        return userInfoRepository.findByEmail(email).orElseThrow {
+        return userInfoRepository.findByEmailAndDeleteYn(email, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.USER_NOT_FOUND)
         }
     }
@@ -45,7 +46,7 @@ class UserInfoService(
     @Transactional
     fun signUp(signUpDto: SignUpDTO): String {
         try {
-            if (userInfoRepository.existsByEmail(signUpDto.email)) {
+            if (userInfoRepository.existsByEmailAndDeleteYn(signUpDto.email, Constant.DEL_N)) {
                 throw BaseException(StatusCode.ALREADY_USE_EMAIL)
             }
 
