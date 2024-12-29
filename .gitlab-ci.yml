@@ -24,6 +24,7 @@ build:
   only:
     - main
     - dev
+  interruptible: true
 
 deploy:
   stage: deploy
@@ -51,3 +52,4 @@ deploy:
   only:
     - main
     - dev
+  interruptible: true
