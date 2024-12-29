@@ -91,9 +91,7 @@ class JwtTokenProvider(
             .map { role: String? -> SimpleGrantedAuthority(role) }
             .collect(Collectors.toList())
 
-        // UserDetails 객체를 만들어서 Authentication return
-        // UserDetails: interface, User: UserDetails를 구현한 class
-        val principal: UserDetails = User(claims.subject, "", authorities)
+        // UserInfo 객체를 만들어서 Authentication return
         return UsernamePasswordAuthenticationToken(UserInfo.toDto(claims), "", authorities)
     }
 

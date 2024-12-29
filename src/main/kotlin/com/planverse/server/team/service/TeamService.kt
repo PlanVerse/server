@@ -5,7 +5,6 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.team.dto.TeamInfoDTO
 import com.planverse.server.team.dto.TeamMemberInfoDTO
-import com.planverse.server.team.entity.TeamMemberInfoEntity
 import com.planverse.server.team.repository.TeamInfoRepository
 import com.planverse.server.team.repository.TeamMemberRepository
 import com.planverse.server.user.dto.UserInfo
@@ -32,7 +31,7 @@ class TeamService(
 
         // fixme DTO 변환이 안되고있으니 수정해야함
         // 팀 멤버리스트 :: 생성자가 아닌 멤버를 검색하므로 null throw X
-        val teamMemberInfoDTOList:List<TeamMemberInfoDTO> = buildList {
+        val teamMemberInfoDTOList: List<TeamMemberInfoDTO> = buildList {
             teamMemberRepository.findByTeamInfoIdAndCreator(teamInfoDTO.id!!, Constant.FLAG_FALSE).orElse(emptyList()).forEach {
                 TeamMemberInfoDTO.toDto(it)
             }
