@@ -3,7 +3,6 @@ package com.planverse.server.common.config.security
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
-import com.planverse.server.common.util.RedisUtil
 import io.jsonwebtoken.*
 import mu.KotlinLogging
 import org.apache.commons.lang3.time.DateUtils
@@ -32,7 +31,7 @@ class JwtTokenProvider(
     private val secretKey: SecretKeySpec by lazy { SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().algorithm) }
 
     /**
-     * User 정보로 AccessToken, RefreshToken 생성
+     * User 정보로 JWT Token 생성
      */
     fun generateToken(authentication: Authentication): Jwt {
         // 권한 가져오기
@@ -60,13 +59,6 @@ class JwtTokenProvider(
             .expiration(refreshTokenExpr)
             .signWith(secretKey)
             .compact()
-
-        // Refresh Token Redis에 저장 및 자동 파기
-        RedisUtil.setWithExpiryDay(
-            authentication.name,
-            refreshToken,
-            7
-        )
 
         return Jwt(
             "Bearer",

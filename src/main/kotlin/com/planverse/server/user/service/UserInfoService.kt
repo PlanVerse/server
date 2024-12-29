@@ -53,6 +53,8 @@ class UserInfoService(
             val encodedPassword = passwordEncoder.encode(signUpDto.pwd)
             userInfoRepository.save(signUpDto.toEntity(key, encodedPassword, SystemRole.ROLE_TEMP_USER))
 
+            RedisUtil.setWithExpiryMin(key, signUpDto.email, 10)
+
             mailService.sendAuthMail(signUpDto.email, key)
 
             return key

@@ -1,7 +1,7 @@
 package com.planverse.server.common.dto
 
-class Jwt(
-    grantType: String,
-    accessToken: String,
-    refreshToken: String,
+data class Jwt(
+    val grantType: String,
+    val accessToken: String,
+    val refreshToken: String,
 )

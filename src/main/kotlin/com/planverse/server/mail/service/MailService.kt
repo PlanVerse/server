@@ -2,7 +2,6 @@ package com.planverse.server.mail.service
 
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
-import com.planverse.server.common.util.RedisUtil
 import jakarta.mail.MessagingException
 import jakarta.mail.internet.MimeMessage
 import org.springframework.beans.factory.annotation.Value
@@ -51,6 +50,5 @@ class MailService(
         } catch (me: MailException) {
             throw BaseException(StatusCode.CANNOT_SENT_EMAIL)
         }
-        RedisUtil.setWithExpiryMin(key, email, 10)
     }
 }
