@@ -44,7 +44,7 @@ deploy:
     - docker rm -f $CONTAINER_NAME;echo $?
     - >
       docker run -d -p 50051:50051 --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_TAG_NAME
-      -v C:\service\logs\planverse:/planverse/logs
+      -v "C:\service:/planverse"
   after_script:
     - docker logout
   tags:
