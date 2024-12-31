@@ -49,6 +49,7 @@ dependencies {
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.postgresql:postgresql")
     implementation("io.jsonwebtoken:jjwt-api:${property("jwtVersion")}")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

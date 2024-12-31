@@ -3,12 +3,17 @@ package com.planverse.server.common.exception.handler
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.common.exception.BaseException
+import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
+import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.servlet.resource.NoResourceFoundException
+
+private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class BaseExceptionHandler {
@@ -17,8 +22,9 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(RuntimeException::class, Exception::class)
     fun handleRuntimeException(ex: RuntimeException?): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex }
         val statusInfo = StatusCode.FAIL
-        return ResponseEntity(BaseResponse.error(status = StatusCode.FAIL), statusInfo.httpStatus)
+        return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
 
     /**
@@ -26,14 +32,15 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex }
         val errors = mutableMapOf<String, String>()
         ex.bindingResult.allErrors.forEach { error ->
-            val fieldName = (error as FieldError).field
+            val fieldName = (error as? FieldError)?.field ?: return@forEach
             val errorMessage = error.defaultMessage
             errors[fieldName] = errorMessage ?: "Not Exception Message"
         }
         val statusInfo = StatusCode.BAD_REQUEST
-        return ResponseEntity(BaseResponse.error(status = StatusCode.FAIL, data = errors), statusInfo.httpStatus)
+        return ResponseEntity(BaseResponse.error(status = statusInfo, data = errors), statusInfo.httpStatus)
     }
 
     /**
@@ -41,7 +48,28 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(BadCredentialsException::class)
     fun badCredentialsException(ex: BadCredentialsException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex }
         val statusInfo = StatusCode.LOGIN_FAIL
+        return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
+    }
+
+    /**
+     * API 소스 미존재 오류 핸들링
+     */
+    @ExceptionHandler(NoResourceFoundException::class)
+    fun noResourceFoundException(ex: NoResourceFoundException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex }
+        val statusInfo = StatusCode.NOT_EXISTS_REQUEST
+        return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
+    }
+
+    /**
+     * 파라미터 누락 오류 핸들링
+     */
+    @ExceptionHandler(MissingServletRequestParameterException::class)
+    fun missingServletRequestParameterException(ex: MissingServletRequestParameterException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex }
+        val statusInfo = StatusCode.BAD_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
 
@@ -50,6 +78,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(be: BaseException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { be }
         val statusInfo = StatusCode[be.status.code]
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }

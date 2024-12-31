@@ -18,7 +18,7 @@ class TeamService(
     private val teamMemberRepository: TeamMemberRepository,
 ) {
 
-    fun getTeamInfo(userInfo: UserInfo, teamId: Long) {
+    fun getTeamInfo(userInfo: UserInfo, teamId: Long): TeamInfoDTO {
         // 팀 정보 존재여부 판단
         val teamInfoDTO = teamInfoRepository.findById(teamId).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
@@ -27,17 +27,21 @@ class TeamService(
         // 팀 멤버중 생성자와 동일한지 2차검증
         val teamCreatorInfoDTO = teamMemberRepository.findByTeamInfoIdAndUserInfoIdAndCreator(teamInfoDTO.id!!, userInfo.id, Constant.FLAG_TRUE).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
-        }.let { TeamMemberInfoDTO.toDto(it) }
+        }.let {
+            TeamMemberInfoDTO.toDto(it)
+        }
 
-        // fixme DTO 변환이 안되고있으니 수정해야함
         // 팀 멤버리스트 :: 생성자가 아닌 멤버를 검색하므로 null throw X
         val teamMemberInfoDTOList: List<TeamMemberInfoDTO> = buildList {
             teamMemberRepository.findByTeamInfoIdAndCreator(teamInfoDTO.id!!, Constant.FLAG_FALSE).orElse(emptyList()).forEach {
-                TeamMemberInfoDTO.toDto(it)
+                add(TeamMemberInfoDTO.toDto(it))
             }
         }
 
-        println(123)
+        return teamInfoDTO.apply {
+            this.teamCreatorInfo = teamCreatorInfoDTO
+            this.teamMemberInfo = teamMemberInfoDTOList
+        }
     }
 
     fun getTeamList() {

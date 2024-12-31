@@ -9,11 +9,7 @@ import org.springframework.stereotype.Component
 class SecurityUtil {
     companion object {
         fun getCurrentEmail(): String {
-            val authentication = SecurityContextHolder.getContext().authentication
-            if (authentication == null || authentication.name == null) {
-                throw BaseException(StatusCode.UNAUTHORIZED)
-            }
-            return authentication.name
+            return SecurityContextHolder.getContext().authentication?.name ?: throw BaseException(StatusCode.UNAUTHORIZED)
         }
     }
 }

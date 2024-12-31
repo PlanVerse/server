@@ -5,16 +5,14 @@ import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
-import io.jsonwebtoken.*
-import io.jsonwebtoken.security.SignatureException
-import mu.KotlinLogging
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.Jwts
 import org.apache.commons.lang3.time.DateUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
@@ -22,8 +20,6 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.stream.Collectors
 import javax.crypto.spec.SecretKeySpec
-
-private val logger = KotlinLogging.logger {}
 
 @Component
 class JwtTokenProvider(
@@ -82,7 +78,7 @@ class JwtTokenProvider(
         // Jwt 토큰 복호화
         val claims = this.parseClaims(accessToken)
 
-        if (claims["auth"] == null) {
+        if (claims["auth"] === null) {
             throw BaseException(StatusCode.NO_AUTHORITY)
         }
 
@@ -116,37 +112,8 @@ class JwtTokenProvider(
             this.parseClaims(token)
             return true
         } catch (e: Exception) {
-            when (e) {
-                is SecurityException -> {
-                    logger.info("Invalid JWT Token", e)
-                }
-
-                is MalformedJwtException -> {
-                    logger.info("Invalid JWT Token", e)
-                }
-
-                is ExpiredJwtException -> {
-                    logger.info("Expired JWT Token", e)
-                }
-
-                is UnsupportedJwtException -> {
-                    logger.info("Unsupported JWT Token", e)
-                }
-
-                is SignatureException -> {
-                    logger.info("Cannot Trust Token", e)
-                }
-
-                is IllegalArgumentException -> {
-                    logger.info("JWT claims string is empty.", e)
-                }
-
-                else -> {
-                    logger.info("JWT Else.", e)
-                }
-            }
+            throw e
         }
-        return false
     }
 
     /**

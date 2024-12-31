@@ -23,7 +23,7 @@ class UserController(
     }
 
     @PostMapping("/verify")
-    fun verifyEmail(@Validated @RequestBody authDTO: AuthDTO): BaseResponse<Unit> {
+    fun verifyEmail(@Validated @RequestBody authDTO: AuthDTO): BaseResponse<Any> {
         userInfoService.verifyEmail(authDTO)
         return BaseResponse.success()
     }
@@ -42,7 +42,7 @@ class UserController(
 
     // TODO 토큰을 블랙리스트에 넣거나 프론트에서 처리해야함 :: 위변조 가능성있으니 만료시키는 것도 방법일듯함
     @PostMapping("/sign-out")
-    fun signOut(): BaseResponse<Unit> {
+    fun signOut(): BaseResponse<Any> {
         userInfoService.signOut()
         return BaseResponse.success()
     }

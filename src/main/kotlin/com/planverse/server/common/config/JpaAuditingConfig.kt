@@ -27,7 +27,7 @@ class AuditorAwareConfig : AuditorAware<Long> {
     override fun getCurrentAuditor(): Optional<Long> {
         val authentication: Authentication? = SecurityContextHolder.getContext().authentication
 
-        if (authentication == null || !authentication.isAuthenticated) {
+        if (authentication === null || !authentication.isAuthenticated) {
             throw BaseException(StatusCode.FAIL)
         } else if (authentication.principal.equals("anonymousUser")) {
             return Optional.of(Constant.SYSTEM_USER)

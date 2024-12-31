@@ -20,17 +20,19 @@ enum class StatusCode(
     ALREADY_AUTH_EMAIL("1007", "이미 인증된 사용자 입니다.", HttpStatus.BAD_REQUEST),
     NOT_EXPECT("1008", "예상결과과 다릅니다.", HttpStatus.BAD_REQUEST),
 
-    TEAM_NOT_FOUND("1010", "팀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    TEAM_MEMBER_NOT_FOUND("1010", "팀에 소속된 멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    NOT_EXISTS_REQUEST("2000", "찾을 수 없는 요청 정보입니다.", HttpStatus.NOT_FOUND),
+
+    TEAM_NOT_FOUND("x011", "팀을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    TEAM_MEMBER_NOT_FOUND("x012", "팀에 소속된 멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     // AUTH
-    NO_AUTHORITY("2000", "권한 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED("2001", "인증 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
-    INVALID_TOKEN("2002", "신뢰할 수 없는 정보입니다.", HttpStatus.UNAUTHORIZED),
-    EXPIRED_TOKEN("2003", "만료된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
-    UNSUPPORTED_TOKEN("2004", "변조된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
-    LOGIN_FAIL("2005", "로그인에 실패하였습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
-    USER_NOT_FOUND("2005", "사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
+    NO_AUTHORITY("8000", "권한 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED("8001", "인증 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("8008", "신뢰할 수 없는 정보입니다.", HttpStatus.UNAUTHORIZED),
+    EXPIRED_TOKEN("8003", "만료된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
+    UNSUPPORTED_TOKEN("8004", "변조된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
+    LOGIN_FAIL("8005", "로그인에 실패하였습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
+    USER_NOT_FOUND("8005", "사용자를 찾을 수 없습니다.", HttpStatus.UNAUTHORIZED),
 
     FAIL("9999", "오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     ;

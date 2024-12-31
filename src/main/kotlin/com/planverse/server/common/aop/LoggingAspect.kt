@@ -1,5 +1,6 @@
 package com.planverse.server.common.aop
 
+import com.planverse.server.common.util.ObjectUtil
 import mu.KotlinLogging
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component
 
 private val logger = KotlinLogging.logger {}
 
-@Order
+@Order(1)
 @Aspect
 @Component
 class LoggingAspect {
@@ -47,7 +48,7 @@ class LoggingAspect {
             result
         }
 
-        logger.info(" $type : '$classNm.$methodNm()', Params=${res.toString()}")
+        logger.trace(" $type : '$classNm.$methodNm()', Data=${ObjectUtil.convertObjectToString(res)}")
         return result
     }
 }

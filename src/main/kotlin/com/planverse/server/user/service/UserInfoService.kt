@@ -40,7 +40,7 @@ class UserInfoService(
     }
 
     internal fun checkUserRole(user: UserInfoEntity, role: SystemRole): Boolean {
-        return user.role == role
+        return user.role === role
     }
 
     @Transactional
@@ -69,7 +69,7 @@ class UserInfoService(
     @Transactional
     fun verifyEmail(authDTO: AuthDTO) {
         val email = RedisUtil.get(authDTO.token) ?: throw BaseException(StatusCode.EXPIRED_AUTH_EMAIL_REQUEST)
-        if (authDTO.email == email) {
+        if (authDTO.email !== email) {
             StatusCode.BAD_REQUEST
         }
 
