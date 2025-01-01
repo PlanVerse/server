@@ -89,7 +89,7 @@ class UserInfoService(
         val user: UserInfoEntity = getUserByEmail(reAuthDTO.email)
 
         if (checkUserRole(user, SystemRole.ROLE_TEMP_USER)) {
-            if (RedisUtil.has(user.key)) {
+            if (RedisUtil.has(user.key!!)) {
                 throw BaseException(StatusCode.ALREADY_SENT_EMAIL)
             } else {
                 val key = UUID.randomUUID().toString()

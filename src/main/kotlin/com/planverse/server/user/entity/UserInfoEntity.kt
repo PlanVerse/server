@@ -22,7 +22,7 @@ class UserInfoEntity(
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
-    var key: String,
+    var key: String? = null,
 
     @NotNull
     @Size(max = 255)

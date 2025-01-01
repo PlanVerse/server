@@ -14,13 +14,12 @@ class ProjectInfoEntity(
     @Column(name = "id")
     var id: Long? = null,
 
-    @Size(max = 255)
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
     val key: String,
 
-    @Size(max = 255)
+    @Size(min = 3, max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
     val name: String,

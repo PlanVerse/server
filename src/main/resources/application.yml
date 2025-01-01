@@ -26,6 +26,10 @@ spring:
     name: planverse
   config:
     import: optional:configserver:https://cloud.seoeungi.work
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
 
 logging:
   config: classpath:spring-logback.xml

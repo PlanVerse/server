@@ -17,7 +17,7 @@ data class UserInfoDTO(
         fun toDto(userInfoEntity: UserInfoEntity): UserInfoDTO {
             return UserInfoDTO(
                 userInfoEntity.id,
-                userInfoEntity.key,
+                userInfoEntity.key!!,
                 userInfoEntity.name,
                 userInfoEntity.nickname,
                 userInfoEntity.email,

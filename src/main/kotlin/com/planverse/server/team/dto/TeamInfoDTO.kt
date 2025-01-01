@@ -8,16 +8,37 @@ data class TeamInfoDTO(
     var name: String,
     var description: String? = null,
     var teamCreatorInfo: TeamMemberInfoDTO? = null,
-    var teamMemberInfo: List<TeamMemberInfoDTO>? = null,
+    var teamMemberInfo: TeamMemberInfoDTO? = null,
+    var teamCreatorInfos: List<TeamMemberInfoDTO>? = null,
+    var teamMemberInfos: List<TeamMemberInfoDTO>? = null,
 ) {
-
     companion object {
         fun toDto(teamInfoEntity: TeamInfoEntity): TeamInfoDTO {
             return TeamInfoDTO(
                 teamInfoEntity.id,
-                teamInfoEntity.key,
+                teamInfoEntity.key!!,
                 teamInfoEntity.name,
                 teamInfoEntity.description,
+            )
+        }
+
+        fun toDtoAndCreator(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO): TeamInfoDTO {
+            return TeamInfoDTO(
+                teamInfoEntity.id,
+                teamInfoEntity.key!!,
+                teamInfoEntity.name,
+                teamInfoEntity.description,
+                teamCreatorInfo = teamMemberInfoDTO,
+            )
+        }
+
+        fun toDtoAndMember(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO): TeamInfoDTO {
+            return TeamInfoDTO(
+                teamInfoEntity.id,
+                teamInfoEntity.key!!,
+                teamInfoEntity.name,
+                teamInfoEntity.description,
+                teamMemberInfo = teamMemberInfoDTO,
             )
         }
     }
