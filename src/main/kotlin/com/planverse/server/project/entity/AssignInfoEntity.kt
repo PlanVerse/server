@@ -3,8 +3,12 @@ package com.planverse.server.project.entity
 import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "assign_info", schema = "public")
 class AssignInfoEntity(
     @Id

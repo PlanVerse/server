@@ -3,6 +3,8 @@ package com.planverse.server.common.config.security
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
+import com.planverse.server.common.service.TokenBlacklistService
+import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
 import io.jsonwebtoken.Claims
@@ -24,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec
 @Component
 class JwtTokenProvider(
     val userDetailsService: UserDetailsService,
+    val blacklistService: TokenBlacklistService,
 ) {
     @Value("\${spring.jwt.secret}")
     private lateinit var secret: String
@@ -39,10 +42,10 @@ class JwtTokenProvider(
             .collect(Collectors.joining(","))
 
         val now = Date()
-        // 30분
-        val accessTokenExpr = DateUtils.addMinutes(now, 30)
+        // 2시간
+        val accessTokenExpr = DateUtils.addHours(now, 2)
         // 대략 1주일 :: 정확한 수치는 소수점이므로 올림 적용
-        val refreshTokenExpr = DateUtils.addWeeks(now, 1)
+        val refreshTokenExpr = DateUtils.addMonths(now, 6)
 
         // Access Token 생성
         val accessToken = Jwts.builder()
@@ -64,10 +67,54 @@ class JwtTokenProvider(
             .signWith(secretKey)
             .compact()
 
+        RedisUtil.setWithExpiryMonth(
+            accessToken,
+            refreshToken,
+            6
+        )
+
         return Jwt(
             "Bearer",
+            accessToken
+        )
+    }
+
+    /**
+     * refreshToken으로 JWT Token 갱신
+     */
+    fun generateTokenByRefreshToken(refreshToken: String): Jwt {
+        val authentication: Authentication = this.getRefreshAuthentication(refreshToken)
+        // 권한 가져오기
+        val authorities = authentication.authorities.stream()
+            .map { obj: GrantedAuthority -> obj.authority }
+            .collect(Collectors.joining(","))
+
+        val now = Date()
+        // 2시간
+        val accessTokenExpr = DateUtils.addHours(now, 2)
+
+        // Access Token 생성
+        val accessToken = Jwts.builder()
+            .subject(authentication.name)
+            .claims(
+                mutableMapOf<String, String>(
+                    "auth" to authorities,
+                    "identity" to authentication.principal.let { principal -> principal as UserInfoEntity }.id!!.toString(),
+                )
+            )
+            .expiration(accessTokenExpr)
+            .signWith(secretKey)
+            .compact()
+
+        RedisUtil.setWithExpiryMonth(
             accessToken,
-            refreshToken
+            refreshToken,
+            6
+        )
+
+        return Jwt(
+            "Bearer",
+            accessToken
         )
     }
 
@@ -78,7 +125,7 @@ class JwtTokenProvider(
         // Jwt 토큰 복호화
         val claims = this.parseClaims(accessToken)
 
-        if (claims["auth"] === null) {
+        if (claims["auth"] == null) {
             throw BaseException(StatusCode.NO_AUTHORITY)
         }
 
@@ -88,7 +135,7 @@ class JwtTokenProvider(
             .collect(Collectors.toList())
 
         // UserInfo 객체를 만들어서 Authentication return
-        return UsernamePasswordAuthenticationToken(UserInfo.toDto(claims), "", authorities)
+        return UsernamePasswordAuthenticationToken(UserInfo.toDto(claims, accessToken), "", authorities)
     }
 
     /**
@@ -108,6 +155,10 @@ class JwtTokenProvider(
      * 토큰 정보를 검증하는
      */
     fun validateToken(token: String): Boolean {
+        if (blacklistService.isBlackToken(token)) {
+            throw BaseException(StatusCode.IS_BLACK_TOKEN)
+        }
+
         try {
             this.parseClaims(token)
             return true
@@ -124,6 +175,17 @@ class JwtTokenProvider(
             .verifyWith(secretKey)
             .build()
             .parseSignedClaims(accessToken)
+            .payload
+    }
+
+    /**
+     * 만료된 accessToken 복호화
+     */
+    fun parseUnsecuredClaims(accessToken: String): Claims {
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseUnsecuredClaims(accessToken)
             .payload
     }
 }

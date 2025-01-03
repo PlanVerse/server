@@ -12,14 +12,12 @@ import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 @Transactional(readOnly = true)
 class TeamService(
-    private val passwordEncoder: PasswordEncoder,
     private val userInfoRepository: UserInfoRepository,
     private val teamInfoRepository: TeamInfoRepository,
     private val teamMemberRepository: TeamMemberRepository,
@@ -68,14 +66,20 @@ class TeamService(
     }
 
     @Transactional
-    fun createTeam(teamInfoRequestDTO: TeamInfoRequestDTO) {
+    fun createTeam(userInfo: UserInfo, teamInfoRequestDTO: TeamInfoRequestDTO) {
         val teamId = teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
 
-        teamInfoRequestDTO.invite?.forEach { teamInfo ->
-            userInfoRepository.findByEmailAndDeleteYn(teamInfo, Constant.DEL_N).ifPresent { userInfo ->
-                val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, Constant.FLAG_FALSE)
-                teamMemberRepository.save(teamMemberInfoEntity)
+        teamMemberRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id, teamId!!, Constant.FLAG_TRUE))
+
+        teamInfoRequestDTO.invite?.forEach { inviteEmail ->
+            if (inviteEmail == userInfo.email) {
+                throw BaseException(StatusCode.TEAM_CREATOR_IS_ALREADY_MEMBER)
+            } else {
+                userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { creatorUserInfo ->
+                    val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(creatorUserInfo.id!!, teamId, Constant.FLAG_FALSE)
+                    teamMemberRepository.save(teamMemberInfoEntity)
+                }
             }
-        } ?: return
+        }
     }
 }

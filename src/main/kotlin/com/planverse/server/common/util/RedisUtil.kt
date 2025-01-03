@@ -39,6 +39,20 @@ object RedisUtil {
         redisTemplate.opsForValue().set(key, value, timeout, TimeUnit.DAYS)
     }
 
+    /**
+     * TimeUnit이 달은 지원하지 않으므로 timeout * 30으로 계산
+     */
+    fun setWithExpiryMonth(key: String, value: Any, timeout: Long) {
+        redisTemplate.opsForValue().set(key, value, timeout * 30, TimeUnit.DAYS)
+    }
+
+    /**
+     * TimeUnit이 년은 지원하지 않으므로 timeout * 365으로 계산
+     */
+    fun setWithExpiryYear(key: String, value: Any, timeout: Long) {
+        redisTemplate.opsForValue().set(key, value, timeout * 365, TimeUnit.DAYS)
+    }
+
     // 데이터 조회
     fun get(key: String): Any? {
         return redisTemplate.opsForValue().get(key)

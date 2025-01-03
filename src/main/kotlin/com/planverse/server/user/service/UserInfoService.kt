@@ -6,18 +6,15 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
+import com.planverse.server.common.service.TokenBlacklistService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.mail.service.MailService
-import com.planverse.server.user.dto.AuthDTO
-import com.planverse.server.user.dto.ReAuthDTO
-import com.planverse.server.user.dto.SignInDTO
-import com.planverse.server.user.dto.SignUpDTO
+import com.planverse.server.user.dto.*
 import com.planverse.server.user.entity.UserInfoEntity
 import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,6 +29,7 @@ class UserInfoService(
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val mailService: MailService,
+    private val tokenBlacklistService: TokenBlacklistService,
 ) {
     internal fun getUserByEmail(email: String): UserInfoEntity {
         return userInfoRepository.findByEmailAndDeleteYn(email, Constant.DEL_N).orElseThrow {
@@ -40,7 +38,7 @@ class UserInfoService(
     }
 
     internal fun checkUserRole(user: UserInfoEntity, role: SystemRole): Boolean {
-        return user.role === role
+        return user.role == role
     }
 
     @Transactional
@@ -123,7 +121,12 @@ class UserInfoService(
         }
     }
 
-    fun signOut() {
-        SecurityContextHolder.getContext().authentication.principal
+    @Transactional
+    fun signOut(userInfo: UserInfo) {
+        val accessToken = userInfo.accessToken ?: throw BaseException(StatusCode.UNAUTHORIZED)
+
+        if (!tokenBlacklistService.isBlackToken(accessToken)) {
+            tokenBlacklistService.addTokenBlacklist(accessToken)
+        }
     }
 }

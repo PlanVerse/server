@@ -13,7 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 class CustomAuthenticationPrincipalArgumentResolver : HandlerMethodArgumentResolver {
 
     override fun supportsParameter(parameter: MethodParameter): Boolean {
-        return parameter.parameterType === UserInfo::class.java
+        return parameter.parameterType == UserInfo::class.java
     }
 
     override fun resolveArgument(

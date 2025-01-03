@@ -4,8 +4,12 @@ import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "team_project_info", schema = "public")
 class TeamProjectInfoEntity(
     @Id

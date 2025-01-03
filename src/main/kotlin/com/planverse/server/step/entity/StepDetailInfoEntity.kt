@@ -4,8 +4,12 @@ import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "step_detail_info", schema = "public")
 class StepDetailInfoEntity(
     @Id

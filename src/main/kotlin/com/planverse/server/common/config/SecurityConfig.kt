@@ -41,6 +41,13 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it
                     .requestMatchers(
+                        "/auth/sign-out"
+                    ).hasAnyAuthority(
+                        SystemRole.ROLE_ADMIN.name,
+                        SystemRole.ROLE_DEVELOPER.name,
+                        SystemRole.ROLE_USER.name
+                    )
+                    .requestMatchers(
                         "/auth/**",
                     ).permitAll()
                     .requestMatchers(

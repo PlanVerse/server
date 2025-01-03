@@ -3,6 +3,8 @@ package com.planverse.server.common.config.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.BaseResponse
+import com.planverse.server.common.exception.BaseException
+import com.planverse.server.common.util.RedisUtil
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
@@ -11,6 +13,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.StringUtils
@@ -35,17 +38,23 @@ class JwtAuthenticationFilter(
 
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
+            val res: HttpServletResponse = response as HttpServletResponse
+            res.status = HttpServletResponse.SC_FORBIDDEN
+
             when (e) {
+                is ExpiredJwtException -> {
+                    val statusInfo = StatusCode.EXPIRED_TOKEN
+                    res.status = statusInfo.httpStatus.value()
+                    val refreshToken = RedisUtil.get(token!!) ?: setErrorResponse(response, statusInfo)
+                    setErrorResponse(response, statusInfo, jwtTokenProvider.generateTokenByRefreshToken(refreshToken.toString()))
+                }
+
                 is SecurityException -> {
-                    setErrorResponse(response, StatusCode.UNSUPPORTED_TOKEN)
+                    setErrorResponse(res, StatusCode.UNSUPPORTED_TOKEN)
                 }
 
                 is MalformedJwtException -> {
                     setErrorResponse(response, StatusCode.UNSUPPORTED_TOKEN)
-                }
-
-                is ExpiredJwtException -> {
-                    setErrorResponse(response, StatusCode.EXPIRED_TOKEN)
                 }
 
                 is UnsupportedJwtException -> {
@@ -58,6 +67,10 @@ class JwtAuthenticationFilter(
 
                 is IllegalArgumentException -> {
                     setErrorResponse(response, StatusCode.INVALID_TOKEN)
+                }
+
+                is BaseException -> {
+                    setErrorResponse(response, e.status)
                 }
 
                 else -> {
@@ -82,11 +95,12 @@ class JwtAuthenticationFilter(
 
     private fun setErrorResponse(
         response: ServletResponse,
-        statusInfo: StatusCode
+        statusInfo: StatusCode,
+        data: Any? = null
     ) {
         val objectMapper = ObjectMapper()
         response.contentType = MediaType.APPLICATION_JSON_VALUE
-        val errorResponse = BaseResponse.error<Any>(status = statusInfo)
+        val errorResponse = BaseResponse.error(status = statusInfo, data = data)
         try {
             response.writer.write(objectMapper.writeValueAsString(errorResponse))
         } catch (e: IOException) {

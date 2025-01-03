@@ -2,10 +2,7 @@ package com.planverse.server.user.controller
 
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.common.dto.Jwt
-import com.planverse.server.user.dto.AuthDTO
-import com.planverse.server.user.dto.ReAuthDTO
-import com.planverse.server.user.dto.SignInDTO
-import com.planverse.server.user.dto.SignUpDTO
+import com.planverse.server.user.dto.*
 import com.planverse.server.user.service.UserInfoService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -40,10 +37,9 @@ class UserController(
         return BaseResponse.success(data = jwt)
     }
 
-    // TODO 토큰을 블랙리스트에 넣거나 프론트에서 처리해야함 :: 위변조 가능성있으니 만료시키는 것도 방법일듯함
     @PostMapping("/sign-out")
-    fun signOut(): BaseResponse<Any> {
-        userInfoService.signOut()
+    fun signOut(userInfo: UserInfo): BaseResponse<Any> {
+        userInfoService.signOut(userInfo)
         return BaseResponse.success()
     }
 }

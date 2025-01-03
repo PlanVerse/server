@@ -5,8 +5,12 @@ import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import org.hibernate.annotations.ColumnDefault
+import org.hibernate.annotations.DynamicInsert
+import org.hibernate.annotations.DynamicUpdate
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "project_info", schema = "public")
 class ProjectInfoEntity(
     @Id
