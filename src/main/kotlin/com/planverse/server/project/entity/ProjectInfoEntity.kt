@@ -17,18 +17,18 @@ class ProjectInfoEntity(
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
-    val key: String,
+    var key: String,
 
     @Size(min = 3, max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
-    val name: String,
+    var name: String,
 
     @Size(max = 255)
     @Column(name = "description")
-    val description: String? = null,
+    var description: String? = null,
 
     @Size(max = 500)
     @Column(name = "project_logo_url", length = 500)
-    val projectLogoUrl: String? = null,
+    var projectLogoUrl: String? = null,
 ) : BaseEntity()

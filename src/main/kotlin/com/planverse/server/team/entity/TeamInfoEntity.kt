@@ -17,14 +17,14 @@ class TeamInfoEntity(
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
-    val key: String? = null,
+    var key: String? = null,
 
     @Size(min = 3, max = 255)
     @NotNull
     @Column(name = "name", nullable = false)
-    val name: String,
+    var name: String,
 
     @Size(max = 255)
     @Column(name = "description")
-    val description: String? = null,
+    var description: String? = null,
 ) : BaseEntity()
