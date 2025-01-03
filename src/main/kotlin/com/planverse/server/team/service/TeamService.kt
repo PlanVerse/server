@@ -2,7 +2,6 @@ package com.planverse.server.team.service
 
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
-import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.team.dto.TeamInfoDTO
 import com.planverse.server.team.dto.TeamInfoRequestDTO
@@ -10,7 +9,6 @@ import com.planverse.server.team.dto.TeamMemberInfoDTO
 import com.planverse.server.team.repository.TeamInfoRepository
 import com.planverse.server.team.repository.TeamMemberRepository
 import com.planverse.server.user.dto.UserInfo
-import com.planverse.server.user.entity.UserInfoEntity
 import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -71,22 +69,13 @@ class TeamService(
 
     @Transactional
     fun createTeam(teamInfoRequestDTO: TeamInfoRequestDTO) {
-        teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
+        val teamId = teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
 
-        TODO("사용자 팀 멤버 할당 및 미존재 시 임시사용자 생성 로직 추가 이후 로그인에서 인증 받도록 해야함")
-        teamInfoRequestDTO.invite?.forEach {
-            userInfoRepository.findByEmail(it).orElse(
-                userInfoRepository.save(
-                    UserInfoEntity(
-                        name = "name",
-                        nickname = "nickname",
-                        email = it,
-                        pwd = passwordEncoder.encode(it),
-                        authentication = false,
-                        role = SystemRole.ROLE_TEMP_USER
-                    )
-                )
-            )
+        teamInfoRequestDTO.invite?.forEach { teamInfo ->
+            userInfoRepository.findByEmailAndDeleteYn(teamInfo, Constant.DEL_N).ifPresent { userInfo ->
+                val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, Constant.FLAG_FALSE)
+                teamMemberRepository.save(teamMemberInfoEntity)
+            }
         } ?: return
     }
 }

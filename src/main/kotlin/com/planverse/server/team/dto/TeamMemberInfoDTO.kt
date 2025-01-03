@@ -17,5 +17,13 @@ data class TeamMemberInfoDTO(
                 teamMemberInfoEntity.creator,
             )
         }
+
+        fun toEntity(userInfoId: Long, teamInfoId: Long, creator: Boolean): TeamMemberInfoEntity {
+            return TeamMemberInfoEntity(
+                userInfoId = userInfoId,
+                teamInfoId = teamInfoId,
+                creator = creator,
+            )
+        }
     }
 }
