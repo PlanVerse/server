@@ -27,6 +27,10 @@ enum class StatusCode(
     TEAM_MEMBER_NOT_FOUND("2003", "팀에 소속된 멤버를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     TEAM_CREATOR_IS_ALREADY_MEMBER("2004", "팀 생성자는 이미 팀에 소속되어있습니다.", HttpStatus.NOT_FOUND),
 
+    // file
+    CANNOT_GET_FILE("3000", "파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    CANNOT_PUT_FILE("3001", "파일을 업로드 할 수 없습니다.", HttpStatus.BAD_REQUEST),
+
     // AUTH
     NO_AUTHORITY("8000", "권한 정보가 없습니다.", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED("8001", "인증 정보가 없습니다.", HttpStatus.UNAUTHORIZED),

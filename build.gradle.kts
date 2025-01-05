@@ -26,7 +26,8 @@ repositories {
     mavenCentral()
 }
 
-extra["jwtVersion"] = "0.12.6"
+val kotlinSdkVersion = "1.3.104"
+val jwtVersion = "0.12.6"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -48,15 +49,17 @@ dependencies {
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3")
     implementation("com.googlecode.json-simple:json-simple:1.1.1")
     implementation("org.postgresql:postgresql")
-    implementation("io.jsonwebtoken:jjwt-api:${property("jwtVersion")}")
+    implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
+    implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
     compileOnly("org.projectlombok:lombok")
 
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:${property("jwtVersion")}")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:${property("jwtVersion")}")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
 
     annotationProcessor("org.projectlombok:lombok")
 
@@ -80,6 +83,7 @@ noArg {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
     annotation("jakarta.persistence.Embeddable")
+    annotation("com.planverse.server.common.annotation.MyBatisResponse")
 }
 
 tasks.withType<KotlinCompile> {

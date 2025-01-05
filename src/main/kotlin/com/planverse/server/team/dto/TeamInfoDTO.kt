@@ -7,6 +7,7 @@ data class TeamInfoDTO(
     var key: String,
     var name: String,
     var description: String? = null,
+    var teamProfileImage: String? = null,
     var teamCreatorInfo: TeamMemberInfoDTO? = null,
     var teamMemberInfo: TeamMemberInfoDTO? = null,
     var teamCreatorInfos: List<TeamMemberInfoDTO>? = null,

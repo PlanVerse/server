@@ -23,7 +23,6 @@ class LoggingAspect {
                 + " && !@annotation(com.planverse.server.common.annotation.Except)"
                 )
     )
-    @Throws(Throwable::class)
     fun logging(pjp: ProceedingJoinPoint): Any? {
         val type: String
         val classNm = pjp.signature.declaringTypeName

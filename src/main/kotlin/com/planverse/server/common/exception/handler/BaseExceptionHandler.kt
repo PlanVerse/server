@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.support.MissingServletRequestPartException
 import org.springframework.web.servlet.resource.NoResourceFoundException
 
 private val logger = KotlinLogging.logger {}
@@ -66,8 +67,8 @@ class BaseExceptionHandler {
     /**
      * 파라미터 누락 오류 핸들링
      */
-    @ExceptionHandler(MissingServletRequestParameterException::class)
-    fun missingServletRequestParameterException(ex: MissingServletRequestParameterException): ResponseEntity<BaseResponse<Map<String, String>>> {
+    @ExceptionHandler(MissingServletRequestParameterException::class, MissingServletRequestPartException::class)
+    fun missingServletRequestParameterException(ex: Exception): ResponseEntity<BaseResponse<Map<String, String>>> {
         logger.error { ex }
         val statusInfo = StatusCode.BAD_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
