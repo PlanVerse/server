@@ -1,3 +1,5 @@
+image: gradle:8.11.1-jdk17
+
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
   JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
@@ -15,12 +17,8 @@ cache:
     - .gradle/wrapper/
     - .gradle/caches/
 
-before_script:
-  - export GRADLE_USER_HOME=$(pwd)/.gradle
-
 build:
   stage: build
-  image: gradle:8.11.1-jdk17
   script:
     - ./gradlew clean jib
   only:
