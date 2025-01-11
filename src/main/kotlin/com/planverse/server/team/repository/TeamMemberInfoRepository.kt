@@ -6,8 +6,9 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
-interface TeamMemberRepository : JpaRepository<TeamMemberInfoEntity, Long> {
+interface TeamMemberInfoRepository : JpaRepository<TeamMemberInfoEntity, Long> {
     fun findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoId: Long, userInfoId: Long, creator: Boolean, deleteYn: String): Optional<TeamMemberInfoEntity>
+    fun findAllByTeamInfoIdAndDeleteYn(teamInfoId: Long, deleteYn: String): Optional<List<TeamMemberInfoEntity>>
     fun findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId: Long, creator: Boolean, deleteYn: String): Optional<List<TeamMemberInfoEntity>>
     fun findAllByUserInfoIdAndCreatorAndDeleteYn(userInfoId: Long, creator: Boolean, deleteYn: String, pageable: Pageable): Slice<TeamMemberInfoEntity>
 }

@@ -3,6 +3,7 @@ package com.planverse.server.team.controller
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.team.dto.TeamInfoDTO
 import com.planverse.server.team.dto.TeamInfoRequestDTO
+import com.planverse.server.team.dto.TeamInfoUpdateRequestDTO
 import com.planverse.server.team.service.TeamService
 import com.planverse.server.user.dto.UserInfo
 import org.springframework.data.domain.Pageable
@@ -36,6 +37,18 @@ class TeamController(
     @PostMapping
     fun createTeam(userInfo: UserInfo, @RequestPart("body") teamInfoRequestDTO: TeamInfoRequestDTO, @RequestPart("file") multipartFile: MultipartFile?): BaseResponse<Any> {
         teamService.createTeam(userInfo, teamInfoRequestDTO, multipartFile)
+        return BaseResponse.success()
+    }
+
+    @PostMapping
+    fun modifyTeamInfo(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
+        teamService.modifyTeamInfo(userInfo, teamInfoUpdateRequestDTO)
+        return BaseResponse.success()
+    }
+
+    @PostMapping
+    fun inviteTeamMember(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
+        teamService.inviteTeamMember(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()
     }
 }
