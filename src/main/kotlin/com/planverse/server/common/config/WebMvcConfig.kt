@@ -15,12 +15,12 @@ class WebMvcConfig(
         resolvers.add(customAuthenticationPrincipalArgumentResolver)
     }
 
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedOrigins("*")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600)
-    }
+//    override fun addCorsMappings(registry: CorsRegistry) {
+//        registry.addMapping("/**")
+//            .allowedMethods("GET", "POST")
+//            .allowedOriginPatterns("*")
+//            .allowedHeaders("*")
+//            .allowCredentials(true)
+//            .maxAge(3600)
+//    }
 }
