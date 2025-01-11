@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import org.springframework.stereotype.Component
-import java.net.URL
 import kotlin.time.Duration.Companion.hours
 
 @Component
@@ -56,7 +55,8 @@ object S3Util {
 
             s3.use {
                 val presignedRequest = it.presignGetObject(request, 24.hours)
-                return URL(presignedRequest.url.toString()).readText()
+                val url = presignedRequest.url.toString()
+                return url
             }
         } catch (e: Exception) {
             throw BaseException(StatusCode.CANNOT_GET_FILE)

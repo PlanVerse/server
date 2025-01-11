@@ -53,7 +53,7 @@ class FileService(
     fun getFile(target: String, targetId: Long): String? {
         return fileRelInfoRepository.findByTargetAndTargetIdAndDeleteYn(target, targetId, Constant.DEL_N).flatMap { fileRelInfo ->
             fileInfoRepository.findById(fileRelInfo.fileInfoId!!).map { fileInfo ->
-                S3Util.getObjectUrl(fileInfo.key)
+                S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}")
             }
         }.orElse(null)
     }
@@ -63,7 +63,7 @@ class FileService(
             fileRelInfoRepository.findAllByTargetAndTargetIdAndDeleteYn(target, targetId, Constant.DEL_N).ifPresent { fileRelInfos ->
                 fileRelInfos.forEach {
                     fileInfoRepository.findById(it.fileInfoId!!).ifPresent { fileInfo ->
-                        add(S3Util.getObjectUrl(fileInfo.key))
+                        add(S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}"))
                     }
                 }
             }
