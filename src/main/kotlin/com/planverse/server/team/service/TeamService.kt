@@ -8,6 +8,7 @@ import com.planverse.server.team.dto.TeamInfoDTO
 import com.planverse.server.team.dto.TeamInfoRequestDTO
 import com.planverse.server.team.dto.TeamInfoUpdateRequestDTO
 import com.planverse.server.team.dto.TeamMemberInfoDTO
+import com.planverse.server.team.entity.TeamMemberInfoEntity
 import com.planverse.server.team.repository.TeamInfoRepository
 import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
@@ -59,35 +60,72 @@ class TeamService(
     }
 
     fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
+        // 팀 멤버 정보를 페이지네이션으로 조회
         return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
-            teamInfoRepository.findById(creator.teamInfoId).orElseThrow {
-                BaseException(StatusCode.TEAM_NOT_FOUND)
-            }.let { teamInfo ->
-                userInfoRepository.findById(creator.userInfoId).orElseThrow {
-                    BaseException(StatusCode.USER_NOT_FOUND)
-                }.let { creatorUserInfo ->
-                    buildList {
-                        teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(creator.id!!, Constant.FLAG_FALSE, Constant.DEL_N).orElse(emptyList()).forEach { member ->
-                            userInfoRepository.findById(member.userInfoId).orElseThrow {
-                                BaseException(StatusCode.USER_NOT_FOUND)
-                            }.let { memberUserInfo ->
-                                add(TeamMemberInfoDTO.toDto(member, memberUserInfo.name))
-                            }
-                        }
-                    }.run {
-                        TeamInfoDTO.toDtoAndCreatorAndMember(teamInfo, TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name), this)
-                    }
-                }
+            getCreateTeamInfoDTO(creator)
+        }
+    }
+
+    private fun getCreateTeamInfoDTO(creator: TeamMemberInfoEntity): TeamInfoDTO {
+        // 팀 정보 조회
+        val teamInfo = teamInfoRepository.findById(creator.teamInfoId).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }
+
+        // 생성자 정보 조회
+        val creatorUserInfo = userInfoRepository.findById(creator.userInfoId).orElseThrow {
+            BaseException(StatusCode.USER_NOT_FOUND)
+        }
+
+        // 팀 멤버 정보 조회 및 변환
+        val memberDTOs = getMemberDTOs(creator.id!!)
+
+        // DTO 생성 및 반환
+        return TeamInfoDTO.toDtoAndCreatorAndMember(
+            teamInfo,
+            TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name),
+            memberDTOs
+        )
+    }
+
+    private fun getMemberDTOs(teamMemberId: Long): List<TeamMemberInfoDTO> {
+        return teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, Constant.FLAG_FALSE, Constant.DEL_N).orElse(emptyList()).map { member ->
+            val memberUserInfo = userInfoRepository.findById(member.userInfoId).orElseThrow {
+                BaseException(StatusCode.USER_NOT_FOUND)
             }
+
+            TeamMemberInfoDTO.toDto(member, memberUserInfo.name)
         }
     }
 
     fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
+        // 팀 멤버 정보를 페이지네이션으로 조회
         return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
-            teamInfoRepository.findById(member.teamInfoId).orElseThrow {
-                BaseException(StatusCode.TEAM_NOT_FOUND)
-            }.let { TeamInfoDTO.toDtoAndMember(it, TeamMemberInfoDTO.toDto(member)) }
+            getTeamCreatorInfoDTO(member)
         }
+    }
+
+    private fun getTeamCreatorInfoDTO(member: TeamMemberInfoEntity): TeamInfoDTO {
+        // 팀 정보 조회
+        val teamInfo = teamInfoRepository.findById(member.teamInfoId).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }
+
+        // 팀 생성자 조회
+        val teamCreatorInfo = teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(member.teamInfoId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow{
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }
+
+        // 생성자 정보 조회
+        val creatorUserInfo = userInfoRepository.findById(teamCreatorInfo.userInfoId).orElseThrow {
+            BaseException(StatusCode.USER_NOT_FOUND)
+        }
+
+        // DTO 생성 및 반환
+        return TeamInfoDTO.toDtoAndCreator(
+            teamInfo,
+            TeamMemberInfoDTO.toDto(teamCreatorInfo, creatorUserInfo.name),
+        )
     }
 
     @Transactional
