@@ -22,12 +22,18 @@ class TeamController(
         return BaseResponse.success(res)
     }
 
+    /**
+     * 내가 생성한 팀 목록만 조회
+     */
     @GetMapping("/list/creator")
     fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): BaseResponse<Slice<TeamInfoDTO>> {
         val res = teamService.getTeamListCreator(userInfo, pageable)
         return BaseResponse.success(res)
     }
 
+    /**
+     * 내가 소속된 팀 목록만 조회
+     */
     @GetMapping("/list/member")
     fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): BaseResponse<Slice<TeamInfoDTO>> {
         val res = teamService.getTeamListMember(userInfo, pageable)

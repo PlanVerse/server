@@ -1,9 +1,7 @@
 package com.planverse.server.team.dto
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.team.entity.TeamInfoEntity
 
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class TeamInfoDTO(
     var id: Long? = null,
     var key: String,
@@ -42,6 +40,17 @@ data class TeamInfoDTO(
                 teamInfoEntity.name,
                 teamInfoEntity.description,
                 teamMemberInfo = teamMemberInfoDTO,
+            )
+        }
+
+        fun toDtoAndCreatorAndMember(teamInfoEntity: TeamInfoEntity, teamCreatorInfo: TeamMemberInfoDTO, teamMemberInfoDTOs: List<TeamMemberInfoDTO>): TeamInfoDTO {
+            return TeamInfoDTO(
+                teamInfoEntity.id,
+                teamInfoEntity.key!!,
+                teamInfoEntity.name,
+                teamInfoEntity.description,
+                teamCreatorInfo = teamCreatorInfo,
+                teamMemberInfos = teamMemberInfoDTOs,
             )
         }
     }

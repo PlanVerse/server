@@ -59,10 +59,26 @@ class TeamService(
     }
 
     fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { member ->
-            teamInfoRepository.findById(member.teamInfoId).orElseThrow {
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
+            teamInfoRepository.findById(creator.teamInfoId).orElseThrow {
                 BaseException(StatusCode.TEAM_NOT_FOUND)
-            }.let { TeamInfoDTO.toDtoAndCreator(it, TeamMemberInfoDTO.toDto(member)) }
+            }.let { teamInfo ->
+                userInfoRepository.findById(creator.userInfoId).orElseThrow {
+                    BaseException(StatusCode.USER_NOT_FOUND)
+                }.let { creatorUserInfo ->
+                    buildList {
+                        teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(creator.id!!, Constant.FLAG_FALSE, Constant.DEL_N).orElse(emptyList()).forEach { member ->
+                            userInfoRepository.findById(member.userInfoId).orElseThrow {
+                                BaseException(StatusCode.USER_NOT_FOUND)
+                            }.let { memberUserInfo ->
+                                add(TeamMemberInfoDTO.toDto(member, memberUserInfo.name))
+                            }
+                        }
+                    }.run {
+                        TeamInfoDTO.toDtoAndCreatorAndMember(teamInfo, TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name), this)
+                    }
+                }
+            }
         }
     }
 
