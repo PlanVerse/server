@@ -1,5 +1,8 @@
 package com.planverse.server.common.config.security
 
+import com.planverse.server.common.constant.StatusCode
+import com.planverse.server.common.exception.BaseException
+import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import org.springframework.core.MethodParameter
 import org.springframework.security.core.context.SecurityContextHolder
@@ -24,7 +27,15 @@ class CustomAuthenticationPrincipalArgumentResolver : HandlerMethodArgumentResol
     ): Any? {
         val authentication = SecurityContextHolder.getContext().authentication ?: return null
         return when (val principal = authentication.principal) {
-            is UserInfo -> principal
+            is UserInfo -> {
+                if (RedisUtil.has(principal.email)) {
+                    principal.id = RedisUtil.getLongValue(principal.email)
+                } else {
+                    throw BaseException(StatusCode.USER_NOT_FOUND)
+                }
+                return principal
+            }
+
             else -> null
         }
     }

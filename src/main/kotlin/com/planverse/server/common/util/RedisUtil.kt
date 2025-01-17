@@ -1,5 +1,7 @@
 package com.planverse.server.common.util
 
+import com.planverse.server.common.constant.StatusCode
+import com.planverse.server.common.exception.BaseException
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Component
 import java.util.concurrent.TimeUnit
@@ -56,6 +58,14 @@ object RedisUtil {
     // 데이터 조회
     fun get(key: String): Any? {
         return redisTemplate.opsForValue().get(key)
+    }
+
+    // 데이터 조회 후 타입 변환
+    fun getStringValue(key: String): String {
+        return get(key)?.toString() ?: throw BaseException(StatusCode.NO_DATA)
+    }
+    fun getLongValue(key: String): Long {
+        return get(key)?.toString()?.toLong() ?: throw BaseException(StatusCode.NO_DATA)
     }
 
     // 키 존재 확인

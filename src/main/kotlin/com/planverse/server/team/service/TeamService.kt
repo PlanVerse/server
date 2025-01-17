@@ -39,7 +39,7 @@ class TeamService(
 
         // 팀 멤버중 생성자와 동일한지 2차검증
         val teamCreatorInfoDTO =
-            teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+            teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
                 BaseException(StatusCode.TEAM_NOT_FOUND)
             }.let {
                 TeamMemberInfoDTO.toDto(it)
@@ -61,7 +61,7 @@ class TeamService(
 
     fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
         // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
             getCreateTeamInfoDTO(creator)
         }
     }
@@ -100,7 +100,7 @@ class TeamService(
 
     fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
         // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
             getTeamCreatorInfoDTO(member)
         }
     }
@@ -132,7 +132,7 @@ class TeamService(
     fun createTeam(userInfo: UserInfo, teamInfoRequestDTO: TeamInfoRequestDTO, multipartFile: MultipartFile?) {
         val teamId = teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
 
-        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id, teamId!!, Constant.FLAG_TRUE))
+        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, Constant.FLAG_TRUE))
 
         teamInfoRequestDTO.invite?.forEach { inviteEmail ->
             if (inviteEmail == userInfo.email) {
@@ -152,7 +152,7 @@ class TeamService(
 
     @Transactional
     fun modifyTeamInfo(userInfo: UserInfo, teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO) {
-        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let { member ->
             teamInfoRepository.findById(member.teamInfoId).orElseThrow {

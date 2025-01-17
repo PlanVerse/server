@@ -53,12 +53,14 @@ class JwtTokenProvider(
             .claims(
                 mutableMapOf<String, String>(
                     "auth" to authorities,
-                    "identity" to authentication.principal.let { principal -> principal as UserInfoEntity }.id!!.toString()
                 )
             )
             .expiration(accessTokenExpr)
             .signWith(secretKey)
             .compact()
+
+        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
+        RedisUtil.setWithExpiryHour(userInfoEntity.email, userInfoEntity.id!!, 2)
 
         // Refresh Token 생성
         val refreshToken = Jwts.builder()
@@ -99,7 +101,6 @@ class JwtTokenProvider(
             .claims(
                 mutableMapOf<String, String>(
                     "auth" to authorities,
-                    "identity" to authentication.principal.let { principal -> principal as UserInfoEntity }.id!!.toString(),
                 )
             )
             .expiration(accessTokenExpr)
