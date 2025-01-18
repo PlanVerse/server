@@ -46,7 +46,7 @@ class TeamController(
         return BaseResponse.success()
     }
 
-    @PostMapping("/invite")
+    @PutMapping("/invite")
     fun inviteTeamMember(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
         teamService.inviteTeamMember(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()

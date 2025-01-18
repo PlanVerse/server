@@ -23,7 +23,8 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(RuntimeException::class, Exception::class)
     fun handleRuntimeException(ex: RuntimeException?): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex }
+        logger.error { ex?.cause }
+        logger.error { ex?.cause?.message }
         val statusInfo = StatusCode.FAIL
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }

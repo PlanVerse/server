@@ -4,7 +4,6 @@ import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.user.dto.UserInfo
-import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.domain.AuditorAware
@@ -23,9 +22,7 @@ class JpaAuditingConfig(
 }
 
 @Configuration
-class AuditorAwareConfig(
-    private val userInfoRepository: UserInfoRepository
-) : AuditorAware<Long> {
+class AuditorAwareConfig : AuditorAware<Long> {
     override fun getCurrentAuditor(): Optional<Long> {
         val authentication: Authentication? = SecurityContextHolder.getContext().authentication
 

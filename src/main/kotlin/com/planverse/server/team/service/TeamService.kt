@@ -9,6 +9,7 @@ import com.planverse.server.team.dto.TeamInfoRequestDTO
 import com.planverse.server.team.dto.TeamInfoUpdateRequestDTO
 import com.planverse.server.team.dto.TeamMemberInfoDTO
 import com.planverse.server.team.entity.TeamMemberInfoEntity
+import com.planverse.server.team.mapper.TeamMemberInfoMapper
 import com.planverse.server.team.repository.TeamInfoRepository
 import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
@@ -27,6 +28,7 @@ class TeamService(
     private val userInfoRepository: UserInfoRepository,
     private val teamInfoRepository: TeamInfoRepository,
     private val teamMemberInfoRepository: TeamMemberInfoRepository,
+    private val teamMemberInfoMapper: TeamMemberInfoMapper,
 ) {
 
     fun getTeamInfo(userInfo: UserInfo, teamId: Long): TeamInfoDTO {
@@ -112,7 +114,7 @@ class TeamService(
         }
 
         // 팀 생성자 조회
-        val teamCreatorInfo = teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(member.teamInfoId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow{
+        val teamCreatorInfo = teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(member.teamInfoId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }
 
@@ -152,32 +154,30 @@ class TeamService(
 
     @Transactional
     fun modifyTeamInfo(userInfo: UserInfo, teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO) {
-        val teamInfoId = teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
-            BaseException(StatusCode.TEAM_NOT_FOUND)
-        }.teamInfoId
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N)
+            .orElseThrow {
+                BaseException(StatusCode.TEAM_NOT_FOUND)
+            }.let { member ->
+                teamInfoRepository.findById(member.teamInfoId).orElseThrow {
+                    BaseException(StatusCode.TEAM_NOT_FOUND)
+                }.let { info ->
+                    if (teamInfoUpdateRequestDTO.name != null) {
+                        info.name = teamInfoUpdateRequestDTO.name
+                    }
+                    info.description = teamInfoUpdateRequestDTO.description
 
-        val teamInfo = teamInfoRepository.findById(teamInfoId).orElseThrow {
-            BaseException(StatusCode.TEAM_NOT_FOUND)
-        }
-
-        if (teamInfoUpdateRequestDTO.name != null) {
-            teamInfo.name = teamInfoUpdateRequestDTO.name
-        }
-        teamInfo.description = teamInfoUpdateRequestDTO.description
-
-        teamInfoRepository.save(teamInfo)
+                    teamInfoRepository.save(info)
+                }
+            }
     }
 
     @Transactional
     fun inviteTeamMember(userInfo: UserInfo, teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO) {
-        teamMemberInfoRepository.findAllByTeamInfoIdAndDeleteYn(teamInfoUpdateRequestDTO.teamId, Constant.DEL_N).orElseThrow {
-            BaseException(StatusCode.TEAM_NOT_FOUND)
+        // 요청자의 정보가 생성자 즉 관리자의 권한일 경우에만 조회 값이 존재
+        teamInfoUpdateRequestDTO.creatorUserInfoId = userInfo.id
+        teamMemberInfoMapper.selectTeamMemberInfoForCreator(teamInfoUpdateRequestDTO).ifEmpty {
+            throw BaseException(StatusCode.TEAM_NOT_FOUND)
         }.run {
-            // 팀 정보 존재여부 2차검증
-            teamInfoRepository.findById(teamInfoUpdateRequestDTO.teamId).orElseThrow {
-                BaseException(StatusCode.TEAM_NOT_FOUND)
-            }
-
             // 초대 멤버 정보가 없다면 동일한 것으로 판단
             if (teamInfoUpdateRequestDTO.invite != null) {
                 buildList {
@@ -194,8 +194,33 @@ class TeamService(
                     // 신규 멤버의 사용자 id에 기존 멤버 id가 포함되어있다면 제외
                     it !in this.stream().map { member -> member.userInfoId }.toList()
                 }.forEach {
-                    // 신규 멤버 추가
                     teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(it, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE))
+                }
+            }
+
+            // 내보내기 멤버 정보 존재 판단
+            if (teamInfoUpdateRequestDTO.excluding != null) {
+                buildList {
+                    // 내보내기 멤버 사용자 정보 획득
+                    teamInfoUpdateRequestDTO.excluding.forEach {
+                        val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
+                            BaseException(StatusCode.USER_NOT_FOUND)
+                        }
+
+                        // DB의 값이므로 존재 확인
+                        add(inviteUserInfo.id!!)
+                    }
+                }.filter {
+                    // 내보내기 멤버의 사용자 id에 기존 멤버 id가 포함되어있어야함
+                    it in this.stream().map { member -> member.userInfoId }.toList()
+                }.forEach {
+                    // 팀 생성자 즉 관리자는 팀에서 내보내기가 불가능하므로 검사
+                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, it, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+                        BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
+                    }.let { excludeMemberInfo ->
+                        excludeMemberInfo.deleteYn = Constant.DEL_Y
+                        teamMemberInfoRepository.save(excludeMemberInfo)
+                    }
                 }
             }
         }

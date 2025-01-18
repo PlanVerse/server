@@ -96,7 +96,7 @@ class DataConfig {
     fun sqlSessionFactory(@Qualifier("dataSource") dataSource: DataSource, applicationContext: ApplicationContext): SqlSessionFactory? {
         val sqlSessionFactoryBean = SqlSessionFactoryBean()
         sqlSessionFactoryBean.setDataSource(dataSource)
-        sqlSessionFactoryBean.setMapperLocations(*PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml"))
+        sqlSessionFactoryBean.setMapperLocations(*PathMatchingResourcePatternResolver().getResources("classpath*:mapper/**/*.xml"))
         sqlSessionFactoryBean.setTypeAliasesPackage("com.planverse.server.*.dto;com.planverse.server.*.*.dto")
         sqlSessionFactoryBean.getObject()?.configuration?.isMapUnderscoreToCamelCase = true
 
