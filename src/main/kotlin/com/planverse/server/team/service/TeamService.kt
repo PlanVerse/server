@@ -152,20 +152,20 @@ class TeamService(
 
     @Transactional
     fun modifyTeamInfo(userInfo: UserInfo, teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO) {
-        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        val teamInfoId = teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
-        }.let { member ->
-            teamInfoRepository.findById(member.teamInfoId).orElseThrow {
-                BaseException(StatusCode.TEAM_NOT_FOUND)
-            }.let { info ->
-                if (teamInfoUpdateRequestDTO.name != null) {
-                    info.name = teamInfoUpdateRequestDTO.name
-                }
-                info.description = teamInfoUpdateRequestDTO.description
+        }.teamInfoId
 
-                teamInfoRepository.save(info)
-            }
+        val teamInfo = teamInfoRepository.findById(teamInfoId).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
         }
+
+        if (teamInfoUpdateRequestDTO.name != null) {
+            teamInfo.name = teamInfoUpdateRequestDTO.name
+        }
+        teamInfo.description = teamInfoUpdateRequestDTO.description
+
+        teamInfoRepository.save(teamInfo)
     }
 
     @Transactional

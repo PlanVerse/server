@@ -16,6 +16,15 @@ data class TeamInfoDTO(
     var teamMemberInfos: List<TeamMemberInfoDTO>? = null,
 ) {
     companion object {
+        fun toEntity(teamInfoDTO: TeamInfoDTO): TeamInfoEntity {
+            return TeamInfoEntity(
+                id = teamInfoDTO.id,
+                key = teamInfoDTO.key,
+                name = teamInfoDTO.name,
+                description = teamInfoDTO.description,
+            )
+        }
+
         fun toDto(teamInfoEntity: TeamInfoEntity): TeamInfoDTO {
             return TeamInfoDTO(
                 teamInfoEntity.id,

@@ -34,12 +34,7 @@ class AuditorAwareConfig(
         } else if (authentication.principal.equals("anonymousUser")) {
             Optional.of(Constant.SYSTEM_USER)
         } else {
-            val email = (authentication.principal as UserInfo).email
-            val userInfoEntity = userInfoRepository.findByEmail(email).orElseThrow {
-                BaseException(StatusCode.USER_NOT_FOUND)
-            }
-
-            Optional.of(userInfoEntity.id!!)
+            Optional.of((authentication.principal as UserInfo).id!!)
         }
     }
 }
