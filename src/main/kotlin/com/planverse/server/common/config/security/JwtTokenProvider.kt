@@ -60,7 +60,7 @@ class JwtTokenProvider(
             .compact()
 
         val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
-        RedisUtil.setWithExpiryHour(userInfoEntity.email, userInfoEntity.id!!, 2)
+        RedisUtil.setWithExpiryHour(userInfoEntity.email, userInfoEntity.id!!.toString(), 2)
 
         // Refresh Token 생성
         val refreshToken = Jwts.builder()

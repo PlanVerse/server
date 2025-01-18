@@ -40,7 +40,7 @@ class TeamController(
         return BaseResponse.success()
     }
 
-    @PostMapping("/info")
+    @PutMapping("/info")
     fun modifyTeamInfo(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
         teamService.modifyTeamInfo(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()

@@ -98,7 +98,7 @@ class SecurityConfig(
         val config = CorsConfiguration()
 
         config.allowCredentials = true
-        config.allowedMethods = listOf("GET", "POST")
+        config.allowedMethods = listOf("GET", "POST", "PUT")
         config.allowedOriginPatterns = listOf("*")
         config.allowedHeaders = listOf("*")
         config.exposedHeaders = listOf("*")
