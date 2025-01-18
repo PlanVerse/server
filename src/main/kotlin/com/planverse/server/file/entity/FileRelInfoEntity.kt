@@ -19,14 +19,14 @@ class FileRelInfoEntity(
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "target", nullable = false)
+    @Column(name = "target")
     var target: String? = null,
 
     @NotNull
-    @Column(name = "target_id", nullable = false)
+    @Column(name = "target_id")
     var targetId: Long? = null,
 
     @NotNull
-    @Column(name = "file_info_id", nullable = false)
+    @Column(name = "file_info_id")
     var fileInfoId: Long? = null,
 ) : BaseEntity()

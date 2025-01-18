@@ -18,14 +18,12 @@ class TeamInfoEntity(
     @Column(name = "id")
     var id: Long? = null,
 
-    @NotNull
     @ColumnDefault("(gen_random_uuid())")
-    @Column(name = "key", nullable = false)
+    @Column(name = "key")
     var key: String? = null,
 
     @Size(min = 3, max = 255)
-    @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     var name: String,
 
     @Size(max = 255)

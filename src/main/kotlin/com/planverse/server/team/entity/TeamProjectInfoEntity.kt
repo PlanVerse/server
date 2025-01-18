@@ -18,15 +18,15 @@ class TeamProjectInfoEntity(
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "team_member_info_id", nullable = false)
+    @Column(name = "team_member_info_id")
     var teamMemberInfoId: Long,
 
     @NotNull
-    @Column(name = "project_info_id", nullable = false)
+    @Column(name = "project_info_id")
     var projectInfoId: Long,
 
     @NotNull
     @ColumnDefault("false")
-    @Column(name = "creator", nullable = false)
+    @Column(name = "creator")
     var creator: Boolean,
 ) : BaseEntity()

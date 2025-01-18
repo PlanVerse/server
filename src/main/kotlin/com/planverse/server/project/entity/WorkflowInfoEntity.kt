@@ -18,23 +18,23 @@ class WorkflowInfoEntity(
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "project_info_id", nullable = false)
+    @Column(name = "project_info_id")
     var projectInfoId: Long,
 
     @NotNull
-    @Column(name = "step_detail_info_id", nullable = false)
+    @Column(name = "step_detail_info_id")
     var stepDetailInfoId: Long,
 
     @NotNull
-    @Column(name = "no", nullable = false)
+    @Column(name = "no")
     var no: Long,
 
     @Size(max = 500)
     @NotNull
-    @Column(name = "title", nullable = false, length = 500)
+    @Column(name = "title", length = 500)
     var title: String,
 
     @NotNull
-    @Column(name = "content", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "content", length = Integer.MAX_VALUE)
     var content: String,
 ) : BaseEntity()

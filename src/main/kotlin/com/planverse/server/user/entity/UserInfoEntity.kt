@@ -25,31 +25,31 @@ class UserInfoEntity(
     @Size(max = 255)
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
-    @Column(name = "key", nullable = false)
+    @Column(name = "key")
     var key: String? = null,
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     var name: String,
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname")
     var nickname: String,
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     val email: String,
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "pwd", nullable = false)
+    @Column(name = "pwd")
     val pwd: String,
 
     @NotNull
-    @Column(name = "authentication", nullable = false)
+    @Column(name = "authentication")
     var authentication: Boolean,
 
     @Column(nullable = false)

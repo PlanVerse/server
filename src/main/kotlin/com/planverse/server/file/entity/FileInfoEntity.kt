@@ -25,11 +25,11 @@ class FileInfoEntity(
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     var name: String,
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "path", nullable = false)
+    @Column(name = "path")
     var path: String,
 ) : BaseEntity()

@@ -17,10 +17,10 @@ class AssignInfoEntity(
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "workflow_info_id", nullable = false)
+    @Column(name = "workflow_info_id")
     var workflowInfoId: Long,
 
     @NotNull
-    @Column(name = "user_info_id", nullable = false)
+    @Column(name = "user_info_id")
     var userInfoId: Long,
 ) : BaseEntity()

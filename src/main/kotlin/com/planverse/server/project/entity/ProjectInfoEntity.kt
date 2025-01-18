@@ -20,12 +20,12 @@ class ProjectInfoEntity(
 
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
-    @Column(name = "key", nullable = false)
+    @Column(name = "key")
     var key: String,
 
     @Size(min = 3, max = 255)
     @NotNull
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     var name: String,
 
     @Size(max = 255)

@@ -19,22 +19,22 @@ import java.time.LocalDateTime
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
 abstract class BaseEntity {
-    @Column(name = "delete_yn", nullable = false)
+    @Column(name = "delete_yn")
     var deleteYn: String = "N"
 
     @CreatedBy
-    @Column(name = "created_by", nullable = false, updatable = false)
+    @Column(name = "created_by", updatable = false)
     var createdBy: Long? = null
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     var createdAt: LocalDateTime? = null
 
     @LastModifiedBy
-    @Column(name = "updated_By", nullable = false)
+    @Column(name = "updated_By")
     var updatedBy: Long? = null
 
     @LastModifiedDate
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     var updatedAt: LocalDateTime? = null
 }
