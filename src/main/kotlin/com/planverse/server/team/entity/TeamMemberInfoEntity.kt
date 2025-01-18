@@ -18,15 +18,15 @@ class TeamMemberInfoEntity(
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "user_info_id")
+    @Column(name = "user_info_id", nullable = false)
     var userInfoId: Long,
 
     @NotNull
-    @Column(name = "team_info_id")
+    @Column(name = "team_info_id", nullable = false)
     var teamInfoId: Long,
 
     @NotNull
     @ColumnDefault("false")
-    @Column(name = "creator")
+    @Column(name = "creator", nullable = false)
     var creator: Boolean,
 ) : BaseEntity()

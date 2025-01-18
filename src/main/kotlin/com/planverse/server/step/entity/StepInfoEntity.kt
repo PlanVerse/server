@@ -18,10 +18,10 @@ class StepInfoEntity(
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "project_info_id")
+    @Column(name = "project_info_id", nullable = false)
     var projectInfoId: Long,
 
     @Size(min = 3, max = 500)
-    @Column(name = "title", length = 500)
+    @Column(name = "title", length = 500, nullable = false)
     var title: String,
 ) : BaseEntity()
