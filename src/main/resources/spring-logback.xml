@@ -61,7 +61,19 @@
             </label>
 
             <message>
-                <pattern>${LOG_PATTERN}</pattern>
+<!--                <pattern>%highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n</pattern>-->
+                <pattern>
+                    {
+                    "level": "%level",
+                    "relative": %relative
+                    "thread": "%thread",
+                    "class": "%logger{100}",
+                    "method": "%method",
+                    "methodLine": "%method:%line",
+                    "message": "%message",
+                    "requestId": "%X{X-Request-ID}"
+                    }
+                </pattern>
             </message>
 
             <sortByTime>true</sortByTime>
