@@ -52,11 +52,11 @@
 
     <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
         <http>
-            <url>http://localhost:51002/loki/api/v1/push</url>
+            <url>http://host.docker.internal:51002/loki/api/v1/push</url>
         </http>
         <format>
             <label>
-                <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceID:-NONE},level=%level</pattern>
+                <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
                 <readMarkers>true</readMarkers>
             </label>
 
