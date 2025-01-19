@@ -10,6 +10,7 @@ variables:
 stages:
   - build
   - deploy
+  - clean
 
 cache:
   key: $CI_COMMIT_REF_NAME
@@ -44,6 +45,23 @@ deploy:
     - docker rm -f $CONTAINER_NAME;echo $?
     - >
       docker run -d -p 50051:50051 -v C:\service\planverse:/planverse --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_TAG_NAME
+  after_script:
+    - docker logout
+  tags:
+    - winos
+  only:
+    - main
+    - dev
+  interruptible: true
+
+clean:
+  stage: clean
+  needs:
+    - job: deploy
+  before_script:
+    - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
+  script:
+    - docker rmi -f $(docker images -f "dangling=true" -q);echo $?
   after_script:
     - docker logout
   tags:
