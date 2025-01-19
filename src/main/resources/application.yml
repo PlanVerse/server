@@ -58,6 +58,13 @@ management:
       access: none
     health:
       show-details: always
+  metrics:
+    enable:
+      all: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
   health:
     db:
       enabled: false

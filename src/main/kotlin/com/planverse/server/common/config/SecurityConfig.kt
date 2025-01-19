@@ -52,6 +52,7 @@ class SecurityConfig(
                     )
                     .requestMatchers(
                         "/auth/**",
+                        "/actuator/prometheus"
                     ).permitAll()
                     .requestMatchers(
                         "/admin/**"
