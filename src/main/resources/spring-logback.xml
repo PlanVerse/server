@@ -68,7 +68,17 @@
         </format>
     </appender>
 
-    <springProfile name="local,dev">
+    <springProfile name="local">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+        <logger name="jdbc.sqltiming" level="DEBUG"/>
+        <logger name="jdbc.resultsettable" level="DEBUG"/>
+    </springProfile>
+
+    <springProfile name="dev">
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>

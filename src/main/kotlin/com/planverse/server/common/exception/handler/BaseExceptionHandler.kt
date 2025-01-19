@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.FieldError
+import org.springframework.web.HttpRequestMethodNotSupportedException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -33,7 +34,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex.cause }
+        logger.error { ex.message }
         val errors = mutableMapOf<String, String>()
         ex.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as? FieldError)?.field ?: return@forEach
@@ -59,7 +60,14 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(NoResourceFoundException::class)
     fun noResourceFoundException(ex: NoResourceFoundException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex.cause }
+        logger.error { ex.message }
+        val statusInfo = StatusCode.NOT_EXISTS_REQUEST
+        return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException::class)
+    fun httpRequestMethodNotSupportedException(ex: HttpRequestMethodNotSupportedException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex.message }
         val statusInfo = StatusCode.NOT_EXISTS_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -69,7 +77,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException::class, MissingServletRequestPartException::class)
     fun missingServletRequestParameterException(ex: Exception): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex.cause }
+        logger.error { ex.cause ?: ex.message }
         val statusInfo = StatusCode.BAD_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -79,7 +87,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(be: BaseException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { be.cause }
+        logger.error { be.message }
         val statusInfo = StatusCode[be.status.code]
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
