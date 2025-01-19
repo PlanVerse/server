@@ -53,7 +53,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
     implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
-    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+    implementation("com.github.loki4j:loki-logback-appender:1.6.0")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
@@ -61,6 +61,7 @@ dependencies {
 
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
+    runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     annotationProcessor("org.projectlombok:lombok")
 

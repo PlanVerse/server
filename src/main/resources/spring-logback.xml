@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <springProperty scope="context" name="spring.application.name" source="spring.application.name"/>
-    <property name="LOG_DIR" value="${spring.application.name}/logs/"/>
     <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
 
     <property name="appName" value="${spring.application.name}-${spring.profiles.active}"/>
@@ -51,11 +50,30 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>http://localhost:51002/loki/api/v1/push</url>
+        </http>
+        <format>
+            <label>
+                <pattern>app=${appName},host=${HOSTNAME},traceID=%X{traceID:-NONE},level=%level</pattern>
+                <readMarkers>true</readMarkers>
+            </label>
+
+            <message>
+                <pattern>${LOG_PATTERN}</pattern>
+            </message>
+
+            <sortByTime>true</sortByTime>
+        </format>
+    </appender>
+
     <springProfile name="local,dev">
         <root level="DEBUG">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
             <appender-ref ref="ERROR_FILE"/>
+            <appender-ref ref="LOKI"/>
         </root>
         <logger name="jdbc.sqltiming" level="DEBUG"/>
         <logger name="jdbc.resultsettable" level="DEBUG"/>
@@ -66,6 +84,7 @@
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
             <appender-ref ref="ERROR_FILE"/>
+            <appender-ref ref="LOKI"/>
         </root>
         <logger name="jdbc.sqltiming" level="OFF"/>
         <logger name="jdbc.resultsettable" level="OFF"/>
