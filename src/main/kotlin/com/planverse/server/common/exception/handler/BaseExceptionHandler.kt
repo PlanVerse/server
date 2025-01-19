@@ -24,7 +24,6 @@ class BaseExceptionHandler {
     @ExceptionHandler(RuntimeException::class, Exception::class)
     fun handleRuntimeException(ex: RuntimeException?): ResponseEntity<BaseResponse<Map<String, String>>> {
         logger.error { ex?.cause }
-        logger.error { ex?.cause?.message }
         val statusInfo = StatusCode.FAIL
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -34,7 +33,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun methodArgumentNotValidException(ex: MethodArgumentNotValidException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex }
+        logger.error { ex.cause }
         val errors = mutableMapOf<String, String>()
         ex.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as? FieldError)?.field ?: return@forEach
@@ -50,7 +49,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(BadCredentialsException::class)
     fun badCredentialsException(ex: BadCredentialsException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex }
+        logger.error { ex.cause }
         val statusInfo = StatusCode.LOGIN_FAIL
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -60,7 +59,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(NoResourceFoundException::class)
     fun noResourceFoundException(ex: NoResourceFoundException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex }
+        logger.error { ex.cause }
         val statusInfo = StatusCode.NOT_EXISTS_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -70,7 +69,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(MissingServletRequestParameterException::class, MissingServletRequestPartException::class)
     fun missingServletRequestParameterException(ex: Exception): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { ex }
+        logger.error { ex.cause }
         val statusInfo = StatusCode.BAD_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }
@@ -80,7 +79,7 @@ class BaseExceptionHandler {
      */
     @ExceptionHandler(BaseException::class)
     fun handleBaseException(be: BaseException): ResponseEntity<BaseResponse<Map<String, String>>> {
-        logger.error { be }
+        logger.error { be.cause }
         val statusInfo = StatusCode[be.status.code]
         return ResponseEntity(BaseResponse.error(status = statusInfo), statusInfo.httpStatus)
     }

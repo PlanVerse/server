@@ -62,7 +62,7 @@ management:
     enable:
       all: true
     tags:
-      application: ${spring.application.name}
+      application: ${spring.application.name}-${spring.profiles.active}
   prometheus:
     metrics:
       export:
