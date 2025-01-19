@@ -2,6 +2,10 @@
 <configuration>
     <springProperty scope="context" name="spring.application.name" source="spring.application.name"/>
     <property name="LOG_DIR" value="${spring.application.name}/logs/"/>
+    <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
+
+    <property name="appName" value="${spring.application.name}-${spring.profiles.active}"/>
+    <property name="LOG_DIR" value="${spring.application.name}/${spring.profiles.active}/logs/"/>
     <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
