@@ -60,6 +60,13 @@
                 <readMarkers>true</readMarkers>
             </label>
 
+            <structuredMetadataPattern>
+                level = %level,
+                thread = %thread,
+                class = %logger,
+                traceId = %mdc{traceId:-none}
+            </structuredMetadataPattern>
+
             <message>
                 <pattern>%highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n</pattern>
             </message>
