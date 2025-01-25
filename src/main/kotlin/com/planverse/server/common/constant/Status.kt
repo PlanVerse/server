@@ -39,7 +39,6 @@ enum class StatusCode(
     EXPIRED_TOKEN("8001", "만료된 로그인 정보입니다.", HttpStatus.UNAUTHORIZED),
     EXPIRED_TOKEN_RE_LOGIN("8002", "만료된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
     LOGIN_FAIL("8003", "로그인에 실패하였습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
-    IS_BLACK_TOKEN("8004", "로그인 정보가 만료되었습니다. 다시 로그인해주세요.", HttpStatus.UNAUTHORIZED),
 
     INVALID_TOKEN("9000", "신뢰할 수 없는 정보입니다.", HttpStatus.FORBIDDEN),
     UNSUPPORTED_TOKEN("9001", "변조된 로그인 정보입니다. 다시 로그인해주세요.", HttpStatus.FORBIDDEN),

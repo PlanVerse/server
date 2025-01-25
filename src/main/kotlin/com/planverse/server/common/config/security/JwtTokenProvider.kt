@@ -155,13 +155,13 @@ class JwtTokenProvider(
     /**
      * 토큰 정보를 검증하는
      */
-    fun validateToken(token: String): Boolean {
-        if (blacklistService.isBlackToken(token)) {
-            throw BaseException(StatusCode.IS_BLACK_TOKEN)
+    fun validateToken(accessToken: String): Boolean {
+        if (blacklistService.isBlackToken(accessToken)) {
+            throw BaseException(StatusCode.EXPIRED_TOKEN_RE_LOGIN)
         }
 
         try {
-            this.parseClaims(token)
+            this.parseClaims(accessToken)
             return true
         } catch (e: Exception) {
             throw e
@@ -176,17 +176,6 @@ class JwtTokenProvider(
             .verifyWith(secretKey)
             .build()
             .parseSignedClaims(accessToken)
-            .payload
-    }
-
-    /**
-     * 만료된 accessToken 복호화
-     */
-    fun parseUnsecuredClaims(accessToken: String): Claims {
-        return Jwts.parser()
-            .verifyWith(secretKey)
-            .build()
-            .parseUnsecuredClaims(accessToken)
             .payload
     }
 }
