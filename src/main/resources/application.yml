@@ -30,6 +30,9 @@ spring:
     web:
       pageable:
         one-indexed-parameters: true
+  cloud:
+    config:
+      fail-fast: true
 
 logging:
   config: classpath:spring-logback.xml

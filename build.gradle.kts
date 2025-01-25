@@ -75,6 +75,14 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 }
 
+val springCloudVersion = "2024.0.0"
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+    }
+}
+
 allOpen {
     annotation("jakarta.persistence.Entity")
     annotation("jakarta.persistence.MappedSuperclass")
