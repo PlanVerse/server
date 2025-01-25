@@ -31,13 +31,13 @@ class UserInfoService(
     private val mailService: MailService,
     private val tokenBlacklistService: TokenBlacklistService,
 ) {
-    internal fun getUserByEmail(email: String): UserInfoEntity {
+    private fun getUserByEmail(email: String): UserInfoEntity {
         return userInfoRepository.findByEmailAndDeleteYn(email, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.USER_NOT_FOUND)
         }
     }
 
-    internal fun checkUserRole(user: UserInfoEntity, role: SystemRole): Boolean {
+    private fun checkUserRole(user: UserInfoEntity, role: SystemRole): Boolean {
         return user.role == role
     }
 

@@ -22,7 +22,7 @@ class FileService(
     private val fileInfoRepository: FileInfoRepository,
     private val fileRelInfoRepository: FileRelInfoRepository,
 ) {
-    internal fun getObjectMetaData(
+    private fun getObjectMetaData(
         originalFilename: String,
         multipartFile: MultipartFile
     ): MutableMap<String, String> {
