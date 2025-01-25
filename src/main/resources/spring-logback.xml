@@ -5,7 +5,7 @@
 
     <property name="appName" value="${spring.application.name}-${spring.profiles.active}"/>
     <property name="LOG_DIR" value="${spring.application.name}/${spring.profiles.active}/logs/"/>
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} %highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} %highlight([%-5level]) [%thread] [traceId=%X{traceId}] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -62,13 +62,17 @@
 
             <structuredMetadataPattern>
                 level = %level,
+                relative = %relative,
                 thread = %thread,
+                traceId = %X{traceId}
                 class = %logger,
-                traceId = %mdc{traceId:-none}
+                method = %method,
+                line = %line,
+                msg = %msg
             </structuredMetadataPattern>
 
             <message>
-                <pattern>%highlight([%-5level]) [%relative] [%thread] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n</pattern>
+                <pattern>%highlight([%-5level]) [%thread] [traceId=%X{traceId}] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n</pattern>
             </message>
 
             <sortByTime>true</sortByTime>

@@ -14,17 +14,21 @@ import jakarta.servlet.ServletRequest
 import jakarta.servlet.ServletResponse
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.slf4j.MDC
 import org.springframework.http.MediaType
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.util.StringUtils
 import org.springframework.web.filter.GenericFilterBean
 import java.io.IOException
+import java.util.*
 
 
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider
 ) : GenericFilterBean() {
     override fun doFilter(request: ServletRequest, response: ServletResponse, filterChain: FilterChain) {
+        MDC.put("traceId", UUID.randomUUID().toString())
+
         // 1. Request Header에서 JWT 토큰 추출
         val token = resolveToken(request as HttpServletRequest)
 
@@ -78,6 +82,7 @@ class JwtAuthenticationFilter(
                 }
             }
         }
+        MDC.clear()
     }
 
     /**
