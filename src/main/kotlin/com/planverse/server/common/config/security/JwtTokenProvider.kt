@@ -3,6 +3,7 @@ package com.planverse.server.common.config.security
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
+import com.planverse.server.common.service.RefreshTokenService
 import com.planverse.server.common.service.TokenBlacklistService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
@@ -27,6 +28,7 @@ import javax.crypto.spec.SecretKeySpec
 class JwtTokenProvider(
     val userDetailsService: UserDetailsService,
     val blacklistService: TokenBlacklistService,
+    val refreshTokenService: RefreshTokenService,
 ) {
     @Value("\${spring.jwt.secret}")
     private lateinit var secret: String
@@ -44,7 +46,7 @@ class JwtTokenProvider(
         val now = Date()
         // 2시간
         val accessTokenExpr = DateUtils.addHours(now, 2)
-        // 대략 1주일 :: 정확한 수치는 소수점이므로 올림 적용
+        // 6달
         val refreshTokenExpr = DateUtils.addMonths(now, 6)
 
         // Access Token 생성
@@ -69,11 +71,7 @@ class JwtTokenProvider(
             .signWith(secretKey)
             .compact()
 
-        RedisUtil.setWithExpiryMonth(
-            accessToken,
-            refreshToken,
-            6
-        )
+        refreshTokenService.putRefreshToken(accessToken, refreshToken)
 
         return Jwt(
             "Bearer",
@@ -84,8 +82,9 @@ class JwtTokenProvider(
     /**
      * refreshToken으로 JWT Token 갱신
      */
-    fun generateTokenByRefreshToken(refreshToken: String): Jwt {
+    private fun regenerateTokenByRefreshToken(refreshToken: String): Jwt {
         val authentication: Authentication = this.getRefreshAuthentication(refreshToken)
+
         // 권한 가져오기
         val authorities = authentication.authorities.stream()
             .map { obj: GrantedAuthority -> obj.authority }
@@ -107,16 +106,25 @@ class JwtTokenProvider(
             .signWith(secretKey)
             .compact()
 
-        RedisUtil.setWithExpiryMonth(
-            accessToken,
-            refreshToken,
-            6
-        )
+        refreshTokenService.putRefreshToken(accessToken, refreshToken)
 
         return Jwt(
             "Bearer",
             accessToken
         )
+    }
+
+    /**
+     * accessToken으로 JWT Token 갱신
+     */
+    fun regenerateTokenByAccessToken(accessToken: String): Jwt? {
+        if (!blacklistService.isBlackToken(accessToken)) {
+            val refreshToken = refreshTokenService.getRefreshToken(accessToken)
+            blacklistService.addTokenBlacklistAndRemoveRefreshToken(accessToken)
+            return this.regenerateTokenByRefreshToken(refreshToken)
+        } else {
+            return null
+        }
     }
 
     /**

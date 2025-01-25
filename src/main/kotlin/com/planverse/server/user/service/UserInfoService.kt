@@ -125,8 +125,6 @@ class UserInfoService(
     fun signOut(userInfo: UserInfo) {
         val accessToken = userInfo.accessToken ?: throw BaseException(StatusCode.UNAUTHORIZED)
 
-        if (!tokenBlacklistService.isBlackToken(accessToken)) {
-            tokenBlacklistService.addTokenBlacklist(accessToken)
-        }
+        tokenBlacklistService.addTokenBlacklistAndRemoveRefreshToken(accessToken)
     }
 }

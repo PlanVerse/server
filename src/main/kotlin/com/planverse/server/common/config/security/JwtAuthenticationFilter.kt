@@ -4,7 +4,6 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.util.ObjectUtil
-import com.planverse.server.common.util.RedisUtil
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.MalformedJwtException
 import io.jsonwebtoken.UnsupportedJwtException
@@ -79,7 +78,7 @@ class JwtAuthenticationFilter(
                         baseResponse = BaseResponse.error(status = statusInfo)
                     } else {
                         response.status = StatusCode.SUCCESS.httpStatus.value()
-                        jwtTokenProvider.blacklistService.addTokenBlacklist(it)
+                        jwtTokenProvider.blacklistService.addTokenBlacklistAndRemoveRefreshToken(it)
                     }
                 }
 
@@ -87,8 +86,13 @@ class JwtAuthenticationFilter(
                     ObjectUtil.convertObjectToString(baseResponse)
                 )
             } else {
+                var data: Any? = null
                 val statusInfo = when (exception) {
                     is ExpiredJwtException -> {
+                        token?.let {
+                            data = jwtTokenProvider.regenerateTokenByAccessToken(it)
+                        }
+
                         StatusCode.EXPIRED_TOKEN
                     }
 
@@ -102,9 +106,7 @@ class JwtAuthenticationFilter(
                     ObjectUtil.convertObjectToString(
                         BaseResponse.error(
                             status = statusInfo,
-                            data = token?.let {
-                                jwtTokenProvider.generateTokenByRefreshToken(RedisUtil.get(it).toString())
-                            }
+                            data = data
                         )
                     )
                 )
