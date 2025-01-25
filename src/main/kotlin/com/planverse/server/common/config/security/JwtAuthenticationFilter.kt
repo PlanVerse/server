@@ -22,7 +22,6 @@ import org.springframework.web.filter.GenericFilterBean
 import java.io.IOException
 import java.util.*
 
-
 class JwtAuthenticationFilter(
     private val jwtTokenProvider: JwtTokenProvider
 ) : GenericFilterBean() {
