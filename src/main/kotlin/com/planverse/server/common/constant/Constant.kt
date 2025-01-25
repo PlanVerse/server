@@ -10,9 +10,11 @@ sealed class Constant {
         const val FLAG_TRUE: Boolean = true
         const val FLAG_FALSE: Boolean = false
         const val BLACKLIST_TOKEN_KEY = "blacklist"
+
         // 단일
         const val FILE_TARGET_TEAM = "team"
         const val FILE_TARGET_PROJECT = "project"
+
         // 복수
         const val FILE_TARGET_CONTENT = "content"
     }

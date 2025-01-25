@@ -64,6 +64,7 @@ object RedisUtil {
     fun getStringValue(key: String): String {
         return get(key)?.toString() ?: throw BaseException(StatusCode.NO_DATA)
     }
+
     fun getLongValue(key: String): Long {
         return get(key)?.toString()?.toLong() ?: throw BaseException(StatusCode.NO_DATA)
     }
