@@ -127,7 +127,7 @@ class JwtTokenProvider(
         val claims = this.parseClaims(accessToken)
 
         if (claims["auth"] == null) {
-            throw BaseException(StatusCode.NO_AUTHORITY)
+            throw BaseException(StatusCode.UNAUTHORIZED)
         }
 
         // 클레임에서 권한 정보 가져오기
