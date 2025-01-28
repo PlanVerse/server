@@ -109,7 +109,7 @@ tasks.withType<Test> {
 
 jib {
     from {
-        image = "amazoncorretto:17"
+        image = "amazoncorretto:17-alpine-jdk"
     }
     to {
         image = System.getenv("JIB_IMAGE")
@@ -121,6 +121,31 @@ jib {
     }
     container {
         jvmFlags = listOf(
+            // Container
+            "-XX:+UseContainerSupport",                             // 컨테이너 환경 지원
+            "-XX:MaxRAMPercentage=50.0",                            // JVM이 사용할 최대 메모리 비율
+            "-XX:InitialRAMPercentage=30.0",                        // JVM 초기 메모리 비율
+            "-XX:MinRAMPercentage=30.0",                            // JVM 최소 메모리 비율
+            "-XX:+AlwaysPreTouch",                                  // JVM 메모리를 미리 할당
+
+            // GC
+            "-XX:+UseG1GC",                                         // G1 Garbage Collector 사용
+            "-XX:+ParallelRefProcEnabled",                          // 참조 처리 병렬화 활성화
+            "-XX:G1HeapRegionSize=16M",                             // G1GC 힙 영역 크기 설정
+            "-XX:InitiatingHeapOccupancyPercent=30",                // 지정한 힙 사용률 n%에서 GC 트리거
+
+            // Metaspace
+            "-XX:MetaspaceSize=128m",                               // 메타스페이스 초기 크기
+            "-XX:MaxMetaspaceSize=256m",                            // 메타스페이스 최대 크기
+
+            // JIT
+            "-XX:+TieredCompilation",                               // 계층적 컴파일 활성화
+            "-XX:+UseStringDeduplication",                          // 문자열 중복 제거 활성화
+
+            // ETC
+            "-Djava.security.egd=file:/dev/./urandom",              // 빠른 난수 생성
+
+            // Personal
             "-Dspring.profiles.active=" + System.getenv("PROFILE_ACTIVE"),
             "-Dspring.jwt.secret=" + System.getenv("JWT_ENC_PWD"),
             "-Djasypt.encryptor.password=" + System.getenv("JASYPT_ENCRYPTOR_PASSWORD"),
