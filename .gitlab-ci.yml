@@ -1,4 +1,4 @@
-image: gradle:8.11.1-jdk17
+image: gradle:8.11.1-jdk17-alpine
 
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
@@ -10,10 +10,9 @@ variables:
 stages:
   - build
   - deploy
-  - clean
 
 cache:
-  key: $CI_COMMIT_REF_NAME
+  key: $CI_COMMIT_REF_SLUG
   paths:
     - .gradle/wrapper/
     - .gradle/caches/
@@ -34,34 +33,14 @@ deploy:
   variables:
     DOCKER_LATEST_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
     CONTAINER_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
-    DOCKER_TAG_NAME: $CONTAINER_NAME:latest
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
-    - docker rmi $DOCKER_LATEST_IMAGE_NAME;echo $?
     - docker pull $DOCKER_LATEST_IMAGE_NAME
-    - docker tag $DOCKER_LATEST_IMAGE_NAME $DOCKER_TAG_NAME
     - docker stop $CONTAINER_NAME;echo $?
     - docker rm -f $CONTAINER_NAME;echo $?
-    - >
-      docker run -d -p 50051:50051 -v C:\service\planverse:/planverse --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_TAG_NAME
-  after_script:
-    - docker logout
-  tags:
-    - winos
-  only:
-    - main
-    - dev
-  interruptible: true
-
-clean:
-  stage: clean
-  needs:
-    - job: deploy
-  before_script:
-    - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
-  script:
-    - docker rmi -f $(docker images -f "dangling=true" -q);echo $?
+    - docker run -d -p 50051:50051 -v C:\service\planverse:/planverse --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_LATEST_IMAGE_NAME
+    - docker system prune -f
   after_script:
     - docker logout
   tags:
