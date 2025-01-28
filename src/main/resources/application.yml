@@ -1,26 +1,3 @@
-server:
-  servlet:
-    context-path: /api/v1/
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-    session:
-      timeout: 600m
-      cookie:
-        name: JSESSIONID
-        secure: true
-        http-only: true
-        max-age: 600m
-  shutdown: graceful
-  error:
-    whitelabel:
-      enabled: false
-  compression:
-    enabled: true
-  http2:
-    enabled: true
-
 spring:
   application:
     name: planverse
@@ -50,23 +27,3 @@ jasypt:
     algorithm: PBEWITHHMACSHA512ANDAES_256
     key-obtention-iterations: 10000
     pool-size: 1
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    shutdown:
-      access: none
-    health:
-      show-details: always
-  metrics:
-    enable:
-      all: true
-    tags:
-      application: ${spring.application.name}-${spring.profiles.active}
-  prometheus:
-    metrics:
-      export:
-        enabled: true
