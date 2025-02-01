@@ -100,7 +100,7 @@
         <logger name="jdbc.resultsettable" level="DEBUG"/>
     </springProfile>
 
-    <springProfile name="prod">
+    <springProfile name="main">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="FILE"/>
