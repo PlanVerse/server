@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.planverse.server.team.mapper.TeamMemberInfoMapper">
+    <sql id="baseCol">
+        ${alias}.id,
+        ${alias}.user_info_id,
+        ${alias}.team_info_id,
+        ${alias}.creator,
+        <include refid="common.selectCol"><property name="alias" value="${alias}"/></include>
+    </sql>
+
+    <select id="selectTeamMemberInfoForCreator" parameterType="TeamInfoUpdateRequestDTO" resultType="TeamMemberInfoDTO">
+        SELECT
+            <include refid="baseCol"><property name="alias" value="tmi"/></include>
+        FROM team_info ti
+        JOIN team_member_info tmi ON tmi.team_info_id = ti.id AND tmi.delete_yn = 'N'
+        WHERE ti.delete_yn = 'N'
+          AND ti.id = #{teamId}
+          AND EXISTS (SELECT 1 FROM team_member_info tmi WHERE tmi.delete_yn = 'N' AND tmi.team_info_id = #{teamId} AND tmi.creator = TRUE AND tmi.user_info_id = #{creatorUserInfoId})
+    </select>
+</mapper>

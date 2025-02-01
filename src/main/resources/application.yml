@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: planverse
+  config:
+    import: optional:configserver:https://cloud.seoeungi.work
+  data:
+    web:
+      pageable:
+        one-indexed-parameters: true
+  cloud:
+    config:
+      fail-fast: true
+
+logging:
+  config: classpath:spring-logback.xml
+  level:
+    org:
+      springframework:
+        session:
+          web:
+            http:
+              SessionRepositoryFilter:
+                SESSION_LOGGER: INFO
+
+jasypt:
+  encryptor:
+    algorithm: PBEWITHHMACSHA512ANDAES_256
+    key-obtention-iterations: 10000
+    pool-size: 1
