@@ -33,13 +33,15 @@ deploy:
   variables:
     DOCKER_LATEST_IMAGE_NAME: $CI_REGISTRY_IMAGE:latest
     CONTAINER_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
+    APP_PORT: 50051
+    VOLUME_PATH: "C:/service/planverse"
   before_script:
-    - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
+    - echo "$TOKEN_PWD" | docker login $CI_REGISTRY -u $TOKEN_USER --password-stdin
   script:
     - docker pull $DOCKER_LATEST_IMAGE_NAME
-    - docker stop $CONTAINER_NAME;echo $?
-    - docker rm -f $CONTAINER_NAME;echo $?
-    - docker run -d -p 50051:50051 -v C:\service\planverse:/planverse --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_LATEST_IMAGE_NAME
+    - docker stop $CONTAINER_NAME || true
+    - docker rm -f $CONTAINER_NAME || true
+    - docker run -d -p $APP_PORT:$APP_PORT -v $VOLUME_PATH:/planverse --restart=unless-stopped --name $CONTAINER_NAME $DOCKER_LATEST_IMAGE_NAME
     - docker system prune -f
   after_script:
     - docker logout
