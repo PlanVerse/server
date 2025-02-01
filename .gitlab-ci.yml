@@ -1,6 +1,6 @@
 variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
-  JIB_IMAGE: $CI_REGISTRY_IMAGE-$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
+  JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   PROFILE_ACTIVE: $CI_COMMIT_REF_NAME
   APP_PORT: 50051
   JWT_ENC_PWD: $JWT_ENC_PWD
@@ -35,15 +35,16 @@ deploy:
   stage: deploy
   needs: [build]
   variables:
+    IMAGE_PATH: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
     CONTAINER_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
     VOLUME_PATH: "C:/service/planverse"
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
-    - docker pull $JIB_IMAGE
+    - docker pull $IMAGE_PATH
     - docker stop $CONTAINER_NAME;echo $?
     - docker rm -f $CONTAINER_NAME;echo $?
-    - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $JIB_IMAGE
+    - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
     - docker system prune -f
   after_script:
     - docker logout
