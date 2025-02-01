@@ -80,7 +80,7 @@ class TeamService(
         }
 
         // 팀 멤버 정보 조회 및 변환
-        val memberDTOs = getMemberDTOs(creator.id!!)
+        val memberDTOs = getMemberDTOs(creator.teamInfoId)
 
         // DTO 생성 및 반환
         return TeamInfoDTO.toDtoAndCreatorAndMember(
