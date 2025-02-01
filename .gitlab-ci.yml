@@ -37,7 +37,7 @@ deploy:
     APP_PORT: 50051
     VOLUME_PATH: "C:/service/planverse"
   before_script:
-    - echo "$TOKEN_PWD" | docker login $CI_REGISTRY -u $TOKEN_USER --password-stdin
+    - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
     - docker pull $JIB_IMAGE
     - docker stop $CONTAINER_NAME;echo $?
