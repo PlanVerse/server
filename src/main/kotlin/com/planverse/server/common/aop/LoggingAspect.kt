@@ -45,7 +45,7 @@ class LoggingAspect {
             result
         }
 
-        logger.trace(" $type : '$classNm.$methodNm()', Data=${ObjectUtil.convertObjectToString(res)}")
+        logger.info(" $type : '$classNm.$methodNm()', Data=${ObjectUtil.convertObjectToString(res)}")
         return result
     }
 }

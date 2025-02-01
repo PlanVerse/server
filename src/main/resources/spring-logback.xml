@@ -107,7 +107,7 @@
             <appender-ref ref="ERROR_FILE"/>
             <appender-ref ref="LOKI"/>
         </root>
-        <logger name="jdbc.sqltiming" level="OFF"/>
+        <logger name="jdbc.sqltiming" level="INFO"/>
         <logger name="jdbc.resultsettable" level="OFF"/>
     </springProfile>
 
