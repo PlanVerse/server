@@ -113,7 +113,7 @@ jib {
     }
     to {
         image = System.getenv("JIB_IMAGE")
-        tags = setOf("latest")
+        tags = setOf(System.getenv("PROFILE_ACTIVE"))
         auth {
             username = System.getenv("TOKEN_USER")
             password = System.getenv("TOKEN_PWD")
