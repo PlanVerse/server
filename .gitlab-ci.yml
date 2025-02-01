@@ -7,6 +7,12 @@ variables:
   JWT_ENC_PWD: $JWT_ENC_PWD
   JASYPT_ENCRYPTOR_PASSWORD: $DEV_ENC_PWD
 
+.rules:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        JASYPT_ENCRYPTOR_PASSWORD: $MAIN_ENC_PWD
+
 stages:
   - build
   - deploy
