@@ -2,9 +2,18 @@ variables:
   GRADLE_USER_HOME: $CI_PROJECT_DIR/.gradle
   JIB_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   PROFILE_ACTIVE: $CI_COMMIT_REF_NAME
-  APP_PORT: 50051
   JWT_ENC_PWD: $JWT_ENC_PWD
-  JASYPT_ENCRYPTOR_PASSWORD: $DEV_ENC_PWD
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        JASYPT_ENCRYPTOR_PASSWORD: $MAIN_ENC_PWD
+        APP_PORT: 50052
+    - if: $CI_COMMIT_BRANCH == "dev"
+      variables:
+        JASYPT_ENCRYPTOR_PASSWORD: $DEV_ENC_PWD
+        APP_PORT: 50051
 
 default:
   interruptible: true
@@ -17,19 +26,16 @@ cache:
   key: $CI_COMMIT_REF_SLUG
   paths:
     - $GRADLE_USER_HOME/wrapper/
-    - $GRADLE_USER_HOME/caches/modules-2/**/*
+    - $GRADLE_USER_HOME/caches/modules-2/
+    - $GRADLE_USER_HOME/caches/build-cache/
 
 build:
   image: gradle:8.11.1-jdk17-alpine
   stage: build
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   script:
     - ./gradlew clean jib --no-daemon
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      variables:
-        JASYPT_ENCRYPTOR_PASSWORD: $MAIN_ENC_PWD
-        APP_PORT: 50052
-    - if: $CI_COMMIT_BRANCH == "dev"
 
 deploy:
   stage: deploy
@@ -38,6 +44,8 @@ deploy:
     IMAGE_PATH: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
     CONTAINER_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
     VOLUME_PATH: "C:/service/planverse"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
@@ -48,7 +56,5 @@ deploy:
     - docker system prune -f
   after_script:
     - docker logout
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   tags:
     - winos
