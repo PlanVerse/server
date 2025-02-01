@@ -42,7 +42,7 @@ deploy:
     - docker pull $JIB_IMAGE
     - docker stop $CONTAINER_NAME;echo $?
     - docker rm -f $CONTAINER_NAME;echo $?
-    - docker run -d -p $APP_PORT:$APP_PORT -v $VOLUME_PATH:/planverse --restart=unless-stopped --name $CONTAINER_NAME $JIB_IMAGE
+    - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $JIB_IMAGE
     - docker system prune -f
   after_script:
     - docker logout
