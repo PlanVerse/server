@@ -40,8 +40,8 @@ deploy:
     - echo "$TOKEN_PWD" | docker login $CI_REGISTRY -u $TOKEN_USER --password-stdin
   script:
     - docker pull $JIB_IMAGE
-    - docker stop $CONTAINER_NAME || true
-    - docker rm -f $CONTAINER_NAME || true
+    - docker stop $CONTAINER_NAME;echo $?
+    - docker rm -f $CONTAINER_NAME;echo $?
     - docker run -d -p $APP_PORT:$APP_PORT -v $VOLUME_PATH:/planverse --restart=unless-stopped --name $CONTAINER_NAME $JIB_IMAGE
     - docker system prune -f
   after_script:
