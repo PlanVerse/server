@@ -150,6 +150,6 @@ jib {
             "-Dspring.jwt.secret=" + System.getenv("JWT_ENC_PWD"),
             "-Djasypt.encryptor.password=" + System.getenv("JASYPT_ENCRYPTOR_PASSWORD"),
         )
-        ports = listOf("50051")
+        ports = listOf(System.getenv("APP_PORT"))
     }
 }
