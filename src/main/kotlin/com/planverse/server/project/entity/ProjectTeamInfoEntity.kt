@@ -1,4 +1,4 @@
-package com.planverse.server.team.entity
+package com.planverse.server.project.entity
 
 import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
@@ -10,8 +10,8 @@ import org.hibernate.annotations.DynamicUpdate
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "team_project_info", schema = "public")
-class TeamProjectInfoEntity(
+@Table(name = "project_team_info", schema = "public")
+class ProjectTeamInfoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

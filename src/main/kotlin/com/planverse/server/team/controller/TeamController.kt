@@ -17,7 +17,7 @@ class TeamController(
     private val teamService: TeamService
 ) {
     @GetMapping("/info/{teamId}")
-    fun getTeamInfo(userInfo: UserInfo, @PathVariable(required = true) teamId: Long): BaseResponse<*> {
+    fun getTeamInfo(userInfo: UserInfo, @PathVariable(required = true) teamId: Long): BaseResponse<TeamInfoDTO> {
         val res = teamService.getTeamInfo(userInfo, teamId)
         return BaseResponse.success(res)
     }
