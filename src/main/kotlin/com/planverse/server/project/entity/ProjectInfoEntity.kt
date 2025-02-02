@@ -31,8 +31,4 @@ class ProjectInfoEntity(
     @Size(max = 255)
     @Column(name = "description")
     var description: String? = null,
-
-    @Size(max = 500)
-    @Column(name = "project_logo_url", length = 500)
-    var projectLogoUrl: String? = null,
 ) : BaseEntity()

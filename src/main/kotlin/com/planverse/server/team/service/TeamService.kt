@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile
 @Transactional(readOnly = true)
 class TeamService(
     private val fileService: FileService,
-
     private val userInfoRepository: UserInfoRepository,
     private val teamInfoRepository: TeamInfoRepository,
     private val teamMemberInfoRepository: TeamMemberInfoRepository,
