@@ -10,7 +10,7 @@ data class ProjectInfoDTO(
     var key: String,
     var name: String,
     var description: String? = null,
-    var teamProfileImage: String? = null,
+    var projectProfileImage: String? = null,
 ) {
     companion object {
         fun toEntity(projectInfoDTO: ProjectInfoDTO): TeamInfoEntity {
