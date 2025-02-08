@@ -38,10 +38,10 @@ class TeamService(
 
         val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, teamId)
 
-        // 팀 멤버중 생성자와 동일한지 2차검증
+        // 팀 생성자 정보 조회
         val teamCreatorInfoDTO =
-            teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
-                BaseException(StatusCode.TEAM_NOT_FOUND)
+            teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+                BaseException(StatusCode.TEAM_CREATOR_NOT_FOUND)
             }.let {
                 TeamMemberInfoDTO.toDto(it)
             }
