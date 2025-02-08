@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.planverse.server.project.mapper.ProjectInfoMapper">
+    <sql id="baseCol">
+        ${alias}.id,
+        ${alias}.key,
+        ${alias}.name,
+        ${alias}.description,
+        <include refid="common.selectCol"><property name="alias" value="${alias}"/></include>
+    </sql>
+
+    <resultMap id="projectAndMemberAndTeamInfoMap" type="ProjectAndMemberAndTeamInfoDTO" autoMapping="true">
+        <id property="id" column="id" />
+
+        <association column="team_info" property="teamInfo" javaType="TeamInfoDTO" columnPrefix="ti_" autoMapping="true">
+            <id property="id" column="id" />
+        </association>
+
+        <collection property="projectMemberInfos" ofType="ProjectMemberInfoDTO" columnPrefix="pmi_" autoMapping="true">
+            <id property="id" column="id" />
+        </collection>
+    </resultMap>
+
+    <select id="selectProjectAndMemberAndTeamInfo" parameterType="Long" resultMap="projectAndMemberAndTeamInfoMap">
+        /** ProjectInfoMapper:selectProjectAndMemberAndTeamInfo **/
+        SELECT
+            <include refid="baseCol"><property name="alias" value="pi"/></include>,
+            <include refid="com.planverse.server.team.mapper.TeamInfoMapper.baseColOuter"><property name="alias" value="ti"/><property name="prefix" value="ti_"/></include>,
+            <include refid="com.planverse.server.project.mapper.ProjectMemberInfoMapper.baseColOuter"><property name="alias" value="pmi"/><property name="prefix" value="pmi_"/></include>,
+            <include refid="com.planverse.server.user.mapper.UserInfoMapper.nameAndEmailColOuter"><property name="alias" value="ui"/><property name="prefix" value="pmi_"/></include>
+        FROM project_info pi
+        JOIN project_member_info pmi ON pmi.project_info_id = pi.id AND pmi.delete_yn = 'N'
+        JOIN team_info ti ON ti.id = pmi.team_info_id AND ti.delete_yn = 'N'
+        JOIN user_info ui ON ui.id = pmi.user_info_id AND ui.delete_yn = 'N'
+        WHERE pi.delete_yn = 'N'
+          AND pi.id = #{projectId}
+    </select>
+</mapper>

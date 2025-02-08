@@ -5,11 +5,15 @@ import com.planverse.server.common.annotation.MyBatisResponse
 import org.apache.ibatis.type.Alias
 
 @MyBatisResponse
-@Alias("ProjectTeamInfoDTO")
+@Alias("ProjectMemberInfoDTO")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-data class ProjectTeamInfoDTO(
+data class ProjectMemberInfoDTO(
     var id: Long? = null,
-    var teamMemberInfoId: Long,
     var projectInfoId: Long,
+    var teamInfoId: Long,
+    var userInfoId: Long,
     var creator: Boolean,
+
+    var username: String,
+    var email: String,
 )

@@ -9,6 +9,7 @@ data class TeamInfoUpdateRequestDTO(
     val teamId: Long,
     val name: String? = null,
     val description: String? = null,
+    val private: Boolean? = false,
     val invite: List<String>? = null,
     val excluding: List<String>? = null,
     var creatorUserInfoId: Long? = null,

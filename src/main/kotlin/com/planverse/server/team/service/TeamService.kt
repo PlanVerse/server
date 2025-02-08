@@ -30,63 +30,16 @@ class TeamService(
     private val teamMemberInfoMapper: TeamMemberInfoMapper,
 ) {
 
-    fun getTeamInfo(userInfo: UserInfo, teamId: Long): TeamInfoDTO {
-        // 팀 정보 존재여부 판단
-        val teamInfoDTO = teamInfoRepository.findById(teamId).orElseThrow {
+    private fun getCreatorDTO(teamMemberId: Long): TeamMemberInfoDTO {
+        return teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
-        }.let { TeamInfoDTO.toDto(it) }
-
-        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, teamId)
-
-        // 팀 생성자 정보 조회
-        val teamCreatorInfoDTO =
-            teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
-                BaseException(StatusCode.TEAM_CREATOR_NOT_FOUND)
-            }.let {
-                TeamMemberInfoDTO.toDto(it)
+        }.let { creator ->
+            val creatorUserInfo = userInfoRepository.findById(creator.userInfoId).orElseThrow {
+                BaseException(StatusCode.USER_NOT_FOUND)
             }
 
-        // 팀 멤버리스트 :: 생성자가 아닌 멤버를 검색하므로 null throw X
-        val teamMemberInfoDTOList: List<TeamMemberInfoDTO> = buildList {
-            teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoDTO.id!!, Constant.FLAG_FALSE, Constant.DEL_N).orElse(emptyList()).forEach {
-                add(TeamMemberInfoDTO.toDto(it))
-            }
+            TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name)
         }
-
-        return teamInfoDTO.apply {
-            this.teamProfileImage = teamProfileImage
-            this.teamCreatorInfo = teamCreatorInfoDTO
-            this.teamMemberInfos = teamMemberInfoDTOList
-        }
-    }
-
-    fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
-        // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
-            getCreateTeamInfoDTO(creator)
-        }
-    }
-
-    private fun getCreateTeamInfoDTO(creator: TeamMemberInfoEntity): TeamInfoDTO {
-        // 팀 정보 조회
-        val teamInfo = teamInfoRepository.findById(creator.teamInfoId).orElseThrow {
-            BaseException(StatusCode.TEAM_NOT_FOUND)
-        }
-
-        // 생성자 정보 조회
-        val creatorUserInfo = userInfoRepository.findById(creator.userInfoId).orElseThrow {
-            BaseException(StatusCode.USER_NOT_FOUND)
-        }
-
-        // 팀 멤버 정보 조회 및 변환
-        val memberDTOs = getMemberDTOs(creator.teamInfoId)
-
-        // DTO 생성 및 반환
-        return TeamInfoDTO.toDtoAndCreatorAndMember(
-            teamInfo,
-            TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name),
-            memberDTOs
-        )
     }
 
     private fun getMemberDTOs(teamMemberId: Long): List<TeamMemberInfoDTO> {
@@ -99,34 +52,100 @@ class TeamService(
         }
     }
 
-    fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
-        // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
-            getTeamCreatorInfoDTO(member)
+    private fun getCreateTeamInfoDTO(userInfoId: Long, creator: TeamMemberInfoEntity): TeamInfoDTO {
+        // 팀 정보 조회
+        val teamInfoDTO = teamInfoRepository.findById(creator.teamInfoId).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }.let { TeamInfoDTO.toDto(it) }
+
+        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, creator.teamInfoId)
+
+        // 팀 생성자 정보 조회 및 변환
+        val creatorDTO = getCreatorDTO(creator.teamInfoId)
+
+        if (teamInfoDTO.private == true) {
+            if (creatorDTO.userInfoId != userInfoId) {
+                throw BaseException(StatusCode.TEAM_NOT_FOUND)
+            }
+        }
+
+        // 팀 멤버 정보 조회 및 변환
+        val memberDTOs = getMemberDTOs(creator.teamInfoId)
+
+        // DTO 생성 및 반환
+        return teamInfoDTO.apply {
+            this.teamProfileImage = teamProfileImage
+            this.teamCreatorInfo = creatorDTO
+            this.teamMemberInfos = memberDTOs
         }
     }
 
-    private fun getTeamCreatorInfoDTO(member: TeamMemberInfoEntity): TeamInfoDTO {
-        // 팀 정보 조회
-        val teamInfo = teamInfoRepository.findById(member.teamInfoId).orElseThrow {
+    fun getTeamInfo(userInfo: UserInfo, teamId: Long): TeamInfoDTO {
+        // 팀 정보 존재여부 판단
+        val teamInfoDTO = teamInfoRepository.findById(teamId).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
+        }.let { TeamInfoDTO.toDto(it) }
+
+        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, teamId)
+
+        // 팀 생성자 정보 조회
+        val creatorDTO = getCreatorDTO(teamInfoDTO.id!!)
+
+        // 팀 멤버리스트 :: 생성자가 아닌 멤버를 검색하므로 null throw X
+        val memberDTOs = getMemberDTOs(teamInfoDTO.id!!)
+
+        if (teamInfoDTO.private == true) {
+            val creatorAndMemberUserInfoIds = arrayListOf(creatorDTO.userInfoId, memberDTOs.stream().map { it.userInfoId }.toList())
+
+            if (!creatorAndMemberUserInfoIds.contains(userInfo.id)) {
+                throw BaseException(StatusCode.TEAM_NOT_FOUND)
+            }
         }
 
-        // 팀 생성자 조회
-        val teamCreatorInfo = teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(member.teamInfoId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
-            BaseException(StatusCode.TEAM_NOT_FOUND)
+        return teamInfoDTO.apply {
+            this.teamProfileImage = teamProfileImage
+            this.teamCreatorInfo = creatorDTO
+            this.teamMemberInfos = memberDTOs
         }
+    }
 
-        // 생성자 정보 조회
-        val creatorUserInfo = userInfoRepository.findById(teamCreatorInfo.userInfoId).orElseThrow {
-            BaseException(StatusCode.USER_NOT_FOUND)
+    fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
+        // 팀 멤버 정보를 페이지네이션으로 조회
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
+            getCreateTeamInfoDTO(userInfo.id!!, creator)
         }
+    }
 
-        // DTO 생성 및 반환
-        return TeamInfoDTO.toDtoAndCreator(
-            teamInfo,
-            TeamMemberInfoDTO.toDto(teamCreatorInfo, creatorUserInfo.name),
-        )
+    fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
+        // 팀 멤버 정보를 페이지네이션으로 조회
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
+            // 팀 정보 조회
+            val teamInfoDTO = teamInfoRepository.findById(member.teamInfoId).orElseThrow {
+                BaseException(StatusCode.TEAM_NOT_FOUND)
+            }.let { TeamInfoDTO.toDto(it) }
+
+            val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, member.teamInfoId)
+
+            // 팀 생성자 조회
+            val creatorDTO = getCreatorDTO(member.teamInfoId)
+
+            // 팀 멤버리스트 :: 생성자가 아닌 멤버를 검색하므로 null throw X
+            val memberDTOs = getMemberDTOs(member.teamInfoId)
+
+            if (teamInfoDTO.private == true) {
+                val creatorAndMemberUserInfoIds = arrayListOf(creatorDTO.userInfoId, memberDTOs.stream().map { it.userInfoId }.toList())
+
+                if (!creatorAndMemberUserInfoIds.contains(userInfo.id)) {
+                    throw BaseException(StatusCode.TEAM_NOT_FOUND)
+                }
+            }
+
+            teamInfoDTO.apply {
+                this.teamProfileImage = teamProfileImage
+                this.teamCreatorInfo = creatorDTO
+                this.teamMemberInfos = memberDTOs
+            }
+        }
     }
 
     @Transactional

@@ -5,17 +5,12 @@ import com.planverse.server.user.entity.UserInfoEntity
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
-import jakarta.validation.constraints.Size
 
 data class SignUpDTO(
     val id: Long?,
 
     @field:NotBlank
     val name: String,
-
-    @field:NotBlank
-    @field:Size(min = 3, max = 50)
-    val nickname: String,
 
     @field:Email
     @field:NotBlank
@@ -29,7 +24,6 @@ data class SignUpDTO(
         return UserInfoEntity(
             key = key,
             name = name,
-            nickname = nickname,
             email = email,
             pwd = encodedPassword,
             authentication = false,

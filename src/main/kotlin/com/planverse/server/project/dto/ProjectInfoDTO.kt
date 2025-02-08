@@ -3,7 +3,9 @@ package com.planverse.server.project.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.project.entity.ProjectInfoEntity
 import com.planverse.server.team.entity.TeamInfoEntity
+import org.apache.ibatis.type.Alias
 
+@Alias("ProjectInfoDTO")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class ProjectInfoDTO(
     var id: Long? = null,
@@ -25,7 +27,7 @@ data class ProjectInfoDTO(
         fun toDto(projectInfoEntity: ProjectInfoEntity): ProjectInfoDTO {
             return ProjectInfoDTO(
                 projectInfoEntity.id,
-                projectInfoEntity.key!!,
+                projectInfoEntity.key,
                 projectInfoEntity.name,
                 projectInfoEntity.description,
             )

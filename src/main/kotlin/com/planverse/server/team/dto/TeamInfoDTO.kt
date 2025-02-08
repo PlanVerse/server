@@ -1,14 +1,19 @@
 package com.planverse.server.team.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.planverse.server.common.annotation.MyBatisResponse
 import com.planverse.server.team.entity.TeamInfoEntity
+import org.apache.ibatis.type.Alias
 
+@MyBatisResponse
+@Alias("TeamInfoDTO")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class TeamInfoDTO(
     var id: Long? = null,
     var key: String,
     var name: String,
     var description: String? = null,
+    val private: Boolean? = false,
     var teamProfileImage: String? = null,
     var teamCreatorInfo: TeamMemberInfoDTO? = null,
     var teamMemberInfo: TeamMemberInfoDTO? = null,
@@ -22,6 +27,7 @@ data class TeamInfoDTO(
                 key = teamInfoDTO.key,
                 name = teamInfoDTO.name,
                 description = teamInfoDTO.description,
+                private = teamInfoDTO.private,
             )
         }
 
@@ -31,6 +37,7 @@ data class TeamInfoDTO(
                 teamInfoEntity.key!!,
                 teamInfoEntity.name,
                 teamInfoEntity.description,
+                teamInfoEntity.private,
             )
         }
 
@@ -40,6 +47,7 @@ data class TeamInfoDTO(
                 teamInfoEntity.key!!,
                 teamInfoEntity.name,
                 teamInfoEntity.description,
+                teamInfoEntity.private,
                 teamCreatorInfo = teamMemberInfoDTO,
             )
         }
@@ -50,6 +58,7 @@ data class TeamInfoDTO(
                 teamInfoEntity.key!!,
                 teamInfoEntity.name,
                 teamInfoEntity.description,
+                teamInfoEntity.private,
                 teamMemberInfo = teamMemberInfoDTO,
             )
         }
@@ -60,6 +69,7 @@ data class TeamInfoDTO(
                 teamInfoEntity.key!!,
                 teamInfoEntity.name,
                 teamInfoEntity.description,
+                teamInfoEntity.private,
                 teamCreatorInfo = teamCreatorInfo,
                 teamMemberInfos = teamMemberInfoDTOs,
             )

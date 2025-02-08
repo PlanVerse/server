@@ -4,11 +4,10 @@ import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.file.service.FileService
-import com.planverse.server.project.dto.ProjectInfoDTO
-import com.planverse.server.project.repository.ProjectInfoRepository
-import com.planverse.server.project.repository.ProjectTeamRepository
+import com.planverse.server.project.dto.ProjectAndMemberAndTeamInfoDTO
+import com.planverse.server.project.mapper.ProjectInfoMapper
+import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
-import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,22 +15,27 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional(readOnly = true)
 class ProjectService(
     private val fileService: FileService,
-    private val userInfoRepository: UserInfoRepository,
-    private val projectInfoRepository: ProjectInfoRepository,
-    private val projectTeamRepository: ProjectTeamRepository,
+    private val teamMemberInfoRepository: TeamMemberInfoRepository,
+    private val projectInfoMapper: ProjectInfoMapper,
 ) {
 
-    fun getProjectInfo(userInfo: UserInfo, projectId: Long): ProjectInfoDTO {
-        // 프로젝트 정보 존재여부 판단
-        val projectInfoDTO = projectInfoRepository.findById(projectId).orElseThrow {
-            BaseException(StatusCode.PROJECT_NOT_FOUND)
-        }.let { ProjectInfoDTO.toDto(it) }
+    fun getProjectInfo(userInfo: UserInfo, projectId: Long): ProjectAndMemberAndTeamInfoDTO {
+        val projectAndMemberAndTeamInfo: ProjectAndMemberAndTeamInfoDTO = checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectId)) {
+            throw BaseException(StatusCode.PROJECT_NOT_FOUND)
+        }.apply {
+            if (this.teamInfo.private == true) {
+                teamMemberInfoRepository.findAllByTeamInfoIdAndDeleteYn(this.teamInfo.id!!, Constant.DEL_N).orElseThrow {
+                    BaseException(StatusCode.TEAM_MEMBER_NOT_FOUND)
+                }.let {
+                    if (!it.stream().map { member -> member.userInfoId }.toList().contains(userInfo.id)) {
+                        throw BaseException(StatusCode.PROJECT_NOT_FOUND)
+                    }
+                }
+            }
 
-        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_PROJECT, projectId)
-
-        // 프로젝트 멤버중 생성자와 동일한지 2차검증
-
-        return projectInfoDTO.apply {
+            this.projectProfileImage = fileService.getFile(Constant.FILE_TARGET_PROJECT, projectId)
         }
+
+        return projectAndMemberAndTeamInfo
     }
 }
