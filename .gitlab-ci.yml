@@ -19,7 +19,6 @@ default:
   interruptible: true
 
 stages:
-  - preBuild
   - build
   - deploy
 
@@ -30,40 +29,13 @@ cache:
     - $GRADLE_USER_HOME/caches/modules-2/
     - $GRADLE_USER_HOME/caches/build-cache/
 
-preBuild:
-  stage: preBuild
-  script:
-    - echo "Gradle 이미지 확인"
-    - |
-      $imageExists = docker images -q gradle:8.11.1-jdk17-alpine
-      if (-not $imageExists) {
-        Write-Host "이미지가 존재하지 않아 다운로드합니다."
-        docker pull gradle:8.11.1-jdk17-alpine
-      } else {
-        Write-Host "이미지가 이미 존재합니다."
-      }
-  tags:
-    - winos
-
 build:
+  image: gradle:8.11.1-jdk17-alpine
   stage: build
-  needs: [preBuild]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   script:
-#    - ./gradlew.bat clean jib --no-daemon
-    - echo "jib 실행"
-    - |
-      set JIB_IMAGE=${JIB_IMAGE} && 
-      set PROFILE_ACTIVE=${PROFILE_ACTIVE} && 
-      set JWT_ENC_PWD=${JWT_ENC_PWD} && 
-      set JASYPT_ENCRYPTOR_PASSWORD=${JASYPT_ENCRYPTOR_PASSWORD} && 
-      set TOKEN_USER=${TOKEN_USER} && 
-      set TOKEN_PWD=${TOKEN_PWD} && 
-      docker run --rm -v ${CI_PROJECT_DIR}:/home/gradle/project -w /home/gradle/project gradle:8.11.1-jdk17-alpine ./gradlew clean jib --no-daemon
-    - echo "jib 완료"
-  tags:
-    - winos
+    - ./gradlew clean jib --no-daemon
 
 deploy:
   stage: deploy
@@ -77,13 +49,11 @@ deploy:
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
-    - echo "Container 실행"
     - docker pull $IMAGE_PATH
     - docker stop $CONTAINER_NAME;echo $?
     - docker rm -f $CONTAINER_NAME;echo $?
     - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
     - docker system prune -f
-    - echo "Container 실행 완료"
   after_script:
     - docker logout
   tags:
