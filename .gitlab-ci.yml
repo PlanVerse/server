@@ -30,12 +30,15 @@ cache:
     - $GRADLE_USER_HOME/caches/build-cache/
 
 build:
-  image: gradle:8.11.1-jdk17-alpine
   stage: build
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   script:
-    - ./gradlew clean jib --no-daemon
+    - echo "jib 실행"
+    - ./gradlew jib --no-daemon
+    - echo "jib 완료"
+  tags:
+    - macos
 
 deploy:
   stage: deploy
@@ -49,11 +52,18 @@ deploy:
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
+    - echo "Docker 작업 시작"
     - docker pull $IMAGE_PATH
+    - echo "Docker pull 완료"
     - docker stop $CONTAINER_NAME;echo $?
+    - echo "Docker Container 정지 완료"
     - docker rm -f $CONTAINER_NAME;echo $?
+    - echo "Docker Container 제거 완료"
     - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
+    - echo "Docker Container 실행 완료"
     - docker system prune -f
+    - echo "Docker 불필요 리소스 제거 완료"
+    - echo "Docker 작업 완료"
   after_script:
     - docker logout
   tags:
