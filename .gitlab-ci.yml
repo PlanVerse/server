@@ -33,7 +33,7 @@ build:
       - .gradle/caches
   script:
     - echo "jib 실행"
-    - ./gradlew jib
+    - ./gradlew jib --no-daemon
     - echo "jib 완료"
   tags:
     - macos
