@@ -26,11 +26,12 @@ build:
   rules:
     - if: $CI_COMMIT_REF_PROTECTED == 'true'
   cache:
-    key: ${CI_COMMIT_REF_SLUG}
+    key: ${CI_COMMIT_REF_NAME}
     paths:
       - build
       - .gradle/wrapper
       - .gradle/caches
+    policy: pull-push
   script:
     - echo "jib 실행"
     - ./gradlew jib --no-daemon
