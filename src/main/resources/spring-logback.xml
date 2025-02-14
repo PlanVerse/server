@@ -1,83 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <configuration>
     <springProperty scope="context" name="spring.application.name" source="spring.application.name"/>
     <springProperty scope="context" name="spring.profiles.active" source="spring.profiles.active"/>
 
-    <property name="appName" value="${spring.application.name}-${spring.profiles.active}"/>
-    <property name="LOG_DIR" value="${spring.application.name}/${spring.profiles.active}/logs/"/>
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} %highlight([%-5level]) [%thread] [traceId=%X{traceId}] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n"/>
-
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>${LOG_PATTERN}</Pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-    </appender>
-
-    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_DIR}/server.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>${LOG_PATTERN}</Pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/server.%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.%i.log.gz</fileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
-            <maxHistory>10</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
-
-    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-
-        <file>${LOG_DIR}/error/error.log</file>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>${LOG_PATTERN}</Pattern>
-            <charset>UTF-8</charset>
-        </encoder>
-
-        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/error/server.%d{yyyy-MM-dd, ${logback.timezone:-Asia/Seoul}}.%i.log.gz</fileNamePattern>
-            <maxFileSize>500MB</maxFileSize>
-            <maxHistory>10</maxHistory>
-            <totalSizeCap>2GB</totalSizeCap>
-        </rollingPolicy>
-    </appender>
-
-    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
-        <http>
-            <url>http://host.docker.internal:51002/loki/api/v1/push</url>
-        </http>
-        <format>
-            <label>
-                <pattern>app=${appName},host=${HOSTNAME},level=%level</pattern>
-                <readMarkers>true</readMarkers>
-            </label>
-
-            <structuredMetadataPattern>
-                level = %level,
-                relative = %relative,
-                thread = %thread,
-                traceId = %X{traceId}
-                class = %logger,
-                method = %method,
-                line = %line,
-                msg = %msg
-            </structuredMetadataPattern>
-
-            <message>
-                <pattern>%highlight([%-5level]) [%thread] [traceId=%X{traceId}] %cyan(%logger{100}) %yellow(%method:%line) - %msg%n</pattern>
-            </message>
-
-            <sortByTime>true</sortByTime>
-        </format>
-    </appender>
+    <include resource="logback/default/console.xml" />
+    <include resource="logback/default/file.xml" />
+    <include resource="logback/default/logger.xml" />
+    <include resource="logback/loki/loki.xml" />
 
     <springProfile name="local">
         <root level="DEBUG">
@@ -110,33 +40,5 @@
         <logger name="jdbc.sqltiming" level="INFO"/>
         <logger name="jdbc.resultsettable" level="OFF"/>
     </springProfile>
-
-    <logger name="jdbc" level="OFF"/>
-    <logger name="jdbc.sqlonly" level="OFF"/>
-    <logger name="jdbc.audit" level="OFF"/>
-    <logger name="jdbc.resultset" level="OFF"/>
-    <logger name="jdbc.connection" level="OFF"/>
-
-    <logger name="org.hibernate.SQL" level="OFF"/>
-    <logger name="org.hibernate.loader" level="OFF"/>
-
-    <logger name="org.hibernate.hql.internal" level="OFF"/>
-
-    <logger name="org.hibernate.jpa.internal.util.LogHelper" level="OFF"/>
-
-    <logger name="org.hibernate.orm.results" level="OFF"/>
-    <logger name="org.hibernate.orm.sql.ast.tree" level="OFF"/>
-    <logger name="org.hibernate.orm.results.graph.AST" level="OFF"/>
-    <logger name="org.hibernate.orm.connections.pooling" level="OFF"/>
-
-    <logger name="org.hibernate.engine.internal" level="OFF"/>
-    <logger name="org.hibernate.engine.loading.internal" level="OFF"/>
-    <logger name="org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator" level="OFF"/>
-
-    <logger name="org.hibernate.internal.util.EntityPrinter" level="OFF"/>
-
-    <logger name="com.zaxxer.hikari.HikariConfig" level="OFF"/>
-
-    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLogger" level="OFF"/>
 
 </configuration>
