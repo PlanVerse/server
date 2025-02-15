@@ -1,4 +1,4 @@
-package com.planverse.server.user.dto
+package com.planverse.server.auth.dto
 
 import jakarta.validation.constraints.NotBlank
 

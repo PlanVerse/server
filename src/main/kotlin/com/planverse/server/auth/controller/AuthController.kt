@@ -1,5 +1,9 @@
-package com.planverse.server.user.controller
+package com.planverse.server.auth.controller
 
+import com.planverse.server.auth.dto.AuthDTO
+import com.planverse.server.auth.dto.ReAuthDTO
+import com.planverse.server.auth.dto.SignInDTO
+import com.planverse.server.auth.dto.SignUpDTO
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.user.dto.*
@@ -12,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/auth/")
-class UserController(
+class AuthController(
     private val userInfoService: UserInfoService,
 ) {
 

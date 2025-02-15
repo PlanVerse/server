@@ -1,4 +1,4 @@
-package com.planverse.server.user.dto
+package com.planverse.server.auth.dto
 
 import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.user.entity.UserInfoEntity
