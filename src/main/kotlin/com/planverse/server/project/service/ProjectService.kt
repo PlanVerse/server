@@ -5,17 +5,24 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.file.service.FileService
 import com.planverse.server.project.dto.ProjectAndMemberAndTeamInfoDTO
+import com.planverse.server.project.dto.ProjectInfoRequestDTO
+import com.planverse.server.project.dto.ProjectMemberInfoDTO
 import com.planverse.server.project.mapper.ProjectInfoMapper
+import com.planverse.server.project.repository.ProjectInfoRepository
+import com.planverse.server.project.repository.ProjectMemberInfoRepository
 import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 @Transactional(readOnly = true)
 class ProjectService(
     private val fileService: FileService,
     private val teamMemberInfoRepository: TeamMemberInfoRepository,
+    private val projectMemberInfoRepository: ProjectMemberInfoRepository,
+    private val projectInfoRepository: ProjectInfoRepository,
     private val projectInfoMapper: ProjectInfoMapper,
 ) {
 
@@ -37,5 +44,24 @@ class ProjectService(
         }
 
         return projectAndMemberAndTeamInfo
+    }
+
+    @Transactional
+    fun createProject(userInfo: UserInfo, projectInfoRequestDTO: ProjectInfoRequestDTO, multipartFile: MultipartFile?) {
+        val projectInfoId = projectInfoRepository.save(projectInfoRequestDTO.toEntity()).id!!
+        val teamId = projectInfoRequestDTO.teamId
+
+        projectInfoRequestDTO.invite?.forEach { inviteUserId ->
+            if (inviteUserId == userInfo.id) {
+                throw BaseException(StatusCode.PROJECT_CREATOR_IS_ALREADY_MEMBER)
+            } else {
+                val projectMemberInfoEntity = ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserId, Constant.FLAG_FALSE)
+                projectMemberInfoRepository.save(projectMemberInfoEntity)
+            }
+        }
+
+        if (multipartFile != null && !multipartFile.isEmpty) {
+            fileService.fileSave(Constant.FILE_TARGET_PROJECT, projectInfoId, multipartFile)
+        }
     }
 }

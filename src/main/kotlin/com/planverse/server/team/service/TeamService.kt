@@ -166,7 +166,7 @@ class TeamService(
         }
 
         if (multipartFile != null && !multipartFile.isEmpty) {
-            fileService.fileSave("team", teamId, multipartFile)
+            fileService.fileSave(Constant.FILE_TARGET_TEAM, teamId, multipartFile)
         }
     }
 

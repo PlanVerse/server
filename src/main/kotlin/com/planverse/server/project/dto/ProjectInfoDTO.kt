@@ -9,7 +9,7 @@ import org.apache.ibatis.type.Alias
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class ProjectInfoDTO(
     var id: Long? = null,
-    var key: String,
+    var key: String? = null,
     var name: String,
     var description: String? = null,
     var projectProfileImage: String? = null,
