@@ -217,10 +217,10 @@ class TeamService(
             }
 
             // 내보내기 멤버 정보 존재 판단
-            if (teamInfoUpdateRequestDTO.excluding != null) {
+            if (teamInfoUpdateRequestDTO.exclude != null) {
                 buildList {
                     // 내보내기 멤버 사용자 정보 획득
-                    teamInfoUpdateRequestDTO.excluding.forEach {
+                    teamInfoUpdateRequestDTO.exclude.forEach {
                         val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
                             BaseException(StatusCode.USER_NOT_FOUND)
                         }
