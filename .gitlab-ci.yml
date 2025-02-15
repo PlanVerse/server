@@ -22,7 +22,6 @@ stages:
   - deploy
 
 build:
-  image: gradle:8.11.1-jdk17
   stage: build
   rules:
     - if: $CI_COMMIT_REF_PROTECTED == 'true'
