@@ -37,7 +37,7 @@ build:
     - ./gradlew jib --no-daemon
     - echo "jib 완료"
   tags:
-    - macos
+    - macmini
 
 deploy:
   stage: deploy
