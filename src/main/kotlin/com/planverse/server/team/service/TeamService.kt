@@ -38,7 +38,7 @@ class TeamService(
                 BaseException(StatusCode.USER_NOT_FOUND)
             }
 
-            TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name)
+            TeamMemberInfoDTO.toDto(creator, creatorUserInfo.name, creatorUserInfo.email)
         }
     }
 
@@ -48,7 +48,7 @@ class TeamService(
                 BaseException(StatusCode.USER_NOT_FOUND)
             }
 
-            TeamMemberInfoDTO.toDto(member, memberUserInfo.name)
+            TeamMemberInfoDTO.toDto(member, memberUserInfo.name, memberUserInfo.email)
         }
     }
 
