@@ -40,7 +40,7 @@ class FileService(
         if (!multipartFile.isEmpty) {
             val originalFilename = multipartFile.originalFilename!!
             val objectMetaData = getObjectMetaData(originalFilename, multipartFile)
-            val requestBody = multipartFile.bytes.toRequestBody("application/octet-stream; charset=utf-8".toMediaTypeOrNull())
+            val requestBody = multipartFile.bytes.toRequestBody("${multipartFile.contentType}; charset=utf-8".toMediaTypeOrNull())
 
             val key = UUID.randomUUID().toString()
             val fileInfoId = fileInfoRepository.save(FileInfoEntity(key = key, name = originalFilename, path = "")).id
