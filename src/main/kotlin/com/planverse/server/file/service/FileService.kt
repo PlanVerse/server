@@ -1,5 +1,6 @@
 package com.planverse.server.file.service
 
+import com.planverse.server.common.annotation.Except
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.util.S3Util
 import com.planverse.server.file.entity.FileInfoEntity
@@ -16,6 +17,7 @@ import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import java.util.*
 
+@Except
 @Service
 @Transactional(readOnly = true)
 class FileService(
