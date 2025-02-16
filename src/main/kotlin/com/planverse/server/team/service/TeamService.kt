@@ -58,7 +58,7 @@ class TeamService(
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let { TeamInfoDTO.toDto(it) }
 
-        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, creator.teamInfoId)
+        val teamProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_TEAM, creator.teamInfoId)
 
         // 팀 생성자 정보 조회 및 변환
         val creatorDTO = getCreatorDTO(creator.teamInfoId)
@@ -86,7 +86,7 @@ class TeamService(
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let { TeamInfoDTO.toDto(it) }
 
-        val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, teamId)
+        val teamProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_TEAM, teamId)
 
         // 팀 생성자 정보 조회
         val creatorDTO = getCreatorDTO(teamInfoDTO.id!!)
@@ -124,7 +124,7 @@ class TeamService(
                 BaseException(StatusCode.TEAM_NOT_FOUND)
             }.let { TeamInfoDTO.toDto(it) }
 
-            val teamProfileImage = fileService.getFile(Constant.FILE_TARGET_TEAM, member.teamInfoId)
+            val teamProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_TEAM, member.teamInfoId)
 
             // 팀 생성자 조회
             val creatorDTO = getCreatorDTO(member.teamInfoId)
@@ -240,6 +240,17 @@ class TeamService(
                         teamMemberInfoRepository.save(excludeMemberInfo)
                     }
                 }
+            }
+        }
+    }
+
+    @Transactional
+    fun modifyTeamImage(userInfo: UserInfo, teamId: Long, multipartFile: MultipartFile) {
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }.let {
+            fileService.deleteFile(Constant.FILE_TARGET_TEAM, teamId).also {
+                fileService.fileSave(Constant.FILE_TARGET_TEAM, teamId, multipartFile)
             }
         }
     }

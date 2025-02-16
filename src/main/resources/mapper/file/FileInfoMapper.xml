@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.planverse.server.file.mapper.FileInfoMapper">
+    <sql id="baseCol">
+        ${alias}.id,
+        ${alias}.key,
+        ${alias}.name,
+        ${alias}.path,
+        <include refid="common.selectCol"><property name="alias" value="${alias}"/></include>
+    </sql>
+
+    <resultMap id="fileInfoAndFileRelInfoMap" type="FileCombInfoDTO" autoMapping="true">
+        <id property="id" column="id" />
+
+        <collection property="fileRelInfos" ofType="FileRelInfoDTO" columnPrefix="fri_" autoMapping="true">
+            <id property="id" column="id" />
+        </collection>
+    </resultMap>
+
+    <select id="selectFileCombineInfo" parameterType="FileRelInfoDTO" resultMap="fileInfoAndFileRelInfoMap">
+        /** ProjectInfoMapper:selectProjectAndMemberAndTeamInfo **/
+        SELECT
+            <include refid="baseCol"><property name="alias" value="fi"/></include>,
+            <include refid="com.planverse.server.file.mapper.FileRelInfoMapper.baseColOuter"><property name="alias" value="fri"/><property name="prefix" value="fri_"/></include>
+        FROM file_info fi
+        JOIN file_rel_info fri ON fri.file_info_id = fi.id AND fri.delete_yn = 'N'
+        <where>
+            AND fi.delete_yn = 'N'
+            <if test="fileInfoId != null and fileInfoId > 0">
+                AND fi.id = #{fileInfoId}
+            </if>
+            <if test="target != null and target != ''">
+                AND fri.target = #{target}
+            </if>
+            <if test="targetId != null and targetId > 0">
+                AND fri.target_id = #{targetId}
+            </if>
+        </where>
+    </select>
+</mapper>

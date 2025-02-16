@@ -45,7 +45,7 @@ class ProjectService(
                 }
             }
 
-            this.projectProfileImage = fileService.getFile(Constant.FILE_TARGET_PROJECT, projectId)
+            this.projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, projectId)
         }
 
         return projectAndMemberAndTeamInfo
