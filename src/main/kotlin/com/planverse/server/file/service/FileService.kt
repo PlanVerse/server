@@ -6,7 +6,6 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.util.S3Util
 import com.planverse.server.file.dto.FileCombInfoDTO
-import com.planverse.server.file.dto.FileInfoDTO
 import com.planverse.server.file.dto.FileRelInfoDTO
 import com.planverse.server.file.entity.FileInfoEntity
 import com.planverse.server.file.entity.FileRelInfoEntity
