@@ -18,8 +18,14 @@ default:
   interruptible: true
 
 stages:
+  - awake
   - build
   - deploy
+
+awake:
+    stage: awake
+    script:
+        - echo > $AWAKE_MACOS
 
 build:
   stage: build
