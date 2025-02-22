@@ -6,6 +6,7 @@ import com.planverse.server.common.exception.BaseException
 import com.planverse.server.file.service.FileService
 import com.planverse.server.project.dto.ProjectAndMemberAndTeamInfoDTO
 import com.planverse.server.project.dto.ProjectInfoRequestDTO
+import com.planverse.server.project.dto.ProjectInfoUpdateRequestDTO
 import com.planverse.server.project.dto.ProjectMemberInfoDTO
 import com.planverse.server.project.mapper.ProjectInfoMapper
 import com.planverse.server.project.repository.ProjectInfoRepository
@@ -80,6 +81,25 @@ class ProjectService(
 
         if (multipartFile != null && !multipartFile.isEmpty) {
             fileService.fileSave(Constant.FILE_TARGET_PROJECT, projectInfoId, multipartFile)
+        }
+    }
+
+    @Transactional
+    fun modifyProjectInfo(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
+    }
+
+    @Transactional
+    fun inviteProjectMember(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
+    }
+
+    @Transactional
+    fun modifyProjectImage(userInfo: UserInfo, projectInfoId: Long, multipartFile: MultipartFile) {
+        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+            BaseException(StatusCode.PROJECT_NOT_FOUND)
+        }.let {
+            fileService.deleteFile(Constant.FILE_TARGET_PROJECT, projectInfoId).also {
+                fileService.fileSave(Constant.FILE_TARGET_PROJECT, projectInfoId, multipartFile)
+            }
         }
     }
 }
