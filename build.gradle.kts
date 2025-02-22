@@ -54,6 +54,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14")
     implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
     implementation("com.github.loki4j:loki-logback-appender:1.6.0")
+    implementation("io.minio:minio:8.5.17")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 

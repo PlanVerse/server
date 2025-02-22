@@ -4,7 +4,7 @@ import com.planverse.server.common.annotation.Except
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
-import com.planverse.server.common.util.S3Util
+import com.planverse.server.common.util.MinioUtil
 import com.planverse.server.file.dto.FileCombInfoDTO
 import com.planverse.server.file.dto.FileRelInfoDTO
 import com.planverse.server.file.entity.FileInfoEntity
@@ -13,8 +13,6 @@ import com.planverse.server.file.mapper.FileInfoMapper
 import com.planverse.server.file.repository.FileInfoRepository
 import com.planverse.server.file.repository.FileRelInfoRepository
 import kotlinx.coroutines.runBlocking
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -50,20 +48,22 @@ class FileService(
         if (!multipartFile.isEmpty) {
             val originalFilename = multipartFile.originalFilename!!
             val objectMetaData = getObjectMetaData(originalFilename, multipartFile)
-            val requestBody = multipartFile.bytes.toRequestBody("${multipartFile.contentType}; charset=utf-8".toMediaTypeOrNull())
+//            val requestBody = multipartFile.bytes.toRequestBody("${multipartFile.contentType}; charset=utf-8".toMediaTypeOrNull())
 
             val key = UUID.randomUUID().toString()
             val fileInfoId = fileInfoRepository.save(FileInfoEntity(key = key, name = originalFilename, path = "")).id
             fileRelInfoRepository.save(FileRelInfoEntity(target = target, targetId = targetId, fileInfoId = fileInfoId))
 
-            S3Util.putObject("$target/$targetId/$key", requestBody, objectMetaData)
+//            S3Util.putObject("$target/$targetId/$key", requestBody, objectMetaData)
+            MinioUtil.putObject("$target/$targetId/$key", multipartFile, objectMetaData)
         }
     }
 
     fun getFileUrl(target: String, targetId: Long): String? {
         return fileRelInfoRepository.findByTargetAndTargetIdAndDeleteYn(target, targetId, Constant.DEL_N).map { fileRelInfo ->
             fileInfoRepository.findById(fileRelInfo.fileInfoId!!).map { fileInfo ->
-                S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}")
+//                S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}")
+                MinioUtil.getObjectUrl("$target/$targetId/${fileInfo.key}")
             }.orElse(null)
         }.orElse(null)
     }
@@ -73,7 +73,8 @@ class FileService(
             fileRelInfoRepository.findAllByTargetAndTargetIdAndDeleteYn(target, targetId, Constant.DEL_N).ifPresent { fileRelInfos ->
                 fileRelInfos.forEach {
                     fileInfoRepository.findById(it.fileInfoId!!).ifPresent { fileInfo ->
-                        add(S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}"))
+//                        add(S3Util.getObjectUrl("$target/$targetId/${fileInfo.key}"))
+                        add(MinioUtil.getObjectUrl("$target/$targetId/${fileInfo.key}"))
                     }
                 }
             }
