@@ -54,9 +54,9 @@ deploy:
     - echo "Docker 작업 시작"
     - docker pull $IMAGE_PATH
     - echo "Docker pull 완료"
-    - docker stop $CONTAINER_NAME
+    - docker stop $CONTAINER_NAME;echo $?
     - echo "Docker Container 정지 완료"
-    - docker rm -f $CONTAINER_NAME
+    - docker rm -f $CONTAINER_NAME;echo $?
     - echo "Docker Container 제거 완료"
     - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
     - echo "Docker Container 실행 완료"
