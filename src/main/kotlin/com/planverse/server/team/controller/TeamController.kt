@@ -53,7 +53,7 @@ class TeamController(
     }
 
     @PutMapping("/image/{teamId}")
-    fun modifyTeamImage(userInfo: UserInfo, @RequestPart("file") @PathVariable(required = true) teamId: Long, multipartFile: MultipartFile): BaseResponse<Any> {
+    fun modifyTeamImage(userInfo: UserInfo, @PathVariable(required = true) teamId: Long, @RequestPart("file") multipartFile: MultipartFile): BaseResponse<Any> {
         teamService.modifyTeamImage(userInfo, teamId, multipartFile)
         return BaseResponse.success()
     }

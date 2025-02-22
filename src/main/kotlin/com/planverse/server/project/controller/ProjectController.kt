@@ -39,7 +39,7 @@ class ProjectController(
     }
 
     @PutMapping("/image/{projectInfoId}")
-    fun modifyProjectImage(userInfo: UserInfo, @RequestPart("file") @PathVariable(required = true) projectInfoId: Long, multipartFile: MultipartFile): BaseResponse<Any> {
+    fun modifyProjectImage(userInfo: UserInfo, @PathVariable(required = true) projectInfoId: Long, @RequestPart("file") multipartFile: MultipartFile): BaseResponse<Any> {
         projectService.modifyProjectImage(userInfo, projectInfoId, multipartFile)
         return BaseResponse.success()
     }
