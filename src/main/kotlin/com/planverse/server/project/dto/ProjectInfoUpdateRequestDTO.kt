@@ -6,7 +6,7 @@ import org.apache.ibatis.type.Alias
 @Alias("ProjectInfoUpdateRequestDTO")
 data class ProjectInfoUpdateRequestDTO(
     @field:NotBlank
-    val teamId: Long,
+    val projectInfoId: Long,
     val name: String? = null,
     val description: String? = null,
     val private: Boolean? = false,

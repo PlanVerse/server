@@ -86,6 +86,20 @@ class ProjectService(
 
     @Transactional
     fun modifyProjectInfo(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
+        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+            BaseException(StatusCode.PROJECT_NOT_FOUND)
+        }.let { member ->
+            projectInfoRepository.findById(member.projectInfoId).orElseThrow {
+                BaseException(StatusCode.PROJECT_NOT_FOUND)
+            }.let { info ->
+                if (projectInfoUpdateRequestDTO.name != null) {
+                    info.name = projectInfoUpdateRequestDTO.name
+                }
+                info.description = projectInfoUpdateRequestDTO.description
+
+                projectInfoRepository.save(info)
+            }
+        }
     }
 
     @Transactional
