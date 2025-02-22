@@ -28,6 +28,9 @@ enum class StatusCode(
     TEAM_CREATOR_IS_ALREADY_MEMBER("2004", "팀 생성자는 이미 팀에 소속되어있습니다.", HttpStatus.NOT_FOUND),
     NO_DATA("2005", "조회된 데이터가 없습니다.", HttpStatus.NOT_FOUND),
     PROJECT_NOT_FOUND("2006", "프로젝트를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    TEAM_CREATOR_NOT_FOUND("2007", "팀 생성자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    PROJECT_CREATOR_NOT_FOUND("2008", "프로젝트 생성자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    PROJECT_CREATOR_IS_ALREADY_MEMBER("2009", "프로젝트 생성자는 이미 프로젝트에 소속되어있습니다.", HttpStatus.NOT_FOUND),
 
     TEAM_CREATOR_CANNOT_EXCLUDE("3005", "팀 생성자는 팀에서 제외될 수 없습니다.", HttpStatus.BAD_REQUEST),
 

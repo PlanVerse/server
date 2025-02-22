@@ -21,7 +21,7 @@ class ProjectInfoEntity(
     @NotNull
     @ColumnDefault("(gen_random_uuid())")
     @Column(name = "key", nullable = false)
-    var key: String,
+    var key: String? = null,
 
     @Size(min = 3, max = 255)
     @NotNull

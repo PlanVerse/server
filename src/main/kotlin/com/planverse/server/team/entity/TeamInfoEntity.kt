@@ -31,4 +31,8 @@ class TeamInfoEntity(
     @Size(max = 255)
     @Column(name = "description")
     var description: String? = null,
+
+    @NotNull
+    @Column(name = "private", nullable = false)
+    var private: Boolean? = false,
 ) : BaseEntity()

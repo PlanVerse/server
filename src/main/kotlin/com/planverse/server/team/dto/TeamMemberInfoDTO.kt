@@ -14,6 +14,7 @@ data class TeamMemberInfoDTO(
     var teamInfoId: Long,
     var creator: Boolean,
     var username: String? = null,
+    var email: String? = null,
 ) {
     companion object {
         fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity): TeamMemberInfoDTO {
@@ -25,13 +26,14 @@ data class TeamMemberInfoDTO(
             )
         }
 
-        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity, username: String): TeamMemberInfoDTO {
+        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity, username: String, email: String): TeamMemberInfoDTO {
             return TeamMemberInfoDTO(
                 teamMemberInfoEntity.id,
                 teamMemberInfoEntity.userInfoId,
                 teamMemberInfoEntity.teamInfoId,
                 teamMemberInfoEntity.creator,
-                username
+                username,
+                email,
             )
         }
 

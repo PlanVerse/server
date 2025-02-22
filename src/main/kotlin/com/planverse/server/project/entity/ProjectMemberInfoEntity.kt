@@ -10,20 +10,24 @@ import org.hibernate.annotations.DynamicUpdate
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@Table(name = "project_team_info", schema = "public")
-class ProjectTeamInfoEntity(
+@Table(name = "project_member_info", schema = "public")
+class ProjectMemberInfoEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     var id: Long? = null,
 
     @NotNull
-    @Column(name = "team_member_info_id", nullable = false)
-    var teamMemberInfoId: Long,
-
-    @NotNull
     @Column(name = "project_info_id", nullable = false)
     var projectInfoId: Long,
+
+    @NotNull
+    @Column(name = "team_info_id", nullable = false)
+    var teamInfoId: Long,
+
+    @NotNull
+    @Column(name = "user_info_id", nullable = false)
+    var userInfoId: Long,
 
     @NotNull
     @ColumnDefault("false")

@@ -11,6 +11,7 @@
     </sql>
 
     <select id="selectTeamMemberInfoForCreator" parameterType="TeamInfoUpdateRequestDTO" resultType="TeamMemberInfoDTO">
+        /** TeamMemberInfoMapper:selectTeamMemberInfoForCreator **/
         SELECT
             <include refid="baseCol"><property name="alias" value="tmi"/></include>
         FROM team_info ti

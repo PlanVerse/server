@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.planverse.server.project.mapper.ProjectMemberInfoMapper">
+    <sql id="baseCol">
+        ${alias}.id,
+        ${alias}.project_info_id,
+        ${alias}.team_info_id,
+        ${alias}.user_info_id,
+        ${alias}.creator,
+        <include refid="common.selectCol"><property name="alias" value="${alias}"/></include>
+    </sql>
+
+    <sql id="baseColOuter">
+        ${alias}.id AS ${prefix}id,
+        ${alias}.project_info_id AS ${prefix}project_info_id,
+        ${alias}.team_info_id AS ${prefix}team_info_id,
+        ${alias}.user_info_id AS ${prefix}user_info_id,
+        ${alias}.creator AS ${prefix}creator
+    </sql>
+
+    <select id="selectProjectMemberInfoForCreator" parameterType="ProjectInfoUpdateRequestDTO" resultType="ProjectMemberInfoDTO">
+        /** ProjectMemberInfoMapper:selectProjectMemberInfoForCreator **/
+        SELECT
+            <include refid="baseCol"><property name="alias" value="pmi"/></include>
+        FROM project_info pi
+        JOIN project_member_info pmi ON pmi.project_info_id = pi.id AND pmi.delete_yn = 'N'
+        WHERE pi.delete_yn = 'N'
+          AND pi.id = #{projectInfoId}
+          AND EXISTS (SELECT 1 FROM project_member_info pmi WHERE pmi.delete_yn = 'N' AND pmi.project_info_id = #{projectInfoId} AND pmi.creator = TRUE AND pmi.user_info_id = #{creatorUserInfoId})
+    </select>
+</mapper>

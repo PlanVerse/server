@@ -35,11 +35,6 @@ class UserInfoEntity(
 
     @NotNull
     @Size(max = 255)
-    @Column(name = "nickname", nullable = false)
-    var nickname: String,
-
-    @NotNull
-    @Size(max = 255)
     @Column(name = "email", nullable = false)
     val email: String,
 

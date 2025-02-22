@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.planverse.server.team.mapper.TeamInfoMapper">
+<mapper namespace="com.planverse.server.file.mapper.FileRelInfoMapper">
     <sql id="baseCol">
         ${alias}.id,
-        ${alias}.key,
-        ${alias}.name,
-        ${alias}.description,
-        ${alias}.private,
+        ${alias}.target,
+        ${alias}.target_id,
+        ${alias}.file_info_id,
         <include refid="common.selectCol"><property name="alias" value="${alias}"/></include>
     </sql>
 
     <sql id="baseColOuter">
         ${alias}.id AS ${prefix}id,
-        ${alias}.key AS ${prefix}key,
-        ${alias}.name AS ${prefix}name,
-        ${alias}.description AS ${prefix}description,
-        ${alias}.private AS ${prefix}private
+        ${alias}.target AS ${prefix}target,
+        ${alias}.target_id AS ${prefix}target_id,
+        ${alias}.file_info_id AS ${prefix}file_info_id
     </sql>
 </mapper>
