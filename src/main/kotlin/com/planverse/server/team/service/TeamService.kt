@@ -233,7 +233,7 @@ class TeamService(
                     it in this.stream().map { member -> member.userInfoId }.toList()
                 }.forEach {
                     // 팀 생성자 즉 관리자는 팀에서 내보내기가 불가능하므로 검사
-                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, it, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, it, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
                         BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
                     }.let { excludeMemberInfo ->
                         excludeMemberInfo.deleteYn = Constant.DEL_Y
@@ -246,7 +246,7 @@ class TeamService(
 
     @Transactional
     fun modifyTeamImage(userInfo: UserInfo, teamId: Long, multipartFile: MultipartFile) {
-        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let {
             fileService.deleteFile(Constant.FILE_TARGET_TEAM, teamId).also {
