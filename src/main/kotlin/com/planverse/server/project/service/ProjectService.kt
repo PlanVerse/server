@@ -9,12 +9,14 @@ import com.planverse.server.project.dto.ProjectInfoRequestDTO
 import com.planverse.server.project.dto.ProjectInfoUpdateRequestDTO
 import com.planverse.server.project.dto.ProjectMemberInfoDTO
 import com.planverse.server.project.mapper.ProjectInfoMapper
+import com.planverse.server.project.mapper.ProjectMemberInfoMapper
 import com.planverse.server.project.repository.ProjectInfoRepository
 import com.planverse.server.project.repository.ProjectMemberInfoRepository
 import com.planverse.server.team.dto.TeamInfoUpdateRequestDTO
 import com.planverse.server.team.mapper.TeamMemberInfoMapper
 import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
+import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
@@ -24,12 +26,15 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectService(
     private val fileService: FileService,
 
+    private val userInfoRepository: UserInfoRepository,
+
     private val teamMemberInfoRepository: TeamMemberInfoRepository,
     private val projectMemberInfoRepository: ProjectMemberInfoRepository,
     private val projectInfoRepository: ProjectInfoRepository,
 
     private val teamMemberInfoMapper: TeamMemberInfoMapper,
     private val projectInfoMapper: ProjectInfoMapper,
+    private val projectMemberInfoMapper: ProjectMemberInfoMapper,
 ) {
 
     fun getProjectInfo(userInfo: UserInfo, projectId: Long): ProjectAndMemberAndTeamInfoDTO {
@@ -104,6 +109,62 @@ class ProjectService(
 
     @Transactional
     fun inviteProjectMember(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
+        projectInfoUpdateRequestDTO.creatorUserInfoId = userInfo.id
+        projectMemberInfoMapper.selectProjectMemberInfoForCreator(projectInfoUpdateRequestDTO).ifEmpty {
+            throw BaseException(StatusCode.PROJECT_NOT_FOUND)
+        }.run {
+            val teamInfoId = this[0].teamInfoId
+            val teamMembers = teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+                BaseException(StatusCode.TEAM_MEMBER_NOT_FOUND)
+            }.let {
+                if (!it.stream().map { member -> member.userInfoId }.toList().contains(userInfo.id)) {
+                    throw BaseException(StatusCode.PROJECT_NOT_FOUND)
+                }
+
+                it.stream().map { member -> member.userInfoId }.toList()
+            }
+
+            if (projectInfoUpdateRequestDTO.invite != null) {
+                buildList {
+                    projectInfoUpdateRequestDTO.invite.forEach {
+                        val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
+                            BaseException(StatusCode.USER_NOT_FOUND)
+                        }
+
+                        add(inviteUserInfo.id!!)
+                    }
+                }.filter {
+                    it !in this.stream().map { member -> member.userInfoId }.toList()
+                }.filter {
+                    it !in teamMembers.stream().map { teamMember -> teamMember }.toList()
+                }.forEach {
+                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoUpdateRequestDTO.projectInfoId, teamInfoId, it, Constant.FLAG_FALSE))
+                }
+            }
+
+            if (projectInfoUpdateRequestDTO.exclude != null) {
+                buildList {
+                    projectInfoUpdateRequestDTO.exclude.forEach {
+                        val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
+                            BaseException(StatusCode.USER_NOT_FOUND)
+                        }
+
+                        add(inviteUserInfo.id!!)
+                    }
+                }.filter {
+                    it !in this.stream().map { member -> member.userInfoId }.toList()
+                }.filter {
+                    it !in teamMembers.stream().map { teamMember -> teamMember }.toList()
+                }.forEach {
+                    projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, it, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+                        BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
+                    }.let { excludeMemberInfo ->
+                        excludeMemberInfo.deleteYn = Constant.DEL_Y
+                        projectMemberInfoRepository.save(excludeMemberInfo)
+                    }
+                }
+            }
+        }
     }
 
     @Transactional
