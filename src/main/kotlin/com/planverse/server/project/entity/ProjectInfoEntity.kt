@@ -31,4 +31,8 @@ class ProjectInfoEntity(
     @Size(max = 255)
     @Column(name = "description")
     var description: String? = null,
+
+    @NotNull
+    @Column(name = "team_info_id", nullable = false)
+    var teamInfoId: Long,
 ) : BaseEntity()

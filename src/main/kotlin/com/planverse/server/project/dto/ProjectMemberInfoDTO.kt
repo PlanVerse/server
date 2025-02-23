@@ -15,10 +15,20 @@ data class ProjectMemberInfoDTO(
     var userInfoId: Long,
     var creator: Boolean,
 
-    var username: String,
-    var email: String,
+    var username: String? = null,
+    var email: String? = null,
 ) {
     companion object {
+        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity): ProjectMemberInfoDTO {
+            return ProjectMemberInfoDTO(
+                id = projectMemberInfoEntity.id,
+                projectInfoId = projectMemberInfoEntity.projectInfoId,
+                teamInfoId = projectMemberInfoEntity.teamInfoId,
+                userInfoId = projectMemberInfoEntity.userInfoId,
+                creator = projectMemberInfoEntity.creator
+            )
+        }
+
         fun toEntity(projectInfoId: Long, teamInfoId: Long, userInfoId: Long, creator: Boolean): ProjectMemberInfoEntity {
             return ProjectMemberInfoEntity(
                 projectInfoId = projectInfoId,

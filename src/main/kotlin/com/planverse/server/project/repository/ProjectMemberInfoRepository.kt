@@ -6,4 +6,5 @@ import java.util.Optional
 
 interface ProjectMemberInfoRepository : JpaRepository<ProjectMemberInfoEntity, Long> {
     fun findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId: Long, userInfoId: Long, creator: Boolean, deleteYn: String): Optional<ProjectMemberInfoEntity>
+    fun findByProjectInfoId(projectInfoId: Long): Optional<List<ProjectMemberInfoEntity>>
 }

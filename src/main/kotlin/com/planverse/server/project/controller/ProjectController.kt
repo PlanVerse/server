@@ -6,6 +6,8 @@ import com.planverse.server.project.dto.ProjectInfoRequestDTO
 import com.planverse.server.project.dto.ProjectInfoUpdateRequestDTO
 import com.planverse.server.project.service.ProjectService
 import com.planverse.server.user.dto.UserInfo
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
@@ -17,6 +19,12 @@ class ProjectController(
     @GetMapping("/info/{projectId}")
     fun getProjectInfo(userInfo: UserInfo, @PathVariable(required = true) projectId: Long): BaseResponse<ProjectAndMemberAndTeamInfoDTO> {
         val res = projectService.getProjectInfo(userInfo, projectId)
+        return BaseResponse.success(res)
+    }
+
+    @GetMapping("/list/{teamInfoId}")
+    fun getProjectInfoList(userInfo: UserInfo, @PathVariable(required = true) teamInfoId: Long, pageable: Pageable): BaseResponse<Slice<ProjectAndMemberAndTeamInfoDTO>> {
+        val res = projectService.getProjectInfoList(userInfo, teamInfoId, pageable)
         return BaseResponse.success(res)
     }
 

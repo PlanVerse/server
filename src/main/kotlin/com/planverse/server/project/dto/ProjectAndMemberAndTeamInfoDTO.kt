@@ -15,7 +15,7 @@ data class ProjectAndMemberAndTeamInfoDTO(
     var description: String? = null,
     var projectProfileImage: String? = null,
 
-    var teamInfo: TeamInfoDTO,
+    var teamInfo: TeamInfoDTO? = null,
 
-    var projectMemberInfos: List<ProjectMemberInfoDTO>,
+    var projectMemberInfos: List<ProjectMemberInfoDTO>? = emptyList(),
 )
