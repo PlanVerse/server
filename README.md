@@ -37,12 +37,27 @@
 - 파일 서비스
   - minio
     - dev : standalone
-    - main : distributed
+    - main : distributed ( TODO )
 - DNS
   - Cloudflare (Proxy)
   - Cloudflare zero trust
+
 ---
 
 ## 개발 참고 자료
 
-- [Kotlin 스코프 함수 정리](scope.md)
+- [Check](doc/check.md)
+- [Kotlin 스코프 함수 정리](doc/scope.md)
+- [Mybatis 관련](doc/mybatis.md)
+
+---
+
+## Need Attention
+
+- [ ] K8S 도입
+- [ ] zero-downtime deployment
+- [ ] Netdata, Portainer 비교
+- [ ] WatchTower
+- [ ] OCI(Oracle Cloud Infrastructure)
+  - [ ] instances 활용
+- [ ] Nexus 활용 방안 고민
