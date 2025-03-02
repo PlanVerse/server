@@ -2,7 +2,7 @@ spring:
   application:
     name: planverse
   config:
-    import: optional:configserver:https://cloud.seoeungi.work
+    import: optional:configserver:https://config.seoeungi.work
   data:
     web:
       pageable:
