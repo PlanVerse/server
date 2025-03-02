@@ -3,6 +3,7 @@ package com.planverse.server.project.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.common.annotation.MyBatisResponse
 import com.planverse.server.project.entity.ProjectMemberInfoEntity
+import com.planverse.server.user.entity.UserInfoEntity
 import org.apache.ibatis.type.Alias
 
 @MyBatisResponse
@@ -27,6 +28,13 @@ data class ProjectMemberInfoDTO(
                 userInfoId = projectMemberInfoEntity.userInfoId,
                 creator = projectMemberInfoEntity.creator
             )
+        }
+
+        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity, userInfoEntity: UserInfoEntity): ProjectMemberInfoDTO {
+            return this.toDto(projectMemberInfoEntity).apply {
+                username = userInfoEntity.username
+                email = userInfoEntity.email
+            }
         }
 
         fun toEntity(projectInfoId: Long, teamInfoId: Long, userInfoId: Long, creator: Boolean): ProjectMemberInfoEntity {

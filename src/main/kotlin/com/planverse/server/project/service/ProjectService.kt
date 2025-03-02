@@ -64,7 +64,10 @@ class ProjectService(
             val projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, it.id!!)
 
             val projectMemberInfos: List<ProjectMemberInfoDTO> = projectMemberInfoRepository.findByProjectInfoId(it.id!!).orElse(emptyList()).map { entity ->
-                ProjectMemberInfoDTO.toDto(entity)
+                val userInfoEntity = userInfoRepository.findById(entity.userInfoId).orElseThrow {
+                    BaseException(StatusCode.USER_NOT_FOUND)
+                }
+                ProjectMemberInfoDTO.toDto(entity, userInfoEntity)
             }
 
             ProjectAndMemberAndTeamInfoDTO(
