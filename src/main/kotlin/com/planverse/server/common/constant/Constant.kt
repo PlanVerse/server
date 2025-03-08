@@ -18,5 +18,8 @@ sealed class Constant {
 
         // 복수
         const val FILE_TARGET_CONTENT = "content"
+
+        // 에디터
+        const val FILE_TARGET_EDITOR = "editor"
     }
 }
