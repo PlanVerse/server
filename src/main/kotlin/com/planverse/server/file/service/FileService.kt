@@ -48,15 +48,24 @@ class FileService(
         if (!multipartFile.isEmpty) {
             val originalFilename = multipartFile.originalFilename!!
             val objectMetaData = getObjectMetaData(originalFilename, multipartFile)
-//            val requestBody = multipartFile.bytes.toRequestBody("${multipartFile.contentType}; charset=utf-8".toMediaTypeOrNull())
 
             val key = UUID.randomUUID().toString()
             val fileInfoId = fileInfoRepository.save(FileInfoEntity(key = key, name = originalFilename, path = "")).id
             fileRelInfoRepository.save(FileRelInfoEntity(target = target, targetId = targetId, fileInfoId = fileInfoId))
 
-//            S3Util.putObject("$target/$targetId/$key", requestBody, objectMetaData)
             MinioUtil.putObject("$target/$targetId/$key", multipartFile, objectMetaData)
         }
+    }
+
+    @Transactional
+    fun fileSaveReturnPath(key: String, target: String, targetId: Long, multipartFile: MultipartFile) = runBlocking {
+        val originalFilename = multipartFile.originalFilename!!
+        val objectMetaData = getObjectMetaData(originalFilename, multipartFile)
+
+        val fileInfoId = fileInfoRepository.save(FileInfoEntity(key = key, name = originalFilename, path = "")).id
+        fileRelInfoRepository.save(FileRelInfoEntity(target = target, targetId = targetId, fileInfoId = fileInfoId))
+
+        MinioUtil.putObject("$target/$targetId/$key", multipartFile, objectMetaData)
     }
 
     fun getFileUrl(target: String, targetId: Long): String? {
