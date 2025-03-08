@@ -2,9 +2,7 @@ package com.planverse.server.common.util
 
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
-import io.minio.GetPresignedObjectUrlArgs
-import io.minio.MinioClient
-import io.minio.PutObjectArgs
+import io.minio.*
 import io.minio.http.Method
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component
@@ -25,7 +23,7 @@ object MinioUtil {
         keyName: String,
     ): String {
         val url = runBlocking {
-            internalGetObjectUrl(keyName = keyName)
+            internalGetPresignedObjectUrl(keyName = keyName)
         }
 
         return url
@@ -41,7 +39,7 @@ object MinioUtil {
         }
     }
 
-    private fun internalGetObjectUrl(
+    private fun internalGetPresignedObjectUrl(
         keyName: String,
     ): String {
         try {
