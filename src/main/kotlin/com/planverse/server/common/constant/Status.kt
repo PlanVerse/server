@@ -31,10 +31,13 @@ enum class StatusCode(
     TEAM_CREATOR_NOT_FOUND("2007", "팀 생성자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PROJECT_CREATOR_NOT_FOUND("2008", "프로젝트 생성자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PROJECT_CREATOR_IS_ALREADY_MEMBER("2009", "프로젝트 생성자는 이미 프로젝트에 소속되어있습니다.", HttpStatus.NOT_FOUND),
-    WORKFLOW_NOT_FOUND("2011", "작업 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    WORKFLOW_NOT_FOUND("2010", "작업 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    WORKFLOW_STEP_NOT_FOUND("2011", "작업 진행 단계 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
+    PROJECT_MEMBER_NOT_FOUND("3003", "프로젝트에 소속된 멤버만 할당 가능합니다.", HttpStatus.BAD_REQUEST),
     NOT_PROJECT_CREATOR("3004", "프로젝트 생성자가 아닙니다..", HttpStatus.BAD_REQUEST),
     TEAM_CREATOR_CANNOT_EXCLUDE("3005", "팀 생성자는 팀에서 제외될 수 없습니다.", HttpStatus.BAD_REQUEST),
+    REQUIRED_PARAMETER_IS_NULL("3999", "필수 전달 정보가 누락되었습니다..", HttpStatus.BAD_REQUEST),
 
     // file
     CANNOT_GET_FILE("5000", "파일을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
