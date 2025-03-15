@@ -12,7 +12,7 @@ interface ProjectInfoMapper {
     // update
 
     // select
-    fun selectProjectAndMemberAndTeamInfo(projectId: Long): ProjectAndMemberAndTeamInfoDTO
+    fun selectProjectAndMemberAndTeamInfo(projectInfoId: Long): ProjectAndMemberAndTeamInfoDTO
 
     // delete
 }

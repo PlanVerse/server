@@ -39,8 +39,8 @@ class ProjectService(
     private val projectMemberInfoMapper: ProjectMemberInfoMapper,
 ) {
 
-    fun getProjectInfo(userInfo: UserInfo, projectId: Long): ProjectAndMemberAndTeamInfoDTO {
-        val projectAndMemberAndTeamInfo: ProjectAndMemberAndTeamInfoDTO = checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectId)) {
+    fun getProjectInfo(userInfo: UserInfo, projectInfoId: Long): ProjectAndMemberAndTeamInfoDTO {
+        val projectAndMemberAndTeamInfo: ProjectAndMemberAndTeamInfoDTO = checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectInfoId)) {
             throw BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.apply {
             if (this.teamInfo?.private == true) {
@@ -53,7 +53,7 @@ class ProjectService(
                 }
             }
 
-            this.projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, projectId)
+            this.projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, projectInfoId)
         }
 
         return projectAndMemberAndTeamInfo

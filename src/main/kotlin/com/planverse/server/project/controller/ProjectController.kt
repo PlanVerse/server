@@ -16,9 +16,9 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectController(
     private val projectService: ProjectService
 ) {
-    @GetMapping("/info/{projectId}")
-    fun getProjectInfo(userInfo: UserInfo, @PathVariable(required = true) projectId: Long): BaseResponse<ProjectAndMemberAndTeamInfoDTO> {
-        val res = projectService.getProjectInfo(userInfo, projectId)
+    @GetMapping("/info/{projectInfoId}")
+    fun getProjectInfo(userInfo: UserInfo, @PathVariable(required = true) projectInfoId: Long): BaseResponse<ProjectAndMemberAndTeamInfoDTO> {
+        val res = projectService.getProjectInfo(userInfo, projectInfoId)
         return BaseResponse.success(res)
     }
 

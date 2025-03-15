@@ -34,6 +34,6 @@
         JOIN team_info ti ON ti.id = pmi.team_info_id AND ti.delete_yn = 'N'
         JOIN user_info ui ON ui.id = pmi.user_info_id AND ui.delete_yn = 'N'
         WHERE pi.delete_yn = 'N'
-          AND pi.id = #{projectId}
+          AND pi.id = #{projectInfoId}
     </select>
 </mapper>
