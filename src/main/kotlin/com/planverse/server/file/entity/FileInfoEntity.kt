@@ -20,7 +20,7 @@ class FileInfoEntity(
 
     @Size(max = 255)
     @ColumnDefault("(gen_random_uuid())")
-    @Column(name = "key")
+    @Column(name = "key", nullable = false)
     var key: String,
 
     @Size(max = 255)

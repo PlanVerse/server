@@ -4,6 +4,7 @@ import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicInsert
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.JdbcTypeCode
@@ -24,12 +25,13 @@ class WorkflowInfoEntity(
     var projectInfoId: Long,
 
     @NotNull
-    @Column(name = "step_detail_info_id", nullable = false)
-    var stepDetailInfoId: Long,
+    @Column(name = "step_info_id", nullable = false)
+    var stepInfoId: Long,
 
-    @NotNull
-    @Column(name = "no", nullable = false)
-    var no: Long,
+    @Size(max = 255)
+    @ColumnDefault("(gen_random_uuid())")
+    @Column(name = "key", nullable = false)
+    var key: String? = null,
 
     @Size(max = 500)
     @NotNull

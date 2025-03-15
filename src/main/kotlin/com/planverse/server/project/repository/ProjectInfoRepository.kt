@@ -6,5 +6,6 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ProjectInfoRepository : JpaRepository<ProjectInfoEntity, Long> {
+    fun existsByIdAndDeleteYn(projectInfoId: Long, deleteYn: String): Boolean
     fun findAllByTeamInfoIdAndDeleteYn(userInfoId: Long, deleteYn: String, pageable: Pageable): Slice<ProjectInfoEntity>
 }
