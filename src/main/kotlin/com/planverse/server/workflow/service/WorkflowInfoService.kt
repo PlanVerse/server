@@ -1,16 +1,20 @@
 package com.planverse.server.workflow.service
 
 import com.planverse.server.assign.dto.AssignInfoDTO
+import com.planverse.server.assign.dto.AssignInfoResponseDTO
 import com.planverse.server.assign.repository.AssignInfoRepository
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.project.repository.ProjectInfoRepository
 import com.planverse.server.project.repository.ProjectMemberInfoRepository
+import com.planverse.server.step.dto.StepInfoDTO
 import com.planverse.server.step.repository.StepInfoRepository
 import com.planverse.server.user.dto.UserInfo
-import com.planverse.server.workflow.dto.WorkFlowInfoDTO
+import com.planverse.server.user.repository.UserInfoRepository
 import com.planverse.server.workflow.dto.WorkFlowInfoRequestDTO
+import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
+import com.planverse.server.workflow.entity.WorkflowInfoEntity
 import com.planverse.server.workflow.repository.WorkflowInfoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,22 +22,45 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class WorkflowInfoService(
+    private val userInfoRepository: UserInfoRepository,
     private val projectInfoRepository: ProjectInfoRepository,
     private val projectMemberInfoRepository: ProjectMemberInfoRepository,
     private val workflowInfoRepository: WorkflowInfoRepository,
     private val stepInfoRepository: StepInfoRepository,
     private val assignInfoRepository: AssignInfoRepository,
 ) {
-    fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long): List<WorkFlowInfoDTO> {
-        return workflowInfoRepository.findByProjectInfoId(projectInfoId).orElse(emptyList()).map { workflowInfo ->
-            WorkFlowInfoDTO.toDto(workflowInfo)
+    private fun getWorkFLowInfo(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoResponseDTO {
+        return WorkFlowInfoResponseDTO.toDto(workflowInfoEntity).also { workflow ->
+            stepInfoRepository.findById(workflowInfoEntity.stepInfoId).orElseThrow {
+                throw BaseException(StatusCode.WORKFLOW_STEP_NOT_FOUND)
+            }.let { stepInfo ->
+                workflow.stepInfo = StepInfoDTO.toDto(stepInfo)
+            }
+
+            workflow.assignInfo = buildList {
+                assignInfoRepository.findAllByWorkflowInfoId(workflow.id!!).ifPresent { assignInfos ->
+                    assignInfos.map { assignInfo ->
+                        userInfoRepository.findById(assignInfo.userInfoId).orElseThrow {
+                            throw BaseException(StatusCode.USER_NOT_FOUND)
+                        }.let { userInfo ->
+                            add(AssignInfoResponseDTO.toDto(assignInfo, userInfo.name, userInfo.email))
+                        }
+                    }
+                }
+            }
         }
     }
 
-    fun getWorkflowContent(userInfo: UserInfo, workflowInfoId: Long): WorkFlowInfoDTO {
+    fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long): List<WorkFlowInfoResponseDTO> {
+        return workflowInfoRepository.findByProjectInfoId(projectInfoId).orElse(emptyList()).map { workflowInfo ->
+            getWorkFLowInfo(workflowInfo)
+        }
+    }
+
+    fun getWorkflowContent(userInfo: UserInfo, workflowInfoId: Long): WorkFlowInfoResponseDTO {
         return workflowInfoRepository.findById(workflowInfoId).orElseThrow {
             throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
-        }.let { WorkFlowInfoDTO.toDto(it) }
+        }.let { getWorkFLowInfo(it) }
     }
 
     fun createWorkflowContent(userInfo: UserInfo, workFlowInfoRequestDTO: WorkFlowInfoRequestDTO) {
@@ -50,11 +77,11 @@ class WorkflowInfoService(
         }
 
         // 할당대상이 프로젝트에 소속된 멤버인지 판단
-        workFlowInfoRequestDTO.assign?.map {
+        workFlowInfoRequestDTO.assignInfo?.map {
             if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId, it, Constant.DEL_N)) {
                 throw BaseException(StatusCode.PROJECT_MEMBER_NOT_FOUND)
             }
-        } ?: throw BaseException(StatusCode.REQUIRED_PARAMETER_IS_NULL)
+        }
 
         // step_info 정보 존재 여부 판단
         if (!stepInfoRepository.existsByIdAndProjectInfoIdAndDeleteYn(workFlowInfoRequestDTO.stepInfoId, projectInfoId, Constant.DEL_N)) {
@@ -64,7 +91,7 @@ class WorkflowInfoService(
         val workflowInfoEntity = workFlowInfoRequestDTO.toEntity()
         workflowInfoRepository.save(workflowInfoEntity)
 
-        workFlowInfoRequestDTO.assign!!.map {
+        workFlowInfoRequestDTO.assignInfo!!.map {
             assignInfoRepository.save(AssignInfoDTO.toEntity(workflowInfoEntity.id!!, it))
         }
     }

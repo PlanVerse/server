@@ -63,7 +63,7 @@ class ProjectService(
         return projectInfoRepository.findAllByTeamInfoIdAndDeleteYn(teamInfoId, Constant.DEL_N, pageable).map {
             val projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, it.id!!)
 
-            val projectMemberInfos: List<ProjectMemberInfoDTO> = projectMemberInfoRepository.findByProjectInfoId(it.id!!).orElse(emptyList()).map { entity ->
+            val projectMemberInfos: List<ProjectMemberInfoDTO> = projectMemberInfoRepository.findAllByProjectInfoId(it.id!!).orElse(emptyList()).map { entity ->
                 val userInfoEntity = userInfoRepository.findById(entity.userInfoId).orElseThrow {
                     BaseException(StatusCode.USER_NOT_FOUND)
                 }

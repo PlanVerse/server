@@ -18,7 +18,7 @@ data class WorkFlowInfoRequestDTO(
     var content: Map<String, Any>? = null,
 
     @field:NotBlank
-    var assign: List<Long>? = null,
+    var assignInfo: List<Long>? = null,
 ) {
     companion object {
         fun toDto(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoRequestDTO {

@@ -8,5 +8,5 @@ interface ProjectMemberInfoRepository : JpaRepository<ProjectMemberInfoEntity, L
     fun existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId: Long, userInfoId: Long, creator: Boolean, deleteYn: String): Boolean
     fun existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId: Long, userInfoId: Long, deleteYn: String): Boolean
     fun findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId: Long, userInfoId: Long, creator: Boolean, deleteYn: String): Optional<ProjectMemberInfoEntity>
-    fun findByProjectInfoId(projectInfoId: Long): Optional<List<ProjectMemberInfoEntity>>
+    fun findAllByProjectInfoId(projectInfoId: Long): Optional<List<ProjectMemberInfoEntity>>
 }
