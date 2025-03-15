@@ -2,7 +2,6 @@ package com.planverse.server.workflow.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
-import jakarta.validation.constraints.NotBlank
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WorkFlowInfoDTO(

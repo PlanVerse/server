@@ -1,7 +1,6 @@
 package com.planverse.server.workflow.service
 
 import com.planverse.server.assign.dto.AssignInfoDTO
-import com.planverse.server.assign.entity.AssignInfoEntity
 import com.planverse.server.assign.repository.AssignInfoRepository
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
