@@ -7,21 +7,26 @@ import jakarta.validation.constraints.NotBlank
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WorkFlowInfoRequestDTO(
     var id: Long? = null,
+    var key: String? = null,
     @field:NotBlank
     var projectInfoId: Long,
     @field:NotBlank
     var stepInfoId: Long,
-    var key: String? = null,
+    @field:NotBlank
     var title: String,
-    var content: Map<String, Any>? = null
+    @field:NotBlank
+    var content: Map<String, Any>? = null,
+
+    @field:NotBlank
+    var assign: List<Long>? = null,
 ) {
     companion object {
         fun toDto(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoRequestDTO {
             return WorkFlowInfoRequestDTO(
                 workflowInfoEntity.id,
+                workflowInfoEntity.key,
                 workflowInfoEntity.projectInfoId,
                 workflowInfoEntity.stepInfoId,
-                workflowInfoEntity.key,
                 workflowInfoEntity.title,
                 workflowInfoEntity.content
             )
@@ -30,9 +35,9 @@ data class WorkFlowInfoRequestDTO(
         fun toEntity(workflowInfoDTO: WorkFlowInfoRequestDTO): WorkflowInfoEntity {
             return WorkflowInfoEntity(
                 workflowInfoDTO.id,
+                workflowInfoDTO.key,
                 workflowInfoDTO.projectInfoId,
                 workflowInfoDTO.stepInfoId,
-                workflowInfoDTO.key,
                 workflowInfoDTO.title,
                 workflowInfoDTO.content
             )
@@ -42,9 +47,9 @@ data class WorkFlowInfoRequestDTO(
     fun toEntity(): WorkflowInfoEntity {
         return WorkflowInfoEntity(
             id = id,
+            key = key,
             projectInfoId = projectInfoId,
             stepInfoId = stepInfoId,
-            key = key,
             title = title,
             content = content
         )

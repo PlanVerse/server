@@ -20,6 +20,11 @@ class WorkflowInfoEntity(
     @Column(name = "id")
     var id: Long? = null,
 
+    @Size(max = 255)
+    @ColumnDefault("(gen_random_uuid())")
+    @Column(name = "key", nullable = false)
+    var key: String? = null,
+
     @NotNull
     @Column(name = "project_info_id", nullable = false)
     var projectInfoId: Long,
@@ -27,11 +32,6 @@ class WorkflowInfoEntity(
     @NotNull
     @Column(name = "step_info_id", nullable = false)
     var stepInfoId: Long,
-
-    @Size(max = 255)
-    @ColumnDefault("(gen_random_uuid())")
-    @Column(name = "key", nullable = false)
-    var key: String? = null,
 
     @Size(max = 500)
     @NotNull

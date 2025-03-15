@@ -22,6 +22,10 @@ class StepInfoEntity(
     var projectInfoId: Long,
 
     @Size(min = 3, max = 500)
-    @Column(name = "title", length = 500, nullable = false)
-    var title: String,
+    @Column(name = "name", length = 500, nullable = false)
+    var name: String,
+
+    @Size(min = 1, max = 10000)
+    @Column(name = "sort", nullable = false)
+    var sort: Int,
 ) : BaseEntity()

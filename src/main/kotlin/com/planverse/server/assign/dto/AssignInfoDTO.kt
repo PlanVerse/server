@@ -17,5 +17,12 @@ data class AssignInfoDTO(
                 assignInfoEntity.userInfoId,
             )
         }
+
+        fun toEntity(workflowInfoId: Long, userInfoId: Long): AssignInfoEntity {
+            return AssignInfoEntity(
+                workflowInfoId = workflowInfoId,
+                userInfoId = userInfoId,
+            )
+        }
     }
 }
