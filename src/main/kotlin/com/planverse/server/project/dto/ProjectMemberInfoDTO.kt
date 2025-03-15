@@ -32,7 +32,7 @@ data class ProjectMemberInfoDTO(
 
         fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity, userInfoEntity: UserInfoEntity): ProjectMemberInfoDTO {
             return this.toDto(projectMemberInfoEntity).apply {
-                username = userInfoEntity.username
+                username = userInfoEntity.name
                 email = userInfoEntity.email
             }
         }
