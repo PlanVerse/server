@@ -1,4 +1,4 @@
-package com.planverse.server.project.entity
+package com.planverse.server.workflow.entity
 
 import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
