@@ -38,6 +38,8 @@ enum class StatusCode(
     PROJECT_MEMBER_NOT_FOUND("3003", "프로젝트에 소속된 멤버만 할당 가능합니다.", HttpStatus.BAD_REQUEST),
     NOT_PROJECT_CREATOR("3004", "프로젝트 생성자가 아닙니다..", HttpStatus.BAD_REQUEST),
     TEAM_CREATOR_CANNOT_EXCLUDE("3005", "팀 생성자는 팀에서 제외될 수 없습니다.", HttpStatus.BAD_REQUEST),
+    ALREADY_EXIST_STEP("3006", "이미 존재하는 워크플로우 단계입니다.", HttpStatus.BAD_REQUEST),
+
     REQUIRED_PARAMETER_IS_NULL("3999", "필수 전달 정보가 누락되었습니다..", HttpStatus.BAD_REQUEST),
 
     // file
