@@ -51,6 +51,14 @@ class WorkflowInfoService(
         }
     }
 
+    private fun getWorkFLowInfo(userInfo: UserInfo, workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoResponseDTO {
+        return this.getWorkFLowInfo(workflowInfoEntity).also {
+            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(workflowInfoEntity.projectInfoId, userInfo.id!!, Constant.DEL_N)) {
+                throw BaseException(StatusCode.NOT_PROJECT_MEMBER)
+            }
+        }
+    }
+
     fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long): List<WorkFlowInfoResponseDTO> {
         return workflowInfoRepository.findByProjectInfoId(projectInfoId).orElse(emptyList()).map { workflowInfo ->
             getWorkFLowInfo(workflowInfo)
@@ -60,7 +68,7 @@ class WorkflowInfoService(
     fun getWorkflowContent(userInfo: UserInfo, workflowInfoId: Long): WorkFlowInfoResponseDTO {
         return workflowInfoRepository.findById(workflowInfoId).orElseThrow {
             throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
-        }.let { getWorkFLowInfo(it) }
+        }.let { getWorkFLowInfo(userInfo, it) }
     }
 
     @Transactional
