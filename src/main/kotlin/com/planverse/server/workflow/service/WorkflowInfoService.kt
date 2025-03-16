@@ -110,7 +110,7 @@ class WorkflowInfoService(
     fun modifyWorkflowContent(userInfo: UserInfo, workFlowInfoUpdateRequestDTO: WorkFlowInfoUpdateRequestDTO) {
         val projectInfoId = workFlowInfoUpdateRequestDTO.projectInfoId
 
-        workflowInfoRepository.findByIdAndProjectInfoIdAndDeleteYn(workFlowInfoUpdateRequestDTO.id, projectInfoId, Constant.DEL_N).orElseThrow {
+        workflowInfoRepository.findByIdAndProjectInfoIdAndDeleteYn(workFlowInfoUpdateRequestDTO.workflowInfoId, projectInfoId, Constant.DEL_N).orElseThrow {
             throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
         }.let { workFlow ->
             // 프로젝트 생성자 여부 판단

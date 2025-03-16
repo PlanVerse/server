@@ -1,7 +1,6 @@
 package com.planverse.server.workflow.entity
 
-import com.planverse.server.common.entity.BaseEntity
-import com.planverse.server.common.listner.WorkflowInfoListener
+import com.planverse.server.common.entity.BaseHistoryEntity
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -14,13 +13,16 @@ import org.hibernate.type.SqlTypes
 @Entity
 @DynamicInsert
 @DynamicUpdate
-@EntityListeners(WorkflowInfoListener::class)
-@Table(name = "workflow_info", schema = "public")
-class WorkflowInfoEntity(
+@Table(name = "workflow_history", schema = "public")
+class WorkflowHistoryEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     var id: Long? = null,
+
+    @NotNull
+    @Column(name = "workflow_info_id", nullable = false)
+    var workflowInfoId: Long,
 
     @Size(max = 255)
     @ColumnDefault("(gen_random_uuid())")
@@ -44,4 +46,4 @@ class WorkflowInfoEntity(
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content", nullable = false)
     var content: List<Map<String, Any>>? = emptyList()
-) : BaseEntity()
+) : BaseHistoryEntity()

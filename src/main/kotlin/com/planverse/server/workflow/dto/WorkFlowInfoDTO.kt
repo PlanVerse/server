@@ -10,7 +10,7 @@ data class WorkFlowInfoDTO(
     var projectInfoId: Long,
     var stepInfoId: Long,
     var title: String,
-    var content: Map<String, Any>? = null
+    var content: List<Map<String, Any>>? = emptyList()
 ) {
     companion object {
         fun toDto(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoDTO {

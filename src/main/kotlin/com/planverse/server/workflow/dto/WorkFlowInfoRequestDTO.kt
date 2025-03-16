@@ -15,7 +15,7 @@ data class WorkFlowInfoRequestDTO(
     @field:NotBlank
     var title: String,
     @field:NotBlank
-    var content: Map<String, Any>? = null,
+    var content: List<Map<String, Any>>? = emptyList(),
 
     var assignInfo: List<Long>? = null,
 ) {
