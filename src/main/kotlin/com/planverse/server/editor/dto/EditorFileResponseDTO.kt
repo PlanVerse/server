@@ -19,6 +19,7 @@ data class EditorFileResponseDTO(
                 file = EditorFileInfoDTO(preview = preview),
             )
         }
+
         fun fromByUrl(url: String): EditorFileResponseDTO {
             return EditorFileResponseDTO(
                 file = EditorFileInfoDTO(url = url),

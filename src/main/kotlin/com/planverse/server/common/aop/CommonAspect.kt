@@ -8,14 +8,18 @@ import org.springframework.stereotype.Component
 @Component
 class CommonAspect {
     @Pointcut(value = "execution(* com.planverse.server.*.controller..*Controller.*(..))")
-    fun pointAllController() {}
+    fun pointAllController() {
+    }
 
     @Pointcut(value = "@annotation(org.springframework.web.bind.annotation.GetMapping)")
-    fun pointGetMapping() {}
+    fun pointGetMapping() {
+    }
 
     @Pointcut(value = "@annotation(org.springframework.web.bind.annotation.PostMapping)")
-    fun pointPostMapping() {}
+    fun pointPostMapping() {
+    }
 
     @Pointcut(value = "@annotation(org.springframework.web.bind.annotation.PutMapping)")
-    fun pointPutMapping() {}
+    fun pointPutMapping() {
+    }
 }
