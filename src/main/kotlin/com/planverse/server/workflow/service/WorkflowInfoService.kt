@@ -63,6 +63,7 @@ class WorkflowInfoService(
         }.let { getWorkFLowInfo(it) }
     }
 
+    @Transactional
     fun createWorkflowContent(userInfo: UserInfo, workFlowInfoRequestDTO: WorkFlowInfoRequestDTO) {
         val projectInfoId = workFlowInfoRequestDTO.projectInfoId
 
