@@ -14,6 +14,7 @@ import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.repository.UserInfoRepository
 import com.planverse.server.workflow.dto.WorkFlowInfoRequestDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
+import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
 import com.planverse.server.workflow.repository.WorkflowInfoRepository
 import org.springframework.stereotype.Service
@@ -38,7 +39,7 @@ class WorkflowInfoService(
             }
 
             workflow.assignInfo = buildList {
-                assignInfoRepository.findAllByWorkflowInfoId(workflow.id!!).ifPresent { assignInfos ->
+                assignInfoRepository.findAllByWorkflowInfoId(workflow.id!!).orElse(emptyList()).let { assignInfos ->
                     assignInfos.map { assignInfo ->
                         userInfoRepository.findById(assignInfo.userInfoId).orElseThrow {
                             throw BaseException(StatusCode.USER_NOT_FOUND)
@@ -60,7 +61,7 @@ class WorkflowInfoService(
     }
 
     fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long): List<WorkFlowInfoResponseDTO> {
-        return workflowInfoRepository.findByProjectInfoId(projectInfoId).orElse(emptyList()).map { workflowInfo ->
+        return workflowInfoRepository.findAllByProjectInfoIdAndDeleteYn(projectInfoId, Constant.DEL_N).orElse(emptyList()).map { workflowInfo ->
             getWorkFLowInfo(workflowInfo)
         }
     }
@@ -85,13 +86,6 @@ class WorkflowInfoService(
             throw BaseException(StatusCode.NOT_PROJECT_CREATOR)
         }
 
-        // 할당대상이 프로젝트에 소속된 멤버인지 판단
-        workFlowInfoRequestDTO.assignInfo?.map {
-            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId, it, Constant.DEL_N)) {
-                throw BaseException(StatusCode.PROJECT_MEMBER_NOT_FOUND)
-            }
-        }
-
         // step_info 정보 존재 여부 판단
         if (!stepInfoRepository.existsByIdAndProjectInfoIdAndDeleteYn(workFlowInfoRequestDTO.stepInfoId, projectInfoId, Constant.DEL_N)) {
             throw BaseException(StatusCode.WORKFLOW_STEP_NOT_FOUND)
@@ -100,8 +94,45 @@ class WorkflowInfoService(
         val workflowInfoEntity = workFlowInfoRequestDTO.toEntity()
         workflowInfoRepository.save(workflowInfoEntity)
 
-        workFlowInfoRequestDTO.assignInfo!!.map {
+        // 할당대상이 프로젝트에 소속된 멤버인지 판단
+        workFlowInfoRequestDTO.assignInfo?.map {
+            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId, it, Constant.DEL_N)) {
+                throw BaseException(StatusCode.PROJECT_MEMBER_NOT_FOUND)
+            }
+        }
+
+        workFlowInfoRequestDTO.assignInfo?.map {
             assignInfoRepository.save(AssignInfoDTO.toEntity(workflowInfoEntity.id!!, it))
+        }
+    }
+
+    @Transactional
+    fun modifyWorkflowContent(userInfo: UserInfo, workFlowInfoUpdateRequestDTO: WorkFlowInfoUpdateRequestDTO) {
+        val projectInfoId = workFlowInfoUpdateRequestDTO.projectInfoId
+
+        workflowInfoRepository.findByIdAndProjectInfoIdAndDeleteYn(workFlowInfoUpdateRequestDTO.id, projectInfoId, Constant.DEL_N).orElseThrow {
+            throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
+        }.let { workFlow ->
+            // 프로젝트 생성자 여부 판단
+            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N)) {
+                throw BaseException(StatusCode.NOT_PROJECT_CREATOR)
+            }
+
+            workFlowInfoUpdateRequestDTO.let {
+                it.stepInfoId?.let { stepInfoId ->
+                    // step_info 정보 존재 여부 판단
+                    if (!stepInfoRepository.existsByIdAndProjectInfoIdAndDeleteYn(stepInfoId, projectInfoId, Constant.DEL_N)) {
+                        throw BaseException(StatusCode.WORKFLOW_STEP_NOT_FOUND)
+                    }
+
+                    workFlow.stepInfoId = stepInfoId
+                }
+
+                it.title?.let { title -> workFlow.title = title }
+                it.content?.let { content -> workFlow.content = content }
+
+                workflowInfoRepository.save(workFlow)
+            }
         }
     }
 }

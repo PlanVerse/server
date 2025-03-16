@@ -9,5 +9,6 @@ import java.util.*
 @Mapper
 @Repository
 interface WorkflowInfoRepository : JpaRepository<WorkflowInfoEntity, Long> {
-    fun findByProjectInfoId(projectInfoId: Long): Optional<List<WorkflowInfoEntity>>
+    fun findByIdAndProjectInfoIdAndDeleteYn(id: Long, projectInfoId: Long, deleteYn: String): Optional<WorkflowInfoEntity>
+    fun findAllByProjectInfoIdAndDeleteYn(projectInfoId: Long, deleteYn: String): Optional<List<WorkflowInfoEntity>>
 }

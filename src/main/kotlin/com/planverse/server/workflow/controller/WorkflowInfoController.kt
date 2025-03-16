@@ -4,6 +4,7 @@ import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.workflow.dto.WorkFlowInfoRequestDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
+import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
 import com.planverse.server.workflow.service.WorkflowInfoService
 import org.springframework.web.bind.annotation.*
 
@@ -28,6 +29,12 @@ class WorkflowInfoController(
     @PostMapping
     fun createWorkflowContent(userInfo: UserInfo, @RequestBody workFlowInfoRequestDTO: WorkFlowInfoRequestDTO): BaseResponse<Any> {
         val res = workflowInfoService.createWorkflowContent(userInfo, workFlowInfoRequestDTO)
+        return BaseResponse.success(res)
+    }
+
+    @PutMapping
+    fun modifyWorkflowContent(userInfo: UserInfo, @RequestBody workFlowInfoUpdateRequestDTO: WorkFlowInfoUpdateRequestDTO): BaseResponse<Any> {
+        val res = workflowInfoService.modifyWorkflowContent(userInfo, workFlowInfoUpdateRequestDTO)
         return BaseResponse.success(res)
     }
 }
