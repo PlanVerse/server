@@ -4,7 +4,7 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.service.RefreshTokenService
-import com.planverse.server.common.service.TokenBlacklistService
+import com.planverse.server.common.service.BlacklistTokenService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec
 @Component
 class JwtTokenProvider(
     val userDetailsService: UserDetailsService,
-    val blacklistService: TokenBlacklistService,
+    val blacklistService: BlacklistTokenService,
     val refreshTokenService: RefreshTokenService,
 ) {
     @Value("\${spring.jwt.secret}")
@@ -118,9 +118,9 @@ class JwtTokenProvider(
      * accessToken으로 JWT Token 갱신
      */
     fun regenerateTokenByAccessToken(accessToken: String): Jwt? {
-        if (!blacklistService.isBlackToken(accessToken)) {
+        if (!blacklistService.isBlockedToken(accessToken)) {
             val refreshToken = refreshTokenService.getRefreshToken(accessToken)
-            blacklistService.addTokenBlacklistAndRemoveRefreshToken(accessToken)
+            blacklistService.addTokenToBlacklistAndRemoveRefreshToken(accessToken)
             return this.regenerateTokenByRefreshToken(refreshToken)
         } else {
             return null
@@ -164,7 +164,7 @@ class JwtTokenProvider(
      * 토큰 정보를 검증하는
      */
     fun validateToken(accessToken: String): Boolean {
-        if (blacklistService.isBlackToken(accessToken)) {
+        if (blacklistService.isBlockedToken(accessToken)) {
             throw BaseException(StatusCode.EXPIRED_TOKEN_RE_LOGIN)
         }
 

@@ -74,11 +74,11 @@ class JwtAuthenticationFilter(
                     val statusInfo = StatusCode.EXPIRED_TOKEN_RE_LOGIN
 
                     response.status = statusInfo.httpStatus.value()
-                    if (jwtTokenProvider.blacklistService.isBlackToken(it)) {
+                    if (jwtTokenProvider.blacklistService.isBlockedToken(it)) {
                         baseResponse = BaseResponse.error(status = statusInfo)
                     } else {
                         response.status = StatusCode.SUCCESS.httpStatus.value()
-                        jwtTokenProvider.blacklistService.addTokenBlacklistAndRemoveRefreshToken(it)
+                        jwtTokenProvider.blacklistService.addTokenToBlacklistAndRemoveRefreshToken(it)
                     }
                 }
 

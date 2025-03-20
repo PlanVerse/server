@@ -10,7 +10,7 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
-import com.planverse.server.common.service.TokenBlacklistService
+import com.planverse.server.common.service.BlacklistTokenService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.mail.service.MailService
 import com.planverse.server.user.dto.UserInfo
@@ -32,7 +32,7 @@ class UserInfoService(
     private val passwordEncoder: PasswordEncoder,
     private val authenticationManagerBuilder: AuthenticationManagerBuilder,
     private val mailService: MailService,
-    private val tokenBlacklistService: TokenBlacklistService,
+    private val blacklistTokenService: BlacklistTokenService,
 ) {
     private fun getUserByEmail(email: String): UserInfoEntity {
         return userInfoRepository.findByEmailAndDeleteYn(email, Constant.DEL_N).orElseThrow {
@@ -128,6 +128,6 @@ class UserInfoService(
     fun signOut(userInfo: UserInfo) {
         val accessToken = userInfo.accessToken ?: throw BaseException(StatusCode.UNAUTHORIZED)
 
-        tokenBlacklistService.addTokenBlacklistAndRemoveRefreshToken(accessToken)
+        blacklistTokenService.addTokenToBlacklistAndRemoveRefreshToken(accessToken)
     }
 }
