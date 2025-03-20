@@ -17,6 +17,8 @@ import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
 import com.planverse.server.workflow.repository.WorkflowInfoRepository
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -60,8 +62,8 @@ class WorkflowInfoService(
         }
     }
 
-    fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long): List<WorkFlowInfoResponseDTO> {
-        return workflowInfoRepository.findAllByProjectInfoIdAndDeleteYn(projectInfoId, Constant.DEL_N).orElse(emptyList()).map { workflowInfo ->
+    fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long, pageable: Pageable): Slice<WorkFlowInfoResponseDTO> {
+        return workflowInfoRepository.findAllByProjectInfoIdAndDeleteYn(projectInfoId, Constant.DEL_N, pageable).map { workflowInfo ->
             getWorkFLowInfo(workflowInfo)
         }
     }

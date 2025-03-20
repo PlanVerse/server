@@ -6,6 +6,8 @@ import com.planverse.server.workflow.dto.WorkFlowInfoRequestDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
 import com.planverse.server.workflow.service.WorkflowInfoService
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Slice
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -15,8 +17,8 @@ class WorkflowInfoController(
 ) {
 
     @GetMapping("/list/{projectInfoId}")
-    fun getWorkflowList(userInfo: UserInfo, @PathVariable(required = true) projectInfoId: Long): BaseResponse<List<WorkFlowInfoResponseDTO>> {
-        val res = workflowInfoService.getWorkflowList(userInfo, projectInfoId)
+    fun getWorkflowList(userInfo: UserInfo, @PathVariable(required = true) projectInfoId: Long, pageable: Pageable): BaseResponse<Slice<WorkFlowInfoResponseDTO>> {
+        val res = workflowInfoService.getWorkflowList(userInfo, projectInfoId, pageable)
         return BaseResponse.success(res)
     }
 
