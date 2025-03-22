@@ -1,36 +1,35 @@
 package com.planverse.server.common.config
 
+import com.planverse.server.common.config.property.RedisConfigProperty
 import com.planverse.server.common.util.RedisUtil
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.data.redis.connection.RedisNode
 import org.springframework.data.redis.connection.RedisPassword
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration
+import org.springframework.data.redis.connection.RedisSentinelConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
+@EnableConfigurationProperties(RedisConfigProperty::class)
 class RedisConfig(
-    @Value("\${spring.data.redis.url}")
-    val host: String,
-
-    @Value("\${spring.data.redis.port}")
-    val port: Int,
-
-    @Value("\${spring.data.redis.password}")
-    val password: String,
-
-    @Value("\${spring.data.redis.database}")
-    val database: Int,
+    private val redisConfigProperty: RedisConfigProperty,
 ) {
     @Bean("lettuceConnectionFactory")
     fun lettuceConnectionFactory(): LettuceConnectionFactory {
-        val redisStandaloneConfiguration = RedisStandaloneConfiguration(host, port)
-        redisStandaloneConfiguration.password = RedisPassword.of(password)
-        redisStandaloneConfiguration.database = database
-        return LettuceConnectionFactory(redisStandaloneConfiguration)
+        val sentinelConfig = RedisSentinelConfiguration().apply {
+            master(redisConfigProperty.sentinel.master)
+            redisConfigProperty.sentinel.nodes.map {
+                sentinel(RedisNode.fromString(it))
+            }
+            password = RedisPassword.of(redisConfigProperty.password)
+            database = redisConfigProperty.database
+        }
+
+        return LettuceConnectionFactory(sentinelConfig)
     }
 
     @Bean("redisTemplate")
@@ -47,4 +46,4 @@ class RedisConfig(
 
         return redisTemplate
     }
-}   
+}
