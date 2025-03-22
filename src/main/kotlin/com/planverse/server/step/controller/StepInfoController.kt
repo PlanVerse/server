@@ -19,7 +19,7 @@ class StepInfoController(
     }
 
 
-    @PostMapping("/list/{projectInfoId}")
+    @PostMapping("/{projectInfoId}")
     fun createStepInfo(userInfo: UserInfo, @RequestBody(required = true) stepInfoRequestDTO: StepInfoRequestDTO): BaseResponse<Any> {
         val res = stepInfoService.createStepInfo(userInfo, stepInfoRequestDTO)
         return BaseResponse.success(res)

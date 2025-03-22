@@ -12,6 +12,8 @@ data class StepInfoRequestDTO(
     @field:NotBlank
     var name: String,
     @field:NotBlank
+    var color: String,
+    @field:NotBlank
     var sort: Int,
 ) {
     companion object {
@@ -20,6 +22,7 @@ data class StepInfoRequestDTO(
                 stepInfoEntity.id,
                 stepInfoEntity.projectInfoId,
                 stepInfoEntity.name,
+                stepInfoEntity.color,
                 stepInfoEntity.sort,
             )
         }
@@ -30,6 +33,7 @@ data class StepInfoRequestDTO(
             id = id,
             projectInfoId = projectInfoId,
             name = name,
+            color = color,
             sort = sort,
         )
     }

@@ -25,6 +25,9 @@ class StepInfoEntity(
     @Column(name = "name", length = 500, nullable = false)
     var name: String,
 
+    @Column(name = "color", length = 500, nullable = false)
+    var color: String,
+
     @Size(min = 1, max = 10000)
     @Column(name = "sort", nullable = false)
     var sort: Int,

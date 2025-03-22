@@ -8,6 +8,7 @@ data class StepInfoDTO(
     var id: Long? = null,
     var projectInfoId: Long,
     var name: String,
+    var color: String,
     var sort: Int,
 ) {
     companion object {
@@ -16,6 +17,7 @@ data class StepInfoDTO(
                 stepInfoEntity.id,
                 stepInfoEntity.projectInfoId,
                 stepInfoEntity.name,
+                stepInfoEntity.color,
                 stepInfoEntity.sort,
             )
         }
