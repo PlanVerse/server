@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "spring.data.redis")
 @EnableConfigurationProperties(RedisSentinelProperties::class)
 class RedisConfigProperty {
+    lateinit var username: String
     lateinit var password: String
     var database: Int = 0
     lateinit var sentinel: RedisSentinelProperties
