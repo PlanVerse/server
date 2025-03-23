@@ -25,6 +25,9 @@ class RedisConfig(
             redisConfigProperty.sentinel.nodes.map {
                 sentinel(RedisNode.fromString(it))
             }
+            sentinelUsername = redisConfigProperty.sentinel.username
+            sentinelPassword = RedisPassword.of(redisConfigProperty.sentinel.password)
+
             username = redisConfigProperty.username
             password = RedisPassword.of(redisConfigProperty.password)
             database = redisConfigProperty.database

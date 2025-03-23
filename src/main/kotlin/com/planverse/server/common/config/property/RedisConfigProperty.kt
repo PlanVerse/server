@@ -18,5 +18,7 @@ class RedisConfigProperty {
 @ConfigurationProperties(prefix = "spring.data.redis.sentinel")
 data class RedisSentinelProperties @ConstructorBinding constructor(
     val master: String,
-    val nodes: List<String>
+    val nodes: List<String>,
+    val username: String,
+    val password: String,
 )
