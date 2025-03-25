@@ -28,6 +28,7 @@ repositories {
 
 val kotlinSdkVersion = "1.3.104"
 val jwtVersion = "0.12.6"
+val activeProfile: String = System.getProperty("spring.profiles.active") ?: "local"
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -41,7 +42,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-mail")
-    implementation("org.springframework.cloud:spring-cloud-starter-config:4.2.0")
+
+    if (activeProfile in listOf("dev", "main")) {
+        implementation("org.springframework.cloud:spring-cloud-starter-config:4.2.0")
+    }
+
     implementation("org.apache.commons:commons-lang3:3.17.0")
     implementation("org.apache.commons:commons-collections4:4.4")
     implementation("com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5")
@@ -81,7 +86,9 @@ val springCloudVersion = "2024.0.0"
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        if (activeProfile in listOf("dev", "main")) {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
+        }
     }
 }
 
