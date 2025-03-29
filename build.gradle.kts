@@ -43,9 +43,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
-    if (activeProfile in listOf("dev", "main")) {
-        implementation("org.springframework.cloud:spring-cloud-starter-config:4.2.0")
-    }
+    implementation("org.springframework.cloud:spring-cloud-starter-config:4.2.0")
 
     implementation("org.apache.commons:commons-lang3:3.17.0")
     implementation("org.apache.commons:commons-collections4:4.4")
@@ -86,9 +84,7 @@ val springCloudVersion = "2024.0.0"
 
 dependencyManagement {
     imports {
-        if (activeProfile in listOf("dev", "main")) {
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
-        }
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
     }
 }
 
