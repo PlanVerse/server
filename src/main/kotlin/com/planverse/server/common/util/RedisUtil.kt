@@ -78,4 +78,46 @@ object RedisUtil {
     fun delete(key: String): Boolean {
         return redisTemplate.delete(key)
     }
+
+    // ======================== hash ========================
+    // hash table 조회
+    fun getHash(hash: String, key: String): Any? {
+        return redisTemplate.opsForHash<String, Any>().get(hash, key)
+    }
+
+    // hash table 추가
+    fun putHash(hash: String, key: String, value: Any) {
+        redisTemplate.opsForHash<String, Any>().put(hash, key, value)
+    }
+
+    // hash table 만료시간 지정
+    fun setExpireHash(hash: String, timeout: Long, unit: TimeUnit) {
+        redisTemplate.expire(hash, timeout, unit)
+    }
+
+    // hash table 키 존재 확인
+    fun hashHasKey(hash: String, key: Any): Boolean {
+        return redisTemplate.opsForHash<String, Any>().hasKey(hash, key)
+    }
+
+    // hash table 삭제
+    fun deleteHash(hash: String, key: String) {
+        redisTemplate.opsForHash<String, Any>().delete(hash, key)
+    }
+
+    // ======================== set ========================
+    // set 추가
+    fun isSetMember(set: String, value: Any): Boolean? {
+        return redisTemplate.opsForSet().isMember(set, value)
+    }
+
+    // set 추가
+    fun putSet(set: String, value: Any) {
+        redisTemplate.opsForSet().add(set, value)
+    }
+
+    // set 만료시간 지정
+    fun setExpireSet(set: String, timeout: Long, unit: TimeUnit) {
+        redisTemplate.expire(set, timeout, unit)
+    }
 }

@@ -126,31 +126,72 @@ jib {
     }
     container {
         jvmFlags = listOf(
-            // Container
-            "-XX:+UseContainerSupport",                             // 컨테이너 환경 지원
-            "-XX:MaxRAMPercentage=50.0",                            // JVM이 사용할 최대 메모리 비율
-            "-XX:InitialRAMPercentage=30.0",                        // JVM 초기 메모리 비율
-            "-XX:MinRAMPercentage=30.0",                            // JVM 최소 메모리 비율
-            "-XX:+AlwaysPreTouch",                                  // JVM 메모리를 미리 할당
+            // 서버 모드로 실행, 서버 환경에서 성능을 최적화
+            "-server",
+            // 각 스레드의 스택 크기
+            "-Xss16m",
+            // JVM 힙 메모리 초기 크기 지정, 애플리케이션 시작 시 할당
+            //"-Xms1024m",
+            // JVM 힙 메모리 최대 크기 지정, 초과시 OOM Error 발생
+            //"-Xmx2048m",
 
-            // GC
-            "-XX:+UseG1GC",                                         // G1 Garbage Collector 사용
-            "-XX:+ParallelRefProcEnabled",                          // 참조 처리 병렬화 활성화
-            "-XX:G1HeapRegionSize=16M",                             // G1GC 힙 영역 크기 설정
-            "-XX:InitiatingHeapOccupancyPercent=30",                // 지정한 힙 사용률 n%에서 GC 트리거
+            /**
+             * Container
+             */
+            // 컨테이너 환경 지원
+            "-XX:+UseContainerSupport",
+            // JVM 사용 최대 메모리 비율
+            "-XX:MaxRAMPercentage=50.0",
+            // JVM 초기 메모리 비율
+            "-XX:InitialRAMPercentage=30.0",
+            // JVM 최소 메모리 비율
+            "-XX:MinRAMPercentage=30.0",
+            // JVM 메모리를 미리 할당
+            "-XX:+AlwaysPreTouch",
 
-            // Metaspace
-            "-XX:MetaspaceSize=128m",                               // 메타스페이스 초기 크기
-            "-XX:MaxMetaspaceSize=256m",                            // 메타스페이스 최대 크기
+            /**
+             * GC
+             */
+            // G1 Garbage Collector 사용
+            "-XX:+UseG1GC",
+            // 참조 처리 병렬화 활성화
+            "-XX:+ParallelRefProcEnabled",
+            // G1GC 힙 영역 크기 설정
+            "-XX:G1HeapRegionSize=16M",
+            // 지정한 힙 사용률 n%에서 GC 트리거
+            "-XX:InitiatingHeapOccupancyPercent=30",
 
-            // JIT
-            "-XX:+TieredCompilation",                               // 계층적 컴파일 활성화
-            "-XX:+UseStringDeduplication",                          // 문자열 중복 제거 활성화
+            /**
+             * Metaspace
+             */
+            // 메타스페이스 초기 크기
+            "-XX:MetaspaceSize=128m",
+            // 메타스페이스 최대 크기
+            "-XX:MaxMetaspaceSize=256m",
 
-            // ETC
-            "-Djava.security.egd=file:/dev/./urandom",              // 빠른 난수 생성
+            /**
+             * JIT
+             */
+            // 계층적 컴파일 활성화
+            "-XX:+TieredCompilation",
+            // 문자열 중복 제거 활성화
+            "-XX:+UseStringDeduplication",
+            // SoftReference Least Recently Used(LRU, 최소 최근 사용) 정책을 조정, 50밀리초 동안 소프트 레퍼런스 유지
+            "-XX:SoftRefLRUPolicyMSPerMB=50",
+            // JVM 코드 캐시의 최대 크기를 지정
+            "-XX:ReservedCodeCacheSize=512m",
+            // 코드 캐시를 비울 수 있도록 허용
+            "-XX:+UseCodeCacheFlushing",
 
-            // Personal
+            /**
+             * ETC
+             */
+            // 빠른 난수 생성
+            "-Djava.security.egd=file:/dev/./urandom",
+
+            /**
+             * Personal
+             */
             "-Dspring.profiles.active=" + System.getenv("PROFILE_ACTIVE"),
             "-Dspring.jwt.secret=" + System.getenv("JWT_ENC_PWD"),
             "-Djasypt.encryptor.password=" + System.getenv("JASYPT_ENCRYPTOR_PASSWORD"),

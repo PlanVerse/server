@@ -1,10 +1,11 @@
 package com.planverse.server.common.config.security
 
 import com.planverse.server.common.constant.StatusCode
+import com.planverse.server.common.constant.SystemRole
 import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
-import com.planverse.server.common.service.RefreshTokenService
 import com.planverse.server.common.service.BlacklistTokenService
+import com.planverse.server.common.service.RefreshTokenService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
@@ -44,8 +45,14 @@ class JwtTokenProvider(
             .collect(Collectors.joining(","))
 
         val now = Date()
-        // 2시간
-        val accessTokenExpr = DateUtils.addHours(now, 2)
+
+        val accessTokenExpr = if (authorities.equals(SystemRole.ROLE_ADMIN.name, ignoreCase = true)) {
+            // 4시간
+            DateUtils.addHours(now, 4)
+        } else {
+            // 2시간
+            DateUtils.addHours(now, 2)
+        }
         // 6달
         val refreshTokenExpr = DateUtils.addMonths(now, 6)
 
