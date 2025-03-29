@@ -11,16 +11,15 @@ import org.springframework.web.multipart.MultipartFile
 class EditorFileController(
     private val editorFileService: EditorFileService
 ) {
-
-    @PostMapping("/upload/{targetId}")
-    fun uploadEditorFile(userInfo: UserInfo, @PathVariable(required = true) targetId: Long, @RequestPart("file") multipartFile: MultipartFile): ResponseEntity<Any> {
-        val res = editorFileService.fileSave(targetId, multipartFile)
+    @GetMapping("/file/{targetId}/{key}")
+    fun fetchEditorFile(@PathVariable(required = true) targetId: Long, @PathVariable(required = true) key: String): ResponseEntity<Any> {
+        val res = editorFileService.getFileUrl(targetId, key)
         return ResponseEntity.ok().body(res)
     }
 
-    @GetMapping("/{targetId}/{key}")
-    fun fetchEditorFile(@PathVariable(required = true) targetId: Long, @PathVariable(required = true) key: String): ResponseEntity<Any> {
-        val res = editorFileService.getFileUrl(targetId, key)
+    @PostMapping("/file/upload/{targetId}")
+    fun uploadEditorFile(userInfo: UserInfo, @PathVariable(required = true) targetId: Long, @RequestPart("file") multipartFile: MultipartFile): ResponseEntity<Any> {
+        val res = editorFileService.fileSave(targetId, multipartFile)
         return ResponseEntity.ok().body(res)
     }
 }
