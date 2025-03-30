@@ -158,8 +158,8 @@ class TeamService(
             if (inviteEmail == userInfo.email) {
                 throw BaseException(StatusCode.TEAM_CREATOR_IS_ALREADY_MEMBER)
             } else {
-                userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { creatorUserInfo ->
-                    val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(creatorUserInfo.id!!, teamId, Constant.FLAG_FALSE)
+                userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { inviteUserInfo ->
+                    val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(inviteUserInfo.id!!, teamId, Constant.FLAG_FALSE)
                     teamMemberInfoRepository.save(teamMemberInfoEntity)
                 }
             }

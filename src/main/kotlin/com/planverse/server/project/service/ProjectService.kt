@@ -89,22 +89,22 @@ class ProjectService(
         teamMemberInfoMapper.selectTeamMemberInfoForCreator(TeamInfoUpdateRequestDTO(teamId = teamId, creatorUserInfoId = userInfo.id)).ifEmpty {
             throw BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let {
-            buildList {
-                it.forEach { member ->
-                    if (member.creator) {
-                        projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, member.userInfoId, Constant.FLAG_TRUE))
-                    } else {
-                        add(member.teamInfoId)
-                    }
+            it.forEach { member ->
+                if (member.creator) {
+                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, member.userInfoId, Constant.FLAG_TRUE))
                 }
             }
         }
 
-        projectInfoRequestDTO.invite?.forEach { inviteUserId ->
-            if (inviteUserId == userInfo.id) {
+        projectInfoRequestDTO.invite?.forEach { inviteEmail ->
+            if (inviteEmail == userInfo.email) {
                 throw BaseException(StatusCode.PROJECT_CREATOR_IS_ALREADY_MEMBER)
             } else {
-                projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserId, Constant.FLAG_FALSE))
+                userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { inviteUserInfo ->
+                    val projectMemberInfoEntity = ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserInfo.id!!, Constant.FLAG_FALSE)
+
+                    projectMemberInfoRepository.save(projectMemberInfoEntity)
+                }
             }
         }
     }

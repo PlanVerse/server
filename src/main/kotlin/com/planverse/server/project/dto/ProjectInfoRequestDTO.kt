@@ -17,7 +17,7 @@ data class ProjectInfoRequestDTO(
     @field:NotBlank
     val teamInfoId: Long,
 
-    val invite: List<Long>? = null,
+    val invite: List<String>? = null,
 ) {
     fun toEntity(): ProjectInfoEntity {
         return ProjectInfoEntity(
