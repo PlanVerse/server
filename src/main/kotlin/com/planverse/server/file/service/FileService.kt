@@ -130,4 +130,17 @@ class FileService(
         fileInfoRepository.save(fileInfoEntity)
         fileRelInfoRepository.save(fileRelInfoEntity)
     }
+
+    @Transactional
+    fun deleteFilePass(target: String, targetId: Long) {
+        this.getFileRelInfoOptional(target, targetId).ifPresent { fileRelInfo ->
+            fileRelInfo.deleteYn = Constant.DEL_Y
+            fileRelInfoRepository.save(fileRelInfo)
+
+            this.getFileInfoOptional(fileRelInfo.fileInfoId!!).ifPresent { fileInfo ->
+                fileInfo.deleteYn = Constant.DEL_Y
+                fileInfoRepository.save(fileInfo)
+            }
+        }
+    }
 }

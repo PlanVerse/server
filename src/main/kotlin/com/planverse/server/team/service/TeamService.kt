@@ -149,7 +149,7 @@ class TeamService(
     }
 
     @Transactional
-    fun createTeam(userInfo: UserInfo, teamInfoRequestDTO: TeamInfoRequestDTO, multipartFile: MultipartFile?) {
+    fun createTeam(userInfo: UserInfo, teamInfoRequestDTO: TeamInfoRequestDTO) {
         val teamId = teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
 
         teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, Constant.FLAG_TRUE))
@@ -163,10 +163,6 @@ class TeamService(
                     teamMemberInfoRepository.save(teamMemberInfoEntity)
                 }
             }
-        }
-
-        if (multipartFile != null && !multipartFile.isEmpty) {
-            fileService.fileSave(Constant.FILE_TARGET_TEAM, teamId, multipartFile)
         }
     }
 
@@ -249,7 +245,7 @@ class TeamService(
         teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let {
-            fileService.deleteFile(Constant.FILE_TARGET_TEAM, teamId).also {
+            fileService.deleteFilePass(Constant.FILE_TARGET_TEAM, teamId).also {
                 fileService.fileSave(Constant.FILE_TARGET_TEAM, teamId, multipartFile)
             }
         }

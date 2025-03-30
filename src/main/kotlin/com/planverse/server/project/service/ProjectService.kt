@@ -82,7 +82,7 @@ class ProjectService(
     }
 
     @Transactional
-    fun createProject(userInfo: UserInfo, projectInfoRequestDTO: ProjectInfoRequestDTO, multipartFile: MultipartFile?) {
+    fun createProject(userInfo: UserInfo, projectInfoRequestDTO: ProjectInfoRequestDTO) {
         val projectInfoId = projectInfoRepository.save(projectInfoRequestDTO.toEntity()).id!!
         val teamId = projectInfoRequestDTO.teamInfoId
 
@@ -106,10 +106,6 @@ class ProjectService(
             } else {
                 projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserId, Constant.FLAG_FALSE))
             }
-        }
-
-        if (multipartFile != null && !multipartFile.isEmpty) {
-            fileService.fileSave(Constant.FILE_TARGET_PROJECT, projectInfoId, multipartFile)
         }
     }
 
@@ -196,7 +192,7 @@ class ProjectService(
         projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.let {
-            fileService.deleteFile(Constant.FILE_TARGET_PROJECT, projectInfoId).also {
+            fileService.deleteFilePass(Constant.FILE_TARGET_PROJECT, projectInfoId).also {
                 fileService.fileSave(Constant.FILE_TARGET_PROJECT, projectInfoId, multipartFile)
             }
         }

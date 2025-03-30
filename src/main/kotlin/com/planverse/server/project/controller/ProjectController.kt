@@ -29,8 +29,8 @@ class ProjectController(
     }
 
     @PostMapping
-    fun createProject(userInfo: UserInfo, @RequestPart("body") projectInfoRequestDTO: ProjectInfoRequestDTO, @RequestPart("file") multipartFile: MultipartFile?): BaseResponse<Any> {
-        projectService.createProject(userInfo, projectInfoRequestDTO, multipartFile)
+    fun createProject(userInfo: UserInfo, @RequestPart("body") projectInfoRequestDTO: ProjectInfoRequestDTO): BaseResponse<Any> {
+        projectService.createProject(userInfo, projectInfoRequestDTO)
         return BaseResponse.success()
     }
 
