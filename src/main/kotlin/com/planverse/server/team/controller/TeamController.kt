@@ -35,7 +35,7 @@ class TeamController(
     }
 
     @PostMapping
-    fun createTeam(userInfo: UserInfo, @RequestPart("body") teamInfoRequestDTO: TeamInfoRequestDTO): BaseResponse<Any> {
+    fun createTeam(userInfo: UserInfo, @RequestBody teamInfoRequestDTO: TeamInfoRequestDTO): BaseResponse<Any> {
         teamService.createTeam(userInfo, teamInfoRequestDTO)
         return BaseResponse.success()
     }
