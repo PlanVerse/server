@@ -181,6 +181,8 @@ class TeamService(
                     info.description = teamInfoUpdateRequestDTO.description
 
                     teamInfoRepository.save(info)
+
+                    this.inviteTeamMember(userInfo, teamInfoUpdateRequestDTO)
                 }
             }
     }
