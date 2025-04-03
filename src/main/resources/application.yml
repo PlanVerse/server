@@ -14,8 +14,114 @@ spring:
 logging:
   config: classpath:spring-logback.xml
   level:
-    org:
+    _org:
       springframework:
+        web:
+          servlet:
+            HandlerMapping:
+              Mappings: OFF
+    org:
+      mybatis:
+        spring:
+          SqlSessionFactoryBean: OFF
+          mapper:
+            ClassPathMapperScanner: OFF
+      hibernate:
+        internal:
+          SessionFactoryImpl: OFF
+        bytecode:
+          internal:
+            bytebuddy:
+              BytecodeProviderImpl: OFF
+        jpa:
+          event:
+            internal:
+              CallbackDefinitionResolverLegacyImpl: OFF
+        type:
+          BasicTypeRegistry: OFF
+        validator:
+          internal:
+            xml:
+              config:
+                ResourceLoaderHelper: OFF
+            engine:
+              ValidatorFactoryConfigurationHelper: OFF
+        mapping:
+          PrimaryKey: OFF
+          BasicValue: OFF
+        orm:
+          sql:
+            ast:
+              create: OFF
+          model:
+            mapping:
+              creation: OFF
+          idgen:
+            factory: OFF
+        persister:
+          entity:
+            AbstractEntityPersister: OFF
+        query:
+          named:
+            NamedObjectRepository: OFF
+          sqm:
+            function:
+              SqmFunctionRegistry: OFF
+        boot:
+          registry:
+            classloading:
+              internal:
+                ClassLoaderServiceImpl: OFF
+          internal:
+            ClassLoaderAccessImpl: OFF
+          model:
+            internal:
+              BinderHelper: OFF
+              EntityBinder: OFF
+              AnnotatedColumn: OFF
+              AbstractPropertyHolder: OFF
+              PropertyBinder: OFF
+              BasicValueBinder: OFF
+        HQL_FUNCTIONS: OFF
+        resource:
+          transaction:
+            backend:
+              jdbc:
+                internal:
+                  JdbcResourceLocalTransactionCoordinatorImpl: INFO
+      springframework:
+        boot:
+          context:
+            properties:
+              source:
+                ConfigurationPropertySourcesPropertyResolver: OFF
+        core:
+          env:
+            PropertySourcesPropertyResolver: OFF
+        orm:
+          jpa:
+            SharedEntityManagerCreator: OFF
+        beans:
+          CachedIntrospectionResults: OFF
+          factory:
+            support:
+              DefaultListableBeanFactory: OFF
+        data:
+          jpa:
+            repository:
+              query:
+                NamedQuery: OFF
+          convert:
+            CustomConversions: OFF
+          repository:
+            core:
+              support:
+                RepositoryFactorySupport: OFF
+            config:
+              RepositoryComponentProvider: OFF
+        context:
+          annotation:
+            ClassPathBeanDefinitionScanner: OFF
         session:
           web:
             http:
