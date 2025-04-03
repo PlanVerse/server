@@ -2,7 +2,7 @@
 
 <included>
     <property name="FILE_LOG_DIR" value="${spring.application.name}/${spring.profiles.active}/logs/"/>
-    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} [%-5level] [%thread] [traceId=%X{traceId}] %logger{100} %method:%line - %msg%n"/>
+    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} [%-5level] [%thread] [traceId=%X{traceId}] %logger{200} %method:%line - %msg%n"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${FILE_LOG_DIR}/server.log</file>
