@@ -126,16 +126,6 @@ jib {
     }
     container {
         jvmFlags = listOf(
-            // 서버 모드로 실행, 서버 환경에서 성능을 최적화
-            "-server",
-            // JVM 힙 메모리 초기 크기 지정, 애플리케이션 시작 시 할당
-            //"-Xms1024m",
-            // JVM 힙 메모리 최대 크기 지정, 초과시 OOM Error 발생
-            //"-Xmx2048m",
-
-            /**
-             * Container
-             */
             // 컨테이너 환경 지원
             "-XX:+UseContainerSupport",
             // JVM 사용 최대 메모리 비율
@@ -147,9 +137,6 @@ jib {
             // JVM 메모리를 미리 할당
             "-XX:+AlwaysPreTouch",
 
-            /**
-             * GC
-             */
             // G1 Garbage Collector 사용
             "-XX:+UseG1GC",
             // 참조 처리 병렬화 활성화
@@ -159,17 +146,11 @@ jib {
             // 지정한 힙 사용률 n%에서 GC 트리거
             "-XX:InitiatingHeapOccupancyPercent=30",
 
-            /**
-             * Metaspace
-             */
             // 메타스페이스 초기 크기
             "-XX:MetaspaceSize=128m",
             // 메타스페이스 최대 크기
             "-XX:MaxMetaspaceSize=256m",
 
-            /**
-             * JIT
-             */
             // 계층적 컴파일 활성화
             "-XX:+TieredCompilation",
             // 문자열 중복 제거 활성화
@@ -181,15 +162,9 @@ jib {
             // 코드 캐시를 비울 수 있도록 허용
             "-XX:+UseCodeCacheFlushing",
 
-            /**
-             * ETC
-             */
             // 빠른 난수 생성
             "-Djava.security.egd=file:/dev/./urandom",
 
-            /**
-             * Personal
-             */
             "-Dspring.profiles.active=" + System.getenv("PROFILE_ACTIVE"),
             "-Dspring.jwt.secret=" + System.getenv("JWT_ENC_PWD"),
             "-Djasypt.encryptor.password=" + System.getenv("JASYPT_ENCRYPTOR_PASSWORD"),
