@@ -7,8 +7,8 @@ plugins {
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
 
-    id("org.springframework.boot") version "3.4.0"
-    id("io.spring.dependency-management") version "1.1.6"
+    id("org.springframework.boot") version "3.4.4"
+    id("io.spring.dependency-management") version "1.1.7"
 
     id("com.google.cloud.tools.jib") version "3.4.4"
 }
@@ -80,7 +80,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok")
 }
 
-val springCloudVersion = "2024.0.0"
+val springCloudVersion = "2024.0.1"
 
 dependencyManagement {
     imports {
@@ -156,11 +156,11 @@ jib {
             // 문자열 중복 제거 활성화
             "-XX:+UseStringDeduplication",
             // SoftReference Least Recently Used(LRU, 최소 최근 사용) 정책을 조정, 50밀리초 동안 소프트 레퍼런스 유지
-            "-XX:SoftRefLRUPolicyMSPerMB=50",
+//            "-XX:SoftRefLRUPolicyMSPerMB=50",
             // JVM 코드 캐시의 최대 크기를 지정
-            "-XX:ReservedCodeCacheSize=512m",
+//            "-XX:ReservedCodeCacheSize=512m",
             // 코드 캐시를 비울 수 있도록 허용
-            "-XX:+UseCodeCacheFlushing",
+//            "-XX:+UseCodeCacheFlushing",
 
             // 빠른 난수 생성
             "-Djava.security.egd=file:/dev/./urandom",

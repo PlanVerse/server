@@ -4,9 +4,9 @@
 ![Java](https://img.shields.io/badge/Java_17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)   
 ![Gradle](https://img.shields.io/badge/Gradle_8.11.1-02303A?style=for-the-badge&logo=Gradle&logoColor=white)   
 ![Kotlin](https://img.shields.io/badge/Kotlin_1.9.25-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white)  
-![Spring Boot](https://img.shields.io/badge/spring_boot_3.4.0-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![Spring Cloud](https://img.shields.io/badge/spring_cloud_4.2.0(2024.0.0)-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![Spring Security](https://img.shields.io/badge/spring_security_6.4.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)   
+![Spring Boot](https://img.shields.io/badge/spring_boot_3.4.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Cloud](https://img.shields.io/badge/spring_cloud_4.2.1(2024.0.1)-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Security](https://img.shields.io/badge/spring_security_6.4.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)   
 ![Jib](https://img.shields.io/badge/jib_3.4.4-4285F4?style=for-the-badge&logo=googlecloud&logoColor=white)  
 
 ![Postgresql](https://img.shields.io/badge/postgresql_17.2-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)  
