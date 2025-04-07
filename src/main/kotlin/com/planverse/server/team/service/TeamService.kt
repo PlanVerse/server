@@ -195,43 +195,45 @@ class TeamService(
             throw BaseException(StatusCode.TEAM_NOT_FOUND)
         }.run {
             // 초대 멤버 정보가 없다면 동일한 것으로 판단
-            if (teamInfoUpdateRequestDTO.invite != null) {
-                buildList {
-                    // 초대 멤버 사용자 정보 획득
-                    teamInfoUpdateRequestDTO.invite.forEach {
-                        val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
-                            BaseException(StatusCode.USER_NOT_FOUND)
-                        }
+            teamInfoUpdateRequestDTO.invite?.let {
+                if (it.isNotEmpty()) {
+                    buildList {
+                        // 초대 멤버 사용자 정보 획득
+                        it.forEach { inviteData ->
+                            val inviteUserInfo = userInfoRepository.findByEmail(inviteData).orElseThrow {
+                                BaseException(StatusCode.USER_NOT_FOUND)
+                            }
 
-                        // DB의 값이므로 존재 확인
-                        add(inviteUserInfo.id!!)
+                            // DB의 값이므로 존재 확인
+                            add(inviteUserInfo.id!!)
+                        }
+                    }.filter { afterBuildList ->
+                        // 신규 멤버의 사용자 id에 기존 멤버 id가 포함되어있다면 제외
+                        afterBuildList !in this.stream().map { member -> member.userInfoId }.toList()
+                    }.forEach { afterFilterList ->
+                        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(afterFilterList, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE))
                     }
-                }.filter {
-                    // 신규 멤버의 사용자 id에 기존 멤버 id가 포함되어있다면 제외
-                    it !in this.stream().map { member -> member.userInfoId }.toList()
-                }.forEach {
-                    teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(it, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE))
                 }
             }
 
             // 내보내기 멤버 정보 존재 판단
-            if (teamInfoUpdateRequestDTO.exclude != null) {
+            teamInfoUpdateRequestDTO.exclude?.let {
                 buildList {
                     // 내보내기 멤버 사용자 정보 획득
-                    teamInfoUpdateRequestDTO.exclude.forEach {
-                        val inviteUserInfo = userInfoRepository.findByEmail(it).orElseThrow {
+                    it.forEach { excludeData ->
+                        val inviteUserInfo = userInfoRepository.findByEmail(excludeData).orElseThrow {
                             BaseException(StatusCode.USER_NOT_FOUND)
                         }
 
                         // DB의 값이므로 존재 확인
                         add(inviteUserInfo.id!!)
                     }
-                }.filter {
+                }.filter { afterBuildList ->
                     // 내보내기 멤버의 사용자 id에 기존 멤버 id가 포함되어있어야함
-                    it in this.stream().map { member -> member.userInfoId }.toList()
-                }.forEach {
+                    afterBuildList in this.stream().map { member -> member.userInfoId }.toList()
+                }.forEach { afterFilterList ->
                     // 팀 생성자 즉 관리자는 팀에서 내보내기가 불가능하므로 검사
-                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, it, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, afterFilterList, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
                         BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
                     }.let { excludeMemberInfo ->
                         excludeMemberInfo.deleteYn = Constant.DEL_Y
