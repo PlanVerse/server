@@ -194,51 +194,48 @@ class TeamService(
         teamMemberInfoMapper.selectTeamMemberInfoForCreator(teamInfoUpdateRequestDTO).ifEmpty {
             throw BaseException(StatusCode.TEAM_NOT_FOUND)
         }.run {
-            // 초대 멤버 정보가 없다면 동일한 것으로 판단
-            teamInfoUpdateRequestDTO.invite?.let {
-                if (it.isNotEmpty()) {
-                    buildList {
-                        // 초대 멤버 사용자 정보 획득
-                        it.forEach { inviteData ->
-                            val inviteUserInfo = userInfoRepository.findByEmail(inviteData).orElseThrow {
-                                BaseException(StatusCode.USER_NOT_FOUND)
-                            }
+            // 초대 멤버 추가 처리
+            teamInfoUpdateRequestDTO.invite?.takeIf {
+                it.isNotEmpty()
+            }?.let { inviteList ->
+                val existingMemberIds = this.map { it.userInfoId }.toSet()
 
-                            // DB의 값이므로 존재 확인
-                            add(inviteUserInfo.id!!)
-                        }
-                    }.filter { afterBuildList ->
-                        // 신규 멤버의 사용자 id에 기존 멤버 id가 포함되어있다면 제외
-                        afterBuildList !in this.stream().map { member -> member.userInfoId }.toList()
-                    }.forEach { afterFilterList ->
-                        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(afterFilterList, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE))
-                    }
+                inviteList.map { email ->
+                    userInfoRepository.findByEmail(email).orElseThrow {
+                        BaseException(StatusCode.USER_NOT_FOUND)
+                    }.id!!
+                }.filterNot {
+                    it in existingMemberIds
+                }.forEach { newUserId ->
+                    val newMember = TeamMemberInfoDTO.toEntity(newUserId, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE)
+                    teamMemberInfoRepository.save(newMember)
                 }
             }
 
-            // 내보내기 멤버 정보 존재 판단
-            teamInfoUpdateRequestDTO.exclude?.let {
-                buildList {
-                    // 내보내기 멤버 사용자 정보 획득
-                    it.forEach { excludeData ->
-                        val inviteUserInfo = userInfoRepository.findByEmail(excludeData).orElseThrow {
-                            BaseException(StatusCode.USER_NOT_FOUND)
-                        }
+            // 멤버 제외 처리
+            teamInfoUpdateRequestDTO.exclude?.takeIf {
+                it.isNotEmpty()
+            }?.let { excludeList ->
+                val existingMemberIds = this.map { it.userInfoId }.toSet()
 
-                        // DB의 값이므로 존재 확인
-                        add(inviteUserInfo.id!!)
-                    }
-                }.filter { afterBuildList ->
-                    // 내보내기 멤버의 사용자 id에 기존 멤버 id가 포함되어있어야함
-                    afterBuildList in this.stream().map { member -> member.userInfoId }.toList()
-                }.forEach { afterFilterList ->
-                    // 팀 생성자 즉 관리자는 팀에서 내보내기가 불가능하므로 검사
-                    teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, afterFilterList, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+                excludeList.map { email ->
+                    userInfoRepository.findByEmail(email).orElseThrow {
+                        BaseException(StatusCode.USER_NOT_FOUND)
+                    }.id!!
+                }.filter {
+                    it in existingMemberIds
+                }.forEach { userIdToExclude ->
+                    val member = teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(
+                        teamInfoUpdateRequestDTO.teamId,
+                        userIdToExclude,
+                        Constant.FLAG_TRUE,
+                        Constant.DEL_N
+                    ).orElseThrow {
                         BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
-                    }.let { excludeMemberInfo ->
-                        excludeMemberInfo.deleteYn = Constant.DEL_Y
-                        teamMemberInfoRepository.save(excludeMemberInfo)
                     }
+
+                    member.deleteYn = Constant.DEL_Y
+                    teamMemberInfoRepository.save(member)
                 }
             }
         }
