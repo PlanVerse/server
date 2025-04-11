@@ -9,5 +9,6 @@ interface UserInfoRepository : JpaRepository<UserInfoEntity, Long> {
     fun existsByEmailAndDeleteYn(email: String, deleteYn: String): Boolean
 
     fun findByEmail(email: String): Optional<UserInfoEntity>
+    fun findByKey(key: String): Optional<UserInfoEntity>
     fun findByEmailAndDeleteYn(email: String, deleteYn: String): Optional<UserInfoEntity>
 }
