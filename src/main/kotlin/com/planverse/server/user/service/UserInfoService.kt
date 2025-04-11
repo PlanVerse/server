@@ -112,7 +112,7 @@ class UserInfoService(
             val authenticationToken = UsernamePasswordAuthenticationToken(signInDTO.email, signInDTO.pwd)
 
             // 2. 실제 검증 (사용자 비밀번호 체크)이 이루어지는 부분
-            // authenticate 매서드가 실행될 때 CustomUserDetailsService 에서 만든 loadUserByUsername 메서드가 실행
+            // authenticate 매서드가 실행될 때 com.planverse.server.user.service.UserDetailService > loadUserByUsername 메서드가 실행
             val authentication: Authentication = authenticationManagerBuilder.`object`.authenticate(authenticationToken)
 
             // 3. 인증 정보를 기반으로 JWT 토큰 생성
