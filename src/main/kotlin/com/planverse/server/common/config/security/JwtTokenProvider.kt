@@ -9,6 +9,7 @@ import com.planverse.server.common.service.RefreshTokenService
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
+import com.planverse.server.user.service.UserDetailService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import org.apache.commons.lang3.time.DateUtils
@@ -18,7 +19,6 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
 import java.util.*
@@ -27,7 +27,7 @@ import javax.crypto.spec.SecretKeySpec
 
 @Component
 class JwtTokenProvider(
-    val userDetailsService: UserDetailsService,
+    val userDetailService: UserDetailService,
     val blacklistService: BlacklistTokenService,
     val refreshTokenService: RefreshTokenService,
 ) {
@@ -48,7 +48,8 @@ class JwtTokenProvider(
 
         val accessTokenExpr = if (authorities.equals(SystemRole.ROLE_ADMIN.name, ignoreCase = true)) {
             // 4시간
-            DateUtils.addHours(now, 4)
+//            DateUtils.addHours(now, 4)
+            DateUtils.addSeconds(now, 5)
         } else {
             // 2시간
             DateUtils.addHours(now, 2)
@@ -56,9 +57,11 @@ class JwtTokenProvider(
         // 6달
         val refreshTokenExpr = DateUtils.addMonths(now, 6)
 
+        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
+
         // Access Token 생성
         val accessToken = Jwts.builder()
-            .subject(authentication.name)
+            .subject(userInfoEntity.key)
             .claims(
                 mutableMapOf<String, String>(
                     "auth" to authorities,
@@ -68,12 +71,11 @@ class JwtTokenProvider(
             .signWith(secretKey)
             .compact()
 
-        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
-        RedisUtil.setWithExpiryHour(userInfoEntity.email, userInfoEntity.id!!.toString(), 2)
+        RedisUtil.setWithExpiryHour(userInfoEntity.key!!, userInfoEntity.id!!.toString(), 2)
 
         // Refresh Token 생성
         val refreshToken = Jwts.builder()
-            .subject(authentication.name)
+            .subject(userInfoEntity.key)
             .expiration(refreshTokenExpr)
             .signWith(secretKey)
             .compact()
@@ -101,9 +103,11 @@ class JwtTokenProvider(
         // 2시간
         val accessTokenExpr = DateUtils.addHours(now, 2)
 
+        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
+
         // Access Token 생성
         val accessToken = Jwts.builder()
-            .subject(authentication.name)
+            .subject(userInfoEntity.key)
             .claims(
                 mutableMapOf<String, String>(
                     "auth" to authorities,
@@ -151,7 +155,8 @@ class JwtTokenProvider(
             .collect(Collectors.toList())
 
         // UserInfo 객체를 만들어서 Authentication return
-        return UsernamePasswordAuthenticationToken(UserInfo.toDto(claims, accessToken), "", authorities)
+        val userInfoEntity = userDetailService.loadUserInfoBySubject(claims["sub"].toString())
+        return UsernamePasswordAuthenticationToken(UserInfo.toDto(userInfoEntity, accessToken), "", authorities)
     }
 
     /**
@@ -160,7 +165,7 @@ class JwtTokenProvider(
     fun getRefreshAuthentication(refreshToken: String): Authentication {
         try {
             val claims: Claims = this.parseClaims(refreshToken)
-            val userDetails: UserDetails = userDetailsService.loadUserByUsername(claims.subject)
+            val userDetails: UserDetails = userDetailService.loadUserDetailsBySubject(claims.subject)
             return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
         } catch (e: Exception) {
             throw BaseException(StatusCode.INVALID_TOKEN)

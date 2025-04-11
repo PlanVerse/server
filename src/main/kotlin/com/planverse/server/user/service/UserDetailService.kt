@@ -3,6 +3,7 @@ package com.planverse.server.user.service
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
+import com.planverse.server.user.entity.UserInfoEntity
 import com.planverse.server.user.repository.UserInfoRepository
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -18,5 +19,19 @@ class UserDetailService(
         return userInfoRepository.findByEmailAndDeleteYn(email, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.USER_NOT_FOUND)
         }
+    }
+
+    fun loadUserDetailsBySubject(subject: String): UserDetails {
+        val userInfoEntity = userInfoRepository.findByKey(subject).orElseThrow {
+            BaseException(StatusCode.USER_NOT_FOUND)
+        }
+        return userInfoEntity
+    }
+
+    fun loadUserInfoBySubject(subject: String): UserInfoEntity {
+        val userInfoEntity = userInfoRepository.findByKey(subject).orElseThrow {
+            BaseException(StatusCode.USER_NOT_FOUND)
+        }
+        return userInfoEntity
     }
 }

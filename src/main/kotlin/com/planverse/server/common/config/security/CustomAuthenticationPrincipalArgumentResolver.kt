@@ -28,8 +28,8 @@ class CustomAuthenticationPrincipalArgumentResolver : HandlerMethodArgumentResol
         val authentication = SecurityContextHolder.getContext().authentication ?: return null
         return when (val principal = authentication.principal) {
             is UserInfo -> {
-                if (RedisUtil.has(principal.email)) {
-                    principal.id = RedisUtil.getLongValue(principal.email)
+                if (RedisUtil.has(principal.key)) {
+                    principal.id = RedisUtil.getLongValue(principal.key)
                 } else {
                     throw BaseException(StatusCode.USER_NOT_FOUND)
                 }
