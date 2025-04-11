@@ -1,7 +1,7 @@
 package com.planverse.server.comment.controller
 
-import com.planverse.server.comment.service.CommentService
 import com.planverse.server.common.dto.BaseResponse
+import com.planverse.server.reply.service.ReplyInfoService
 import com.planverse.server.user.dto.UserInfo
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.GetMapping
@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/comment")
-class CommentController(
-    private val commentService: CommentService
+@RequestMapping("/reply")
+class ReplyInfoController(
+    private val replyInfoService: ReplyInfoService
 ) {
 
-    @GetMapping("/list/{workflowInfoId}")
-    fun getCommentList(userInfo: UserInfo, @PathVariable(required = true) workflowInfoId: Long, pageable: Pageable) : BaseResponse<Any> {
-        val res = commentService.getCommentList(userInfo, workflowInfoId, pageable)
+    @GetMapping("/list/{commentId}")
+    fun getReplyList(userInfo: UserInfo, @PathVariable(required = true) commentId: Long, pageable: Pageable): BaseResponse<Any> {
+        val res = replyInfoService.getReplyList(userInfo, commentId, pageable)
 
         return BaseResponse.success(res)
     }
