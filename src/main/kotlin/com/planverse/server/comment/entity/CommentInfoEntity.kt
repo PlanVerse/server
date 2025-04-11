@@ -2,8 +2,13 @@ package com.planverse.server.comment.entity
 
 import com.planverse.server.common.entity.BaseEntity
 import jakarta.persistence.*
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.Size
+import org.hibernate.annotations.ColumnDefault
 import org.hibernate.annotations.DynamicInsert
 import org.hibernate.annotations.DynamicUpdate
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @DynamicInsert
@@ -14,4 +19,24 @@ class CommentInfoEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     var id: Long? = null,
+
+    @Size(max = 255)
+    @NotNull
+    @ColumnDefault("(gen_random_uuid())")
+    @Column(name = "key", nullable = false)
+    var key: String? = null,
+
+    @Size(max = 255)
+    @NotNull
+    @Column(name = "target", nullable = false)
+    var target: String,
+
+    @NotNull
+    @Column(name = "target_id", nullable = false)
+    var targetId: Long,
+
+    @NotNull
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "content", nullable = false)
+    var content: List<Map<String, Any>>? = emptyList()
 ) : BaseEntity()
