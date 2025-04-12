@@ -2,19 +2,24 @@ package com.planverse.server.workflow.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class WorkFlowInfoRequestDTO(
     var id: Long? = null,
     var key: String? = null,
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     var projectInfoId: Long,
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     var stepInfoId: Long,
     @field:NotBlank
     var title: String,
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     var content: List<Map<String, Any>>? = emptyList(),
 
     var assignInfo: List<Long>? = null,

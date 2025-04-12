@@ -2,18 +2,22 @@ package com.planverse.server.step.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.step.entity.StepInfoEntity
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class StepInfoRequestDTO(
     var id: Long? = null,
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     var projectInfoId: Long,
     @field:NotBlank
     var name: String,
     @field:NotBlank
     var color: String,
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     var sort: Int,
 ) {
     companion object {

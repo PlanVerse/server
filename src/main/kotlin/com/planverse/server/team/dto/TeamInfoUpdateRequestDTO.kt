@@ -1,11 +1,13 @@
 package com.planverse.server.team.dto
 
-import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotNull
 import org.apache.ibatis.type.Alias
 
 @Alias("TeamInfoUpdateRequestDTO")
 data class TeamInfoUpdateRequestDTO(
-    @field:NotBlank
+    @field:NotNull
+    @field:Min(1)
     val teamId: Long,
     val name: String? = null,
     val description: String? = null,
