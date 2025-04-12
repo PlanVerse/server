@@ -48,8 +48,7 @@ class JwtTokenProvider(
 
         val accessTokenExpr = if (authorities.equals(SystemRole.ROLE_ADMIN.name, ignoreCase = true)) {
             // 4시간
-//            DateUtils.addHours(now, 4)
-            DateUtils.addSeconds(now, 5)
+            DateUtils.addHours(now, 4)
         } else {
             // 2시간
             DateUtils.addHours(now, 2)
