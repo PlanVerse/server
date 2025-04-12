@@ -8,6 +8,7 @@ import com.planverse.server.team.service.TeamService
 import com.planverse.server.user.dto.UserInfo
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
@@ -35,19 +36,19 @@ class TeamController(
     }
 
     @PostMapping
-    fun createTeam(userInfo: UserInfo, @RequestBody teamInfoRequestDTO: TeamInfoRequestDTO): BaseResponse<Any> {
+    fun createTeam(userInfo: UserInfo, @Validated @RequestBody teamInfoRequestDTO: TeamInfoRequestDTO): BaseResponse<Any> {
         teamService.createTeam(userInfo, teamInfoRequestDTO)
         return BaseResponse.success()
     }
 
     @PutMapping("/info")
-    fun modifyTeamInfo(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
+    fun modifyTeamInfo(userInfo: UserInfo, @Validated @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
         teamService.modifyTeamInfo(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()
     }
 
     @PutMapping("/invite")
-    fun inviteTeamMember(userInfo: UserInfo, @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
+    fun inviteTeamMember(userInfo: UserInfo, @Validated @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
         teamService.inviteTeamMember(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()
     }

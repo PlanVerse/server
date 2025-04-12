@@ -8,6 +8,7 @@ import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
 import com.planverse.server.workflow.service.WorkflowInfoService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -29,13 +30,13 @@ class WorkflowInfoController(
     }
 
     @PostMapping
-    fun createWorkflowContent(userInfo: UserInfo, @RequestBody workFlowInfoRequestDTO: WorkFlowInfoRequestDTO): BaseResponse<Any> {
+    fun createWorkflowContent(userInfo: UserInfo, @Validated @RequestBody workFlowInfoRequestDTO: WorkFlowInfoRequestDTO): BaseResponse<Any> {
         val res = workflowInfoService.createWorkflowContent(userInfo, workFlowInfoRequestDTO)
         return BaseResponse.success(res)
     }
 
     @PutMapping
-    fun modifyWorkflowContent(userInfo: UserInfo, @RequestBody workFlowInfoUpdateRequestDTO: WorkFlowInfoUpdateRequestDTO): BaseResponse<Any> {
+    fun modifyWorkflowContent(userInfo: UserInfo, @Validated @RequestBody workFlowInfoUpdateRequestDTO: WorkFlowInfoUpdateRequestDTO): BaseResponse<Any> {
         val res = workflowInfoService.modifyWorkflowContent(userInfo, workFlowInfoUpdateRequestDTO)
         return BaseResponse.success(res)
     }
