@@ -43,9 +43,9 @@ class StepInfoService(
 
         // step_info 정보 존재 여부 판단
         if (!stepInfoRepository.existsByProjectInfoIdAndNameAndDeleteYn(stepInfoRequestDTO.projectInfoId, stepInfoRequestDTO.name, Constant.DEL_N)) {
+            stepInfoRepository.save(stepInfoRequestDTO.toEntity())
+        } else {
             throw BaseException(StatusCode.ALREADY_EXIST_STEP)
         }
-
-        stepInfoRepository.save(stepInfoRequestDTO.toEntity())
     }
 }
