@@ -21,7 +21,7 @@ data class WorkFlowInfoRequestDTO(
     @field:Size(max = 500)
     var title: String,
     @field:NotNull
-    var content: List<Map<String, Any>>? = emptyList(),
+    var content: Map<String, Any>? = emptyMap(),
 
     var assignInfo: List<Long>? = null,
 ) {

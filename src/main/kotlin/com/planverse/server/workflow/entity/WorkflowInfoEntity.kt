@@ -43,5 +43,5 @@ class WorkflowInfoEntity(
     @NotNull
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content", nullable = false)
-    var content: List<Map<String, Any>>? = emptyList()
+    var content: Map<String, Any>? = emptyMap()
 ) : BaseEntity()

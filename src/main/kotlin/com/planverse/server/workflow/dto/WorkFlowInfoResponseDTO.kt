@@ -12,7 +12,7 @@ data class WorkFlowInfoResponseDTO(
     var projectInfoId: Long,
     var stepInfoId: Long,
     var title: String,
-    var content: List<Map<String, Any>>? = emptyList(),
+    var content: Map<String, Any>? = emptyMap(),
 
     var stepInfo: StepInfoDTO? = null,
 

@@ -14,7 +14,7 @@ data class WorkFlowInfoUpdateRequestDTO(
     var projectInfoId: Long,
     var stepInfoId: Long? = null,
     var title: String? = null,
-    var content: List<Map<String, Any>>? = emptyList(),
+    var content: Map<String, Any>? = emptyMap(),
 
     var assignInfo: List<Long>? = null,
 )
