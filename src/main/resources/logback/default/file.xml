@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <included>
-    <property name="FILE_LOG_DIR" value="${spring.application.name}/${spring.profiles.active}/logs/"/>
+    <property name="FILE_LOG_DIR" value="${spring.application.name}/logs/"/>
     <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS, ${logback.timezone:-Asia/Seoul}} [%-5level] [%thread] [traceId=%X{traceId}] %logger{200} %method:%line - %msg%n"/>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
