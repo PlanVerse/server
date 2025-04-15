@@ -1,4 +1,4 @@
-package com.planverse.server.common.config
+package com.planverse.server.common.config.data
 
 import com.planverse.server.common.config.property.RedisConfigProperty
 import com.planverse.server.common.util.RedisUtil

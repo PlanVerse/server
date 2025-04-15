@@ -1,9 +1,5 @@
-package com.planverse.server.common.config
+package com.planverse.server.common.config.security
 
-import com.planverse.server.common.config.security.JwtAccessDeniedHandler
-import com.planverse.server.common.config.security.JwtAuthenticationEntryPoint
-import com.planverse.server.common.config.security.JwtAuthenticationFilter
-import com.planverse.server.common.config.security.JwtTokenProvider
 import com.planverse.server.common.constant.SystemRole
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

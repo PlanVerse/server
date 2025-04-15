@@ -1,6 +1,5 @@
-package com.planverse.server.common.config
+package com.planverse.server.common.config.data
 
-import com.planverse.server.common.config.data.RoutingDataSource
 import jakarta.persistence.EntityManagerFactory
 import org.apache.ibatis.session.SqlSessionFactory
 import org.mybatis.spring.SqlSessionFactoryBean

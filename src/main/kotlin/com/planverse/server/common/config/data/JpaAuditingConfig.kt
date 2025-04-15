@@ -1,4 +1,4 @@
-package com.planverse.server.common.config
+package com.planverse.server.common.config.data
 
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
