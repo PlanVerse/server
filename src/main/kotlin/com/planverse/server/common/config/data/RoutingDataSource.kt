@@ -3,6 +3,7 @@ package com.planverse.server.common.config.data
 import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.util.concurrent.atomic.AtomicInteger
 import javax.sql.DataSource
 
 class RoutingDataSource(
@@ -12,7 +13,7 @@ class RoutingDataSource(
     private val readKeyList: MutableList<String> = ArrayList()
     private var writeOnly = false
     private var readSize: Int = 0
-    private var readIdx: Int = 0
+    private var readIdx = AtomicInteger(0)
 
     init {
         val targetDataSourceMap: MutableMap<Any, Any> = HashMap()
@@ -34,13 +35,9 @@ class RoutingDataSource(
 
     override fun determineCurrentLookupKey(): Any {
         if (!writeOnly && TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-            if (readIdx + 1 >= readSize) {
-                readIdx = -1
-            }
-
-            return readKeyList[++readIdx]
-        } else {
-            return "WRITE"
+            val index = readIdx.getAndIncrement() % readSize
+            return readKeyList[index]
         }
+        return "WRITE"
     }
 }
