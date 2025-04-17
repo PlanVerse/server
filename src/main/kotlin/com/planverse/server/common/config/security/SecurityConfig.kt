@@ -24,69 +24,47 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 class SecurityConfig(
     private val jwtTokenProvider: JwtTokenProvider,
 ) {
-
     @Bean
-    fun securityFilterChain(
-        http: HttpSecurity,
-        jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
-        jwtAccessDeniedHandler: JwtAccessDeniedHandler
-    ): SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity, jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint, jwtAccessDeniedHandler: JwtAccessDeniedHandler): SecurityFilterChain {
         return http
             .formLogin { it.disable() }
             .csrf { it.disable() }
             .cors { it.configurationSource(corsConfigurationSource()) }
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests {
-                it
-                    .requestMatchers(
-                        "/auth/sign-out"
-                    ).hasAnyAuthority(
-                        SystemRole.ROLE_ADMIN.name,
-                        SystemRole.ROLE_DEVELOPER.name,
-                        SystemRole.ROLE_USER.name
-                    )
-                    .requestMatchers(
-                        "/auth/**",
-                        "/actuator/prometheus"
-                    ).permitAll()
-                    .requestMatchers(
-                        "/admin/**"
-                    ).hasAnyAuthority(SystemRole.ROLE_ADMIN.name)
-                    .requestMatchers(
-                        "/actuator/**"
-                    ).hasAnyAuthority(
-                        SystemRole.ROLE_ADMIN.name,
-                        SystemRole.ROLE_DEVELOPER.name
-                    )
-                    .anyRequest().hasAnyAuthority(
-                        SystemRole.ROLE_ADMIN.name,
-                        SystemRole.ROLE_DEVELOPER.name,
-                        SystemRole.ROLE_USER.name
-                    )
+                it.requestMatchers(
+                    "/auth/sign-out"
+                ).authenticated()
+                it.requestMatchers(
+                    "/auth/**",
+                    "/actuator/prometheus"
+                ).permitAll()
+                it.requestMatchers(
+                    "/admin/**"
+                ).hasAnyAuthority(SystemRole.ROLE_ADMIN.name)
+                it.requestMatchers(
+                    "/actuator/**"
+                ).hasAnyAuthority(
+                    SystemRole.ROLE_ADMIN.name,
+                    SystemRole.ROLE_DEVELOPER.name
+                )
+                it.anyRequest().authenticated()
             }
             .exceptionHandling {
-                it
-                    .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                    .accessDeniedHandler(jwtAccessDeniedHandler)
+                it.authenticationEntryPoint(jwtAuthenticationEntryPoint).accessDeniedHandler(jwtAccessDeniedHandler)
             }
             .addFilterBefore(JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter::class.java)
             .build()
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder()
-    }
+    fun passwordEncoder(): PasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder()
 
     @Bean
-    fun bCryptPasswordEncoder(): BCryptPasswordEncoder {
-        return BCryptPasswordEncoder()
-    }
+    fun bCryptPasswordEncoder(): BCryptPasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager {
-        return authConfig.authenticationManager
-    }
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager = authConfig.authenticationManager
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
