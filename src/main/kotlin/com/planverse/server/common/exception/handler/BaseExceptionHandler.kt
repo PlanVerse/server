@@ -1,10 +1,12 @@
 package com.planverse.server.common.exception.handler
 
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.common.exception.BaseException
 import mu.KotlinLogging
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.security.authentication.BadCredentialsException
 import org.springframework.validation.FieldError
 import org.springframework.web.HttpRequestMethodNotSupportedException
@@ -40,6 +42,19 @@ class BaseExceptionHandler {
             val fieldName = (error as? FieldError)?.field ?: return@forEach
             val errorMessage = error.defaultMessage
             errors[fieldName] = errorMessage ?: "Not Exception Message"
+        }
+        val statusInfo = StatusCode.BAD_REQUEST
+        return ResponseEntity(BaseResponse.error(status = statusInfo, data = errors), statusInfo.httpStatus)
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun httpMessageNotReadableException(ex: HttpMessageNotReadableException): ResponseEntity<BaseResponse<Map<String, String>>> {
+        logger.error { ex.message }
+        val errors = mutableMapOf<String, String>()
+        when (val cause = ex.cause) {
+            is MissingKotlinParameterException -> {
+                errors[cause.parameter.name!!] = "필수값입니다."
+            }
         }
         val statusInfo = StatusCode.BAD_REQUEST
         return ResponseEntity(BaseResponse.error(status = statusInfo, data = errors), statusInfo.httpStatus)
