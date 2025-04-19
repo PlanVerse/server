@@ -32,6 +32,6 @@ abstract class BaseHistoryEntity {
     var updatedAt: LocalDateTime? = null
 
     @LastModifiedDate
-    @Column(name = "record_at", nullable = false)
-    var recordAt: LocalDateTime? = null
+    @Column(name = "changed_at", nullable = false)
+    var changedAt: LocalDateTime? = null
 }
