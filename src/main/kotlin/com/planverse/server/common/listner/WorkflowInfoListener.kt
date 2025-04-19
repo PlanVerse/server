@@ -4,9 +4,11 @@ import com.planverse.server.common.util.BeanUtil
 import com.planverse.server.workflow.entity.WorkflowHistoryEntity
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
 import com.planverse.server.workflow.repository.WorkflowHistoryRepository
+import jakarta.persistence.PostPersist
 import jakarta.persistence.PreUpdate
 
 class WorkflowInfoListener {
+    @PostPersist
     @PreUpdate
     fun preUpdate(before: WorkflowInfoEntity) {
         val workflowHistoryRepository = BeanUtil.getBean(WorkflowHistoryRepository::class.java)
