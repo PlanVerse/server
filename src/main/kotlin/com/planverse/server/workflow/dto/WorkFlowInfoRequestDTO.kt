@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
@@ -20,7 +21,7 @@ data class WorkFlowInfoRequestDTO(
     @field:NotBlank
     @field:Size(max = 500)
     var title: String,
-    @field:NotNull
+    @field:NotEmpty
     var content: Map<String, Any>? = emptyMap(),
 
     var assignInfo: List<Long>? = null,
