@@ -8,8 +8,6 @@ sealed class Constant {
         const val DEL_N: String = "N"
         const val FLAG_Y: String = "Y"
         const val FLAG_N: String = "N"
-        const val FLAG_TRUE: Boolean = true
-        const val FLAG_FALSE: Boolean = false
         const val REFRESH_TOKEN_KEY = "refresh_token"
         const val BLACKLIST_TOKEN_KEY = "blacklist"
 

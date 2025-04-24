@@ -91,7 +91,7 @@ class ProjectService(
         }.let {
             it.forEach { member ->
                 if (member.creator) {
-                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, member.userInfoId, Constant.FLAG_TRUE))
+                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, member.userInfoId, true))
                 }
             }
         }
@@ -101,7 +101,7 @@ class ProjectService(
                 throw BaseException(StatusCode.PROJECT_CREATOR_IS_ALREADY_MEMBER)
             } else {
                 userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { inviteUserInfo ->
-                    val projectMemberInfoEntity = ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserInfo.id!!, Constant.FLAG_FALSE)
+                    val projectMemberInfoEntity = ProjectMemberInfoDTO.toEntity(projectInfoId, teamId, inviteUserInfo.id!!, false)
 
                     projectMemberInfoRepository.save(projectMemberInfoEntity)
                 }
@@ -111,7 +111,7 @@ class ProjectService(
 
     @Transactional
     fun modifyProjectInfo(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
-        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, userInfo.id!!, true, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.let { member ->
             projectInfoRepository.findById(member.projectInfoId).orElseThrow {
@@ -134,7 +134,7 @@ class ProjectService(
             throw BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.run {
             val teamInfoId = this[0].teamInfoId
-            val teamMembers = teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId, Constant.FLAG_FALSE, Constant.DEL_N).orElseThrow {
+            val teamMembers = teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId, false, Constant.DEL_N).orElseThrow {
                 BaseException(StatusCode.TEAM_MEMBER_NOT_FOUND)
             }.let {
                 if (!it.stream().map { member -> member.userInfoId }.toList().contains(userInfo.id)) {
@@ -158,7 +158,7 @@ class ProjectService(
                 }.filter {
                     it !in teamMembers.stream().map { teamMember -> teamMember }.toList()
                 }.forEach {
-                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoUpdateRequestDTO.projectInfoId, teamInfoId, it, Constant.FLAG_FALSE))
+                    projectMemberInfoRepository.save(ProjectMemberInfoDTO.toEntity(projectInfoUpdateRequestDTO.projectInfoId, teamInfoId, it, false))
                 }
             }
 
@@ -176,7 +176,7 @@ class ProjectService(
                 }.filter {
                     it !in teamMembers.stream().map { teamMember -> teamMember }.toList()
                 }.forEach {
-                    projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, it, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+                    projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoUpdateRequestDTO.projectInfoId, it, true, Constant.DEL_N).orElseThrow {
                         BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
                     }.let { excludeMemberInfo ->
                         excludeMemberInfo.deleteYn = Constant.DEL_Y
@@ -189,7 +189,7 @@ class ProjectService(
 
     @Transactional
     fun modifyProjectImage(userInfo: UserInfo, projectInfoId: Long, multipartFile: MultipartFile) {
-        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        projectMemberInfoRepository.findByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, true, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.let {
             fileService.deleteFilePass(Constant.FILE_TARGET_PROJECT, projectInfoId).also {

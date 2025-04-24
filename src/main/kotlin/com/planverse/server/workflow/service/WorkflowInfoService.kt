@@ -84,7 +84,7 @@ class WorkflowInfoService(
         }
 
         // 프로젝트 생성자 여부 판단
-        if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N)) {
+        if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, true, Constant.DEL_N)) {
             throw BaseException(StatusCode.NOT_PROJECT_CREATOR)
         }
 
@@ -116,7 +116,7 @@ class WorkflowInfoService(
             throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
         }.let { workFlow ->
             // 프로젝트 생성자 여부 판단
-            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N)) {
+            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndCreatorAndDeleteYn(projectInfoId, userInfo.id!!, true, Constant.DEL_N)) {
                 throw BaseException(StatusCode.NOT_PROJECT_CREATOR)
             }
 

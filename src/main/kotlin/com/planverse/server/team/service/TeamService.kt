@@ -31,7 +31,7 @@ class TeamService(
 ) {
 
     private fun getCreatorDTO(teamMemberId: Long): TeamMemberInfoDTO {
-        return teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        return teamMemberInfoRepository.findByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, true, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let { creator ->
             val creatorUserInfo = userInfoRepository.findById(creator.userInfoId).orElseThrow {
@@ -43,7 +43,7 @@ class TeamService(
     }
 
     private fun getMemberDTOs(teamMemberId: Long): List<TeamMemberInfoDTO> {
-        return teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, Constant.FLAG_FALSE, Constant.DEL_N).orElse(emptyList()).map { member ->
+        return teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamMemberId, false, Constant.DEL_N).orElse(emptyList()).map { member ->
             val memberUserInfo = userInfoRepository.findById(member.userInfoId).orElseThrow {
                 BaseException(StatusCode.USER_NOT_FOUND)
             }
@@ -111,14 +111,14 @@ class TeamService(
 
     fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
         // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N, pageable).map { creator ->
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, true, Constant.DEL_N, pageable).map { creator ->
             getCreateTeamInfoDTO(userInfo.id!!, creator)
         }
     }
 
     fun getTeamListMember(userInfo: UserInfo, pageable: Pageable): Slice<TeamInfoDTO> {
         // 팀 멤버 정보를 페이지네이션으로 조회
-        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, Constant.FLAG_FALSE, Constant.DEL_N, pageable).map { member ->
+        return teamMemberInfoRepository.findAllByUserInfoIdAndCreatorAndDeleteYn(userInfo.id!!, false, Constant.DEL_N, pageable).map { member ->
             // 팀 정보 조회
             val teamInfoDTO = teamInfoRepository.findById(member.teamInfoId).orElseThrow {
                 BaseException(StatusCode.TEAM_NOT_FOUND)
@@ -152,14 +152,14 @@ class TeamService(
     fun createTeam(userInfo: UserInfo, teamInfoRequestDTO: TeamInfoRequestDTO) {
         val teamId = teamInfoRepository.save(teamInfoRequestDTO.toEntity()).id
 
-        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, Constant.FLAG_TRUE))
+        teamMemberInfoRepository.save(TeamMemberInfoDTO.toEntity(userInfo.id!!, teamId!!, true))
 
         teamInfoRequestDTO.invite?.forEach { inviteEmail ->
             if (inviteEmail == userInfo.email) {
                 throw BaseException(StatusCode.TEAM_CREATOR_IS_ALREADY_MEMBER)
             } else {
                 userInfoRepository.findByEmailAndDeleteYn(inviteEmail, Constant.DEL_N).ifPresent { inviteUserInfo ->
-                    val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(inviteUserInfo.id!!, teamId, Constant.FLAG_FALSE)
+                    val teamMemberInfoEntity = TeamMemberInfoDTO.toEntity(inviteUserInfo.id!!, teamId, false)
                     teamMemberInfoRepository.save(teamMemberInfoEntity)
                 }
             }
@@ -168,7 +168,7 @@ class TeamService(
 
     @Transactional
     fun modifyTeamInfo(userInfo: UserInfo, teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO) {
-        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N)
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamInfoUpdateRequestDTO.teamId, userInfo.id!!, true, Constant.DEL_N)
             .orElseThrow {
                 BaseException(StatusCode.TEAM_NOT_FOUND)
             }.let { member ->
@@ -207,7 +207,7 @@ class TeamService(
                 }.filterNot {
                     it in existingMemberIds
                 }.forEach { newUserId ->
-                    val newMember = TeamMemberInfoDTO.toEntity(newUserId, teamInfoUpdateRequestDTO.teamId, Constant.FLAG_FALSE)
+                    val newMember = TeamMemberInfoDTO.toEntity(newUserId, teamInfoUpdateRequestDTO.teamId, false)
                     teamMemberInfoRepository.save(newMember)
                 }
             }
@@ -228,7 +228,7 @@ class TeamService(
                     val member = teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(
                         teamInfoUpdateRequestDTO.teamId,
                         userIdToExclude,
-                        Constant.FLAG_TRUE,
+                        true,
                         Constant.DEL_N
                     ).orElseThrow {
                         BaseException(StatusCode.TEAM_CREATOR_CANNOT_EXCLUDE)
@@ -243,7 +243,7 @@ class TeamService(
 
     @Transactional
     fun modifyTeamImage(userInfo: UserInfo, teamId: Long, multipartFile: MultipartFile) {
-        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, Constant.FLAG_TRUE, Constant.DEL_N).orElseThrow {
+        teamMemberInfoRepository.findByTeamInfoIdAndUserInfoIdAndCreatorAndDeleteYn(teamId, userInfo.id!!, true, Constant.DEL_N).orElseThrow {
             BaseException(StatusCode.TEAM_NOT_FOUND)
         }.let {
             fileService.deleteFilePass(Constant.FILE_TARGET_TEAM, teamId).also {
