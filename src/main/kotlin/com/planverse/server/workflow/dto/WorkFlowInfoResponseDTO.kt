@@ -14,6 +14,8 @@ data class WorkFlowInfoResponseDTO(
     var title: String,
     var content: Map<String, Any>? = emptyMap(),
 
+    var detailInfo: WorkFlowDetailInfoDTO? = null,
+
     var stepInfo: StepInfoDTO? = null,
 
     var assignInfo: List<AssignInfoResponseDTO>? = null,

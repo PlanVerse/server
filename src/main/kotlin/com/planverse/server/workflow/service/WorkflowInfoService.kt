@@ -12,10 +12,13 @@ import com.planverse.server.step.dto.StepInfoDTO
 import com.planverse.server.step.repository.StepInfoRepository
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.repository.UserInfoRepository
+import com.planverse.server.workflow.dto.WorkFlowDetailInfoDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoRequestDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoResponseDTO
 import com.planverse.server.workflow.dto.WorkFlowInfoUpdateRequestDTO
+import com.planverse.server.workflow.entity.WorkflowDetailInfoEntity
 import com.planverse.server.workflow.entity.WorkflowInfoEntity
+import com.planverse.server.workflow.repository.WorkflowDetailInfoRepository
 import com.planverse.server.workflow.repository.WorkflowInfoRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -29,19 +32,28 @@ class WorkflowInfoService(
     private val projectInfoRepository: ProjectInfoRepository,
     private val projectMemberInfoRepository: ProjectMemberInfoRepository,
     private val workflowInfoRepository: WorkflowInfoRepository,
+    private val workflowDetailInfoRepository: WorkflowDetailInfoRepository,
     private val stepInfoRepository: StepInfoRepository,
     private val assignInfoRepository: AssignInfoRepository,
 ) {
     private fun getWorkFLowInfo(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoResponseDTO {
-        return WorkFlowInfoResponseDTO.toDto(workflowInfoEntity).also { workflow ->
+        return WorkFlowInfoResponseDTO.toDto(workflowInfoEntity).also { workflowInfo ->
+            val workflowInfoId = workflowInfo.id ?: throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
+
+            workflowDetailInfoRepository.findByWorkflowInfoId(workflowInfoId).orElseThrow {
+                throw BaseException(StatusCode.WORKFLOW_DETAIL_NOT_FOUND)
+            }.let { detailInfo ->
+                workflowInfo.detailInfo = WorkFlowDetailInfoDTO.toDto(detailInfo)
+            }
+
             stepInfoRepository.findById(workflowInfoEntity.stepInfoId).orElseThrow {
                 throw BaseException(StatusCode.WORKFLOW_STEP_NOT_FOUND)
             }.let { stepInfo ->
-                workflow.stepInfo = StepInfoDTO.toDto(stepInfo)
+                workflowInfo.stepInfo = StepInfoDTO.toDto(stepInfo)
             }
 
-            workflow.assignInfo = buildList {
-                assignInfoRepository.findAllByWorkflowInfoId(workflow.id!!).orElse(emptyList()).let { assignInfos ->
+            workflowInfo.assignInfo = buildList {
+                assignInfoRepository.findAllByWorkflowInfoId(workflowInfoId).orElse(emptyList()).let { assignInfos ->
                     assignInfos.map { assignInfo ->
                         userInfoRepository.findById(assignInfo.userInfoId).orElseThrow {
                             throw BaseException(StatusCode.USER_NOT_FOUND)
@@ -54,15 +66,13 @@ class WorkflowInfoService(
         }
     }
 
-    private fun getWorkFLowInfo(userInfo: UserInfo, workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoResponseDTO {
-        return this.getWorkFLowInfo(workflowInfoEntity).also {
-            if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(workflowInfoEntity.projectInfoId, userInfo.id!!, Constant.DEL_N)) {
-                throw BaseException(StatusCode.NOT_PROJECT_MEMBER)
-            }
-        }
-    }
-
     fun getWorkflowList(userInfo: UserInfo, projectInfoId: Long, pageable: Pageable): Slice<WorkFlowInfoResponseDTO> {
+        projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId, userInfo.id!!, Constant.DEL_N).takeIf { isMember ->
+            !isMember
+        }?.let {
+            throw BaseException(StatusCode.NOT_PROJECT_MEMBER)
+        }
+
         return workflowInfoRepository.findAllByProjectInfoIdAndDeleteYn(projectInfoId, Constant.DEL_N, pageable).map { workflowInfo ->
             getWorkFLowInfo(workflowInfo)
         }
@@ -71,7 +81,15 @@ class WorkflowInfoService(
     fun getWorkflowContent(userInfo: UserInfo, workflowInfoId: Long): WorkFlowInfoResponseDTO {
         return workflowInfoRepository.findById(workflowInfoId).orElseThrow {
             throw BaseException(StatusCode.WORKFLOW_NOT_FOUND)
-        }.let { getWorkFLowInfo(userInfo, it) }
+        }.let { workflowInfo ->
+            getWorkFLowInfo(workflowInfo).also {
+                projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(it.projectInfoId, userInfo.id!!, Constant.DEL_N).takeIf { isMember ->
+                    !isMember
+                }?.let {
+                    throw BaseException(StatusCode.NOT_PROJECT_MEMBER)
+                }
+            }
+        }
     }
 
     @Transactional
@@ -96,14 +114,15 @@ class WorkflowInfoService(
         val workflowInfoEntity = workFlowInfoRequestDTO.toEntity()
         workflowInfoRepository.save(workflowInfoEntity)
 
+        // 상세 정보 생성
+        workflowDetailInfoRepository.save(WorkflowDetailInfoEntity(workflowInfoId = workflowInfoEntity.id!!))
+
         // 할당대상이 프로젝트에 소속된 멤버인지 판단
         workFlowInfoRequestDTO.assignInfo?.map {
             if (!projectMemberInfoRepository.existsByProjectInfoIdAndUserInfoIdAndDeleteYn(projectInfoId, it, Constant.DEL_N)) {
                 throw BaseException(StatusCode.PROJECT_MEMBER_NOT_FOUND)
             }
-        }
 
-        workFlowInfoRequestDTO.assignInfo?.map {
             assignInfoRepository.save(AssignInfoDTO.toEntity(workflowInfoEntity.id!!, it))
         }
     }

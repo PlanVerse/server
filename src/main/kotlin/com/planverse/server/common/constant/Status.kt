@@ -32,7 +32,8 @@ enum class StatusCode(
     PROJECT_CREATOR_NOT_FOUND("2008", "프로젝트 생성자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PROJECT_CREATOR_IS_ALREADY_MEMBER("2009", "프로젝트 생성자는 이미 프로젝트에 소속되어있습니다.", HttpStatus.NOT_FOUND),
     WORKFLOW_NOT_FOUND("2010", "워크플로우 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
-    WORKFLOW_STEP_NOT_FOUND("2011", "워크플로우 진행 단계 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    WORKFLOW_DETAIL_NOT_FOUND("2011", "워크플로우 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    WORKFLOW_STEP_NOT_FOUND("2012", "워크플로우 진행 단계 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     NOT_PROJECT_MEMBER("3002", "프로젝트에 소속되어있지 않습니다.", HttpStatus.BAD_REQUEST),
     PROJECT_MEMBER_NOT_FOUND("3003", "프로젝트에 소속된 멤버만 할당 가능합니다.", HttpStatus.BAD_REQUEST),
