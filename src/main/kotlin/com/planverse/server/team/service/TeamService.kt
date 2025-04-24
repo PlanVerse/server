@@ -98,7 +98,7 @@ class TeamService(
             val creatorAndMemberUserInfoIds = arrayListOf(creatorDTO.userInfoId, memberDTOs.stream().map { it.userInfoId }.toList())
 
             if (!creatorAndMemberUserInfoIds.contains(userInfo.id)) {
-                throw BaseException(StatusCode.TEAM_NOT_FOUND)
+                throw BaseException(StatusCode.NOT_TEAM_MEMBER)
             }
         }
 
@@ -136,7 +136,7 @@ class TeamService(
                 val creatorAndMemberUserInfoIds = arrayListOf(creatorDTO.userInfoId, memberDTOs.stream().map { it.userInfoId }.toList())
 
                 if (!creatorAndMemberUserInfoIds.contains(userInfo.id)) {
-                    throw BaseException(StatusCode.TEAM_NOT_FOUND)
+                    throw BaseException(StatusCode.NOT_TEAM_MEMBER)
                 }
             }
 
