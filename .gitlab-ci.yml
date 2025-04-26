@@ -37,7 +37,7 @@ build:
     - ./gradlew jib --no-daemon
     - echo "jib 완료"
   tags:
-    - shared-mac
+    - macos
 
 deploy:
   stage: deploy
@@ -64,4 +64,4 @@ deploy:
   after_script:
     - docker logout
   tags:
-    - shared-mac
+    - macos
