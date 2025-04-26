@@ -6,6 +6,7 @@ import com.planverse.server.common.dto.Jwt
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.common.service.BlacklistTokenService
 import com.planverse.server.common.service.RefreshTokenService
+import com.planverse.server.common.util.DateUtil
 import com.planverse.server.common.util.RedisUtil
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.entity.UserInfoEntity
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.stream.Collectors
 import javax.crypto.spec.SecretKeySpec
+import kotlin.math.absoluteValue
 
 @Component
 class JwtTokenProvider(
@@ -91,7 +93,8 @@ class JwtTokenProvider(
 
         return Jwt(
             "Bearer",
-            accessToken
+            accessToken,
+            DateUtil.diffFromNowInMilliseconds(accessTokenExpr).absoluteValue,
         )
     }
 
