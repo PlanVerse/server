@@ -40,7 +40,7 @@ class ProjectService(
 ) {
 
     fun getProjectInfo(userInfo: UserInfo, projectInfoId: Long): ProjectAndMemberAndTeamInfoDTO {
-        val projectAndMemberAndTeamInfo: ProjectAndMemberAndTeamInfoDTO = checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectInfoId)) {
+        return checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectInfoId)) {
             throw BaseException(StatusCode.PROJECT_NOT_FOUND)
         }.apply {
             if (this.teamInfo?.private == true) {
@@ -55,12 +55,16 @@ class ProjectService(
 
             this.projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, projectInfoId)
         }
-
-        return projectAndMemberAndTeamInfo
     }
 
     fun getProjectInfoList(userInfo: UserInfo, teamInfoId: Long, pageable: Pageable): Slice<ProjectAndMemberAndTeamInfoDTO> {
-        return projectInfoRepository.findAllByTeamInfoIdAndDeleteYn(teamInfoId, Constant.DEL_N, pageable).map {
+        teamMemberInfoRepository.existsByTeamInfoIdAndUserInfoIdAndDeleteYn(teamInfoId, userInfo.id!!, Constant.DEL_N).takeIf { isMember ->
+            !isMember
+        }?.let {
+            throw BaseException(StatusCode.TEAM_MEMBER_NOT_FOUND)
+        }
+
+        return projectInfoRepository.findAllByTeamInfoIdAndUserInfoIdAndDeleteYnOnlyMember(teamInfoId, userInfo.id!!, pageable).map {
             val projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, it.id!!)
 
             val projectMemberInfos: List<ProjectMemberInfoDTO> = projectMemberInfoRepository.findAllByProjectInfoId(it.id!!).orElse(emptyList()).map { entity ->
@@ -87,7 +91,7 @@ class ProjectService(
         val teamId = projectInfoRequestDTO.teamInfoId
 
         teamMemberInfoMapper.selectTeamMemberInfoForCreator(TeamInfoUpdateRequestDTO(teamId = teamId, creatorUserInfoId = userInfo.id)).ifEmpty {
-            throw BaseException(StatusCode.TEAM_NOT_FOUND)
+            throw BaseException(StatusCode.NOT_TEAM_CREATOR)
         }.let {
             it.forEach { member ->
                 if (member.creator) {
@@ -131,7 +135,7 @@ class ProjectService(
     fun inviteProjectMember(userInfo: UserInfo, projectInfoUpdateRequestDTO: ProjectInfoUpdateRequestDTO) {
         projectInfoUpdateRequestDTO.creatorUserInfoId = userInfo.id
         projectMemberInfoMapper.selectProjectMemberInfoForCreator(projectInfoUpdateRequestDTO).ifEmpty {
-            throw BaseException(StatusCode.PROJECT_NOT_FOUND)
+            throw BaseException(StatusCode.NOT_PROJECT_CREATOR)
         }.run {
             val teamInfoId = this[0].teamInfoId
             val teamMembers = teamMemberInfoRepository.findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId, false, Constant.DEL_N).orElseThrow {
