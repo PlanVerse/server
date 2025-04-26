@@ -9,7 +9,7 @@ data class TeamInfoUpdateRequestDTO(
     @field:NotNull
     @field:Min(1)
     val teamId: Long,
-    val name: String? = null,
+    val name: String = "",
     val description: String? = null,
     val private: Boolean? = false,
     val invite: List<String>? = null,

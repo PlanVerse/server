@@ -23,9 +23,9 @@ class TeamController(
         return BaseResponse.success(res)
     }
 
-    @GetMapping("/list/creator")
-    fun getTeamListCreator(userInfo: UserInfo, pageable: Pageable): BaseResponse<Slice<TeamInfoDTO>> {
-        val res = teamService.getTeamListCreator(userInfo, pageable)
+    @GetMapping("/list/create")
+    fun getTeamListCreate(userInfo: UserInfo, pageable: Pageable): BaseResponse<Slice<TeamInfoDTO>> {
+        val res = teamService.getTeamListCreate(userInfo, pageable)
         return BaseResponse.success(res)
     }
 
@@ -47,9 +47,9 @@ class TeamController(
         return BaseResponse.success()
     }
 
-    @PutMapping("/invite")
-    fun inviteTeamMember(userInfo: UserInfo, @Validated @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
-        teamService.inviteTeamMember(userInfo, teamInfoUpdateRequestDTO)
+    @PutMapping("/member")
+    fun modifyTeamMember(userInfo: UserInfo, @Validated @RequestBody teamInfoUpdateRequestDTO: TeamInfoUpdateRequestDTO): BaseResponse<Any> {
+        teamService.modifyTeamMember(userInfo, teamInfoUpdateRequestDTO)
         return BaseResponse.success()
     }
 
