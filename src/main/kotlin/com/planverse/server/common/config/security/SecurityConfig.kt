@@ -41,10 +41,14 @@ class SecurityConfig(
                 ).permitAll()
                 it.requestMatchers(
                     "/admin/**"
-                ).hasAnyAuthority(SystemRole.ROLE_ADMIN.name)
+                ).hasAnyAuthority(
+                    SystemRole.ROLE_SUPER_ADMIN.name,
+                    SystemRole.ROLE_ADMIN.name
+                )
                 it.requestMatchers(
                     "/actuator/**"
                 ).hasAnyAuthority(
+                    SystemRole.ROLE_SUPER_ADMIN.name,
                     SystemRole.ROLE_ADMIN.name,
                     SystemRole.ROLE_DEVELOPER.name
                 )

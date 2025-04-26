@@ -44,19 +44,26 @@ class JwtTokenProvider(
             .map { obj: GrantedAuthority -> obj.authority }
             .collect(Collectors.joining(","))
 
-        val now = Date()
+        // 유저 정보 가져오기
+        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
 
-        val accessTokenExpr = if (authorities.equals(SystemRole.ROLE_ADMIN.name, ignoreCase = true)) {
+        val now = Date()
+        val accessTokenExpr = if (authorities.equals(SystemRole.ROLE_SUPER_ADMIN.name, ignoreCase = true)) {
+            RedisUtil.setWithExpiryYear(userInfoEntity.key!!, userInfoEntity.id!!.toString(), 10)
+
+            // 10년
+            DateUtils.addYears(now, 10)
+        } else if (authorities.equals(SystemRole.ROLE_ADMIN.name, ignoreCase = true)) {
+            RedisUtil.setWithExpiryHour(userInfoEntity.key!!, userInfoEntity.id!!.toString(), 4)
+
             // 4시간
             DateUtils.addHours(now, 4)
         } else {
+            RedisUtil.setWithExpiryHour(userInfoEntity.key!!, userInfoEntity.id!!.toString(), 2)
+
             // 2시간
             DateUtils.addHours(now, 2)
         }
-        // 6달
-        val refreshTokenExpr = DateUtils.addMonths(now, 6)
-
-        val userInfoEntity = authentication.principal.let { principal -> principal as UserInfoEntity }
 
         // Access Token 생성
         val accessToken = Jwts.builder()
@@ -70,7 +77,8 @@ class JwtTokenProvider(
             .signWith(secretKey)
             .compact()
 
-        RedisUtil.setWithExpiryHour(userInfoEntity.key!!, userInfoEntity.id!!.toString(), 2)
+        // 6달
+        val refreshTokenExpr = DateUtils.addMonths(now, 6)
 
         // Refresh Token 생성
         val refreshToken = Jwts.builder()
