@@ -1,5 +1,6 @@
 package com.planverse.server.workflow.dto
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.planverse.server.workflow.entity.WorkflowDetailInfoEntity
 import java.time.LocalDateTime
@@ -8,7 +9,9 @@ import java.time.LocalDateTime
 data class WorkFlowDetailInfoDTO(
     var id: Long? = null,
     var workflowInfoId: Long,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     var startAt: LocalDateTime? = null,
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     var endAt: LocalDateTime? = null,
 ) {
     companion object {
