@@ -37,7 +37,7 @@ build:
     - ./gradlew jib --no-daemon
     - echo "jib 완료"
   tags:
-    - macos
+    - shared-mac
 
 deploy:
   stage: deploy
@@ -51,13 +51,11 @@ deploy:
   before_script:
     - docker login $CI_REGISTRY -u $TOKEN_USER --password $TOKEN_PWD
   script:
-    - echo "Docker 작업 시작"
+    - echo "Docker pull 시작"
     - docker pull $IMAGE_PATH
     - echo "Docker pull 완료"
-    - docker stop $CONTAINER_NAME;echo $?
-    - echo "Docker Container 정지 완료"
-    - docker rm -f $CONTAINER_NAME;echo $?
-    - echo "Docker Container 제거 완료"
+    - docker stop $CONTAINER_NAME || true && docker rm -f $CONTAINER_NAME || true
+    - echo "Docker Container 정지, 제거 완료"
     - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
     - echo "Docker Container 실행 완료"
     - docker system prune -f
@@ -66,4 +64,4 @@ deploy:
   after_script:
     - docker logout
   tags:
-    - winos
+    - shared-mac
