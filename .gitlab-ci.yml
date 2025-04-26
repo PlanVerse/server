@@ -44,8 +44,8 @@ deploy:
   needs: [ build ]
   variables:
     IMAGE_PATH: $CI_REGISTRY_IMAGE:$CI_COMMIT_BRANCH
-    CONTAINER_NAME: $CI_PROJECT_NAME-$CI_COMMIT_REF_NAME
-    VOLUME_PATH: "C:/service/planverse"
+    CONTAINER_NAME: planverse-$CI_COMMIT_REF_NAME
+    VOLUME_PATH: "/Users/seoeungi/planverse"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH || $CI_COMMIT_BRANCH == "dev"
   before_script:
@@ -56,7 +56,7 @@ deploy:
     - echo "Docker pull 완료"
     - docker stop $CONTAINER_NAME || true && docker rm -f $CONTAINER_NAME || true
     - echo "Docker Container 정지, 제거 완료"
-    - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/planverse --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
+    - docker run -d -p ${APP_PORT}:${APP_PORT} -v ${VOLUME_PATH}:/${CONTAINER_NAME} --restart=unless-stopped --name $CONTAINER_NAME $IMAGE_PATH
     - echo "Docker Container 실행 완료"
     - docker system prune -f
     - echo "Docker 불필요 리소스 제거 완료"
