@@ -19,6 +19,8 @@ enum class StatusCode(
     EXPIRED_AUTH_EMAIL_REQUEST("1006", "인증 요청이 만료되었습니다. 재시도 부탁드립니다.", HttpStatus.BAD_REQUEST),
     ALREADY_AUTH_EMAIL("1007", "이미 인증된 사용자 입니다.", HttpStatus.BAD_REQUEST),
     NOT_EXPECT("1008", "예상결과과 다릅니다.", HttpStatus.BAD_REQUEST),
+    METHOD_NOT_ALLOW("1009", "허용되지 않은 요청입니다.", HttpStatus.METHOD_NOT_ALLOWED),
+    METHOD_NOT_SUPPORT("1010", "지원하지 않는 요청입니다.", HttpStatus.METHOD_NOT_ALLOWED),
 
     // Common
     NOT_EXISTS_REQUEST("2000", "찾을 수 없는 요청 정보입니다.", HttpStatus.NOT_FOUND),
