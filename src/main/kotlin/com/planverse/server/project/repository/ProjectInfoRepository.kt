@@ -19,4 +19,15 @@ interface ProjectInfoRepository : JpaRepository<ProjectInfoEntity, Long> {
           AND pi.deleteYn = 'N'
     """)
     fun findAllByTeamInfoIdAndUserInfoIdAndDeleteYnOnlyMember(teamInfoId: Long, userInfoId: Long, pageable: Pageable): Slice<ProjectInfoEntity>
+
+    @Query("""
+        SELECT
+            pi
+        FROM ProjectInfoEntity pi
+        JOIN ProjectMemberInfoEntity pmi ON pmi.projectInfoId = pi.id AND pmi.userInfoId = :userInfoId AND pmi.deleteYn = 'N'
+        WHERE pi.teamInfoId IN (:teamInfoIds)
+          AND pi.deleteYn = 'N'
+        ORDER BY pi.createdAt DESC
+    """)
+    fun findAllByTeamInfoIdsAndUserInfoIdAndDeleteYnOnlyMemberOrderByCreatedAtDesc(teamInfoIds: List<Long>, userInfoId: Long, pageable: Pageable): Slice<ProjectInfoEntity>
 }

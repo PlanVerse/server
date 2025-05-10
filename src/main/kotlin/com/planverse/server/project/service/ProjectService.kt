@@ -12,8 +12,10 @@ import com.planverse.server.project.mapper.ProjectInfoMapper
 import com.planverse.server.project.mapper.ProjectMemberInfoMapper
 import com.planverse.server.project.repository.ProjectInfoRepository
 import com.planverse.server.project.repository.ProjectMemberInfoRepository
+import com.planverse.server.team.dto.TeamInfoDTO
 import com.planverse.server.team.dto.TeamInfoUpdateRequestDTO
 import com.planverse.server.team.mapper.TeamMemberInfoMapper
+import com.planverse.server.team.repository.TeamInfoRepository
 import com.planverse.server.team.repository.TeamMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
 import com.planverse.server.user.repository.UserInfoRepository
@@ -30,6 +32,7 @@ class ProjectService(
 
     private val userInfoRepository: UserInfoRepository,
 
+    private val teamInfoRepository: TeamInfoRepository,
     private val teamMemberInfoRepository: TeamMemberInfoRepository,
     private val projectInfoRepository: ProjectInfoRepository,
     private val projectMemberInfoRepository: ProjectMemberInfoRepository,
@@ -38,6 +41,42 @@ class ProjectService(
     private val projectInfoMapper: ProjectInfoMapper,
     private val projectMemberInfoMapper: ProjectMemberInfoMapper,
 ) {
+
+    fun getAllProjectInfoList(userInfo: UserInfo, pageable: Pageable): Slice<ProjectAndMemberAndTeamInfoDTO> {
+        val teamInfoIds = teamMemberInfoRepository.findAllByUserInfoIdAndDeleteYn(userInfo.id!!, Constant.DEL_N).orElseThrow {
+            BaseException(StatusCode.TEAM_NOT_FOUND)
+        }.let {
+            buildList { it.forEach { teamMember -> add(teamMember.teamInfoId) } }
+        }
+
+        return projectInfoRepository.findAllByTeamInfoIdsAndUserInfoIdAndDeleteYnOnlyMemberOrderByCreatedAtDesc(teamInfoIds, userInfo.id!!, pageable).map {
+            val projectProfileImage = fileService.getFileUrl(Constant.FILE_TARGET_PROJECT, it.id!!)
+
+            val teamInfo = teamInfoRepository.findById(it.teamInfoId).orElseThrow {
+                BaseException(StatusCode.TEAM_NOT_FOUND)
+            }.let { teamInfo ->
+                TeamInfoDTO.toDto(teamInfo)
+            }
+
+            val projectMemberInfos: List<ProjectMemberInfoDTO> = projectMemberInfoRepository.findAllByProjectInfoId(it.id!!).orElse(emptyList()).map { entity ->
+                val userInfoEntity = userInfoRepository.findById(entity.userInfoId).orElseThrow {
+                    BaseException(StatusCode.USER_NOT_FOUND)
+                }
+                ProjectMemberInfoDTO.toDto(entity, userInfoEntity)
+            }
+
+            ProjectAndMemberAndTeamInfoDTO(
+                id = it.id,
+                key = it.key!!,
+                name = it.name,
+                description = it.description,
+                projectProfileImage = projectProfileImage,
+                teamInfo = teamInfo,
+                projectMemberInfos = projectMemberInfos,
+            )
+        }
+    }
+
 
     fun getProjectInfo(userInfo: UserInfo, projectInfoId: Long): ProjectAndMemberAndTeamInfoDTO {
         return checkNotNull(projectInfoMapper.selectProjectAndMemberAndTeamInfo(projectInfoId)) {

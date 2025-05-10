@@ -12,5 +12,6 @@ interface TeamMemberInfoRepository : JpaRepository<TeamMemberInfoEntity, Long> {
     fun findAllByTeamInfoIdAndCreatorAndDeleteYn(teamInfoId: Long, creator: Boolean, deleteYn: String): Optional<List<TeamMemberInfoEntity>>
     fun findAllByUserInfoIdAndCreatorAndDeleteYn(userInfoId: Long, creator: Boolean, deleteYn: String, pageable: Pageable): Slice<TeamMemberInfoEntity>
     fun findAllByTeamInfoIdAndDeleteYn(teamInfoId: Long, deleteYn: String): Optional<List<TeamMemberInfoEntity>>
+    fun findAllByUserInfoIdAndDeleteYn(userInfoId: Long, deleteYn: String): Optional<List<TeamMemberInfoEntity>>
     fun existsByTeamInfoIdAndUserInfoIdAndDeleteYn(teamInfoId: Long, userInfoId: Long, deleteYn: String): Boolean
 }
