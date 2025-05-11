@@ -26,17 +26,12 @@ class CommentInfoEntity(
     @Column(name = "key", nullable = false)
     var key: String? = null,
 
-    @Size(max = 255)
     @NotNull
-    @Column(name = "target", nullable = false)
-    var target: String,
-
-    @NotNull
-    @Column(name = "target_id", nullable = false)
-    var targetId: Long,
+    @Column(name = "workflow_info_id", nullable = false)
+    var workflowInfoId: Long,
 
     @NotNull
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content", nullable = false)
-    var content: List<Map<String, Any>>? = emptyList()
+    var content: Map<String, Any>? = emptyMap()
 ) : BaseEntity()
