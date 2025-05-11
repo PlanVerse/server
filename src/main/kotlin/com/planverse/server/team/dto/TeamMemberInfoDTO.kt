@@ -17,32 +17,26 @@ data class TeamMemberInfoDTO(
     var email: String? = null,
 ) {
     companion object {
-        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity): TeamMemberInfoDTO {
-            return TeamMemberInfoDTO(
-                teamMemberInfoEntity.id,
-                teamMemberInfoEntity.userInfoId,
-                teamMemberInfoEntity.teamInfoId,
-                teamMemberInfoEntity.creator,
-            )
-        }
+        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity) = TeamMemberInfoDTO(
+            teamMemberInfoEntity.id,
+            teamMemberInfoEntity.userInfoId,
+            teamMemberInfoEntity.teamInfoId,
+            teamMemberInfoEntity.creator,
+        )
 
-        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity, username: String, email: String): TeamMemberInfoDTO {
-            return TeamMemberInfoDTO(
-                teamMemberInfoEntity.id,
-                teamMemberInfoEntity.userInfoId,
-                teamMemberInfoEntity.teamInfoId,
-                teamMemberInfoEntity.creator,
-                username,
-                email,
-            )
-        }
+        fun toDto(teamMemberInfoEntity: TeamMemberInfoEntity, username: String, email: String) = TeamMemberInfoDTO(
+            teamMemberInfoEntity.id,
+            teamMemberInfoEntity.userInfoId,
+            teamMemberInfoEntity.teamInfoId,
+            teamMemberInfoEntity.creator,
+            username,
+            email,
+        )
 
-        fun toEntity(userInfoId: Long, teamInfoId: Long, creator: Boolean): TeamMemberInfoEntity {
-            return TeamMemberInfoEntity(
-                userInfoId = userInfoId,
-                teamInfoId = teamInfoId,
-                creator = creator,
-            )
-        }
+        fun toEntity(userInfoId: Long, teamInfoId: Long, creator: Boolean) = TeamMemberInfoEntity(
+            userInfoId = userInfoId,
+            teamInfoId = teamInfoId,
+            creator = creator,
+        )
     }
 }

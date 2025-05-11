@@ -12,11 +12,9 @@ data class TeamInfoRequestDTO(
     val private: Boolean? = false,
     val invite: List<String>? = null,
 ) {
-    fun toEntity(): TeamInfoEntity {
-        return TeamInfoEntity(
-            name = name,
-            description = description,
-            private = private,
-        )
-    }
+    fun toEntity() = TeamInfoEntity(
+        name = name,
+        description = description,
+        private = private,
+    )
 }

@@ -20,30 +20,24 @@ data class ProjectMemberInfoDTO(
     var email: String? = null,
 ) {
     companion object {
-        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity): ProjectMemberInfoDTO {
-            return ProjectMemberInfoDTO(
-                id = projectMemberInfoEntity.id,
-                projectInfoId = projectMemberInfoEntity.projectInfoId,
-                teamInfoId = projectMemberInfoEntity.teamInfoId,
-                userInfoId = projectMemberInfoEntity.userInfoId,
-                creator = projectMemberInfoEntity.creator
-            )
+        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity) = ProjectMemberInfoDTO(
+            id = projectMemberInfoEntity.id,
+            projectInfoId = projectMemberInfoEntity.projectInfoId,
+            teamInfoId = projectMemberInfoEntity.teamInfoId,
+            userInfoId = projectMemberInfoEntity.userInfoId,
+            creator = projectMemberInfoEntity.creator
+        )
+
+        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity, userInfoEntity: UserInfoEntity) = this.toDto(projectMemberInfoEntity).apply {
+            username = userInfoEntity.name
+            email = userInfoEntity.email
         }
 
-        fun toDto(projectMemberInfoEntity: ProjectMemberInfoEntity, userInfoEntity: UserInfoEntity): ProjectMemberInfoDTO {
-            return this.toDto(projectMemberInfoEntity).apply {
-                username = userInfoEntity.name
-                email = userInfoEntity.email
-            }
-        }
-
-        fun toEntity(projectInfoId: Long, teamInfoId: Long, userInfoId: Long, creator: Boolean): ProjectMemberInfoEntity {
-            return ProjectMemberInfoEntity(
-                projectInfoId = projectInfoId,
-                teamInfoId = teamInfoId,
-                userInfoId = userInfoId,
-                creator = creator,
-            )
-        }
+        fun toEntity(projectInfoId: Long, teamInfoId: Long, userInfoId: Long, creator: Boolean) = ProjectMemberInfoEntity(
+            projectInfoId = projectInfoId,
+            teamInfoId = teamInfoId,
+            userInfoId = userInfoId,
+            creator = creator,
+        )
     }
 }

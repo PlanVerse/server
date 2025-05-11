@@ -22,11 +22,9 @@ data class ProjectInfoRequestDTO(
 
     val invite: List<String>? = null,
 ) {
-    fun toEntity(): ProjectInfoEntity {
-        return ProjectInfoEntity(
-            name = name,
-            description = description,
-            teamInfoId = teamInfoId
-        )
-    }
+    fun toEntity() = ProjectInfoEntity(
+        name = name,
+        description = description,
+        teamInfoId = teamInfoId
+    )
 }

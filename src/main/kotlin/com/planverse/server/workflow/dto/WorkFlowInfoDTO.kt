@@ -13,37 +13,31 @@ data class WorkFlowInfoDTO(
     var content: Map<String, Any>? = emptyMap()
 ) {
     companion object {
-        fun toDto(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoDTO {
-            return WorkFlowInfoDTO(
-                workflowInfoEntity.id,
-                workflowInfoEntity.key,
-                workflowInfoEntity.projectInfoId,
-                workflowInfoEntity.stepInfoId,
-                workflowInfoEntity.title,
-                workflowInfoEntity.content
-            )
-        }
+        fun toDto(workflowInfoEntity: WorkflowInfoEntity) = WorkFlowInfoDTO(
+            workflowInfoEntity.id,
+            workflowInfoEntity.key,
+            workflowInfoEntity.projectInfoId,
+            workflowInfoEntity.stepInfoId,
+            workflowInfoEntity.title,
+            workflowInfoEntity.content
+        )
 
-        fun toEntity(workflowInfoDTO: WorkFlowInfoDTO): WorkflowInfoEntity {
-            return WorkflowInfoEntity(
-                workflowInfoDTO.id,
-                workflowInfoDTO.key,
-                workflowInfoDTO.projectInfoId,
-                workflowInfoDTO.stepInfoId,
-                workflowInfoDTO.title,
-                workflowInfoDTO.content
-            )
-        }
-    }
-
-    fun toEntity(): WorkflowInfoEntity {
-        return WorkflowInfoEntity(
-            id = id,
-            key = key,
-            projectInfoId = projectInfoId,
-            stepInfoId = stepInfoId,
-            title = title,
-            content = content
+        fun toEntity(workflowInfoDTO: WorkFlowInfoDTO) = WorkflowInfoEntity(
+            workflowInfoDTO.id,
+            workflowInfoDTO.key,
+            workflowInfoDTO.projectInfoId,
+            workflowInfoDTO.stepInfoId,
+            workflowInfoDTO.title,
+            workflowInfoDTO.content
         )
     }
+
+    fun toEntity() = WorkflowInfoEntity(
+        id = id,
+        key = key,
+        projectInfoId = projectInfoId,
+        stepInfoId = stepInfoId,
+        title = title,
+        content = content
+    )
 }

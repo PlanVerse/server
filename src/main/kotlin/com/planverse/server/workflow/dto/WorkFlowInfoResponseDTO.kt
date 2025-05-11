@@ -21,15 +21,13 @@ data class WorkFlowInfoResponseDTO(
     var assignInfo: List<AssignInfoResponseDTO>? = null,
 ) {
     companion object {
-        fun toDto(workflowInfoEntity: WorkflowInfoEntity): WorkFlowInfoResponseDTO {
-            return WorkFlowInfoResponseDTO(
-                workflowInfoEntity.id,
-                workflowInfoEntity.key,
-                workflowInfoEntity.projectInfoId,
-                workflowInfoEntity.stepInfoId,
-                workflowInfoEntity.title,
-                workflowInfoEntity.content
-            )
-        }
+        fun toDto(workflowInfoEntity: WorkflowInfoEntity) = WorkFlowInfoResponseDTO(
+            workflowInfoEntity.id,
+            workflowInfoEntity.key,
+            workflowInfoEntity.projectInfoId,
+            workflowInfoEntity.stepInfoId,
+            workflowInfoEntity.title,
+            workflowInfoEntity.content
+        )
     }
 }

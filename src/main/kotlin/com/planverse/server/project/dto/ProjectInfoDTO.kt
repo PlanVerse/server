@@ -15,22 +15,18 @@ data class ProjectInfoDTO(
     var projectProfileImage: String? = null,
 ) {
     companion object {
-        fun toEntity(projectInfoDTO: ProjectInfoDTO): TeamInfoEntity {
-            return TeamInfoEntity(
-                id = projectInfoDTO.id,
-                key = projectInfoDTO.key,
-                name = projectInfoDTO.name,
-                description = projectInfoDTO.description,
-            )
-        }
+        fun toEntity(projectInfoDTO: ProjectInfoDTO) = TeamInfoEntity(
+            id = projectInfoDTO.id,
+            key = projectInfoDTO.key,
+            name = projectInfoDTO.name,
+            description = projectInfoDTO.description,
+        )
 
-        fun toDto(projectInfoEntity: ProjectInfoEntity): ProjectInfoDTO {
-            return ProjectInfoDTO(
-                projectInfoEntity.id,
-                projectInfoEntity.key,
-                projectInfoEntity.name,
-                projectInfoEntity.description,
-            )
-        }
+        fun toDto(projectInfoEntity: ProjectInfoEntity) = ProjectInfoDTO(
+            projectInfoEntity.id,
+            projectInfoEntity.key,
+            projectInfoEntity.name,
+            projectInfoEntity.description,
+        )
     }
 }

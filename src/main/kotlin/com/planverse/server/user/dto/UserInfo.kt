@@ -10,20 +10,16 @@ data class UserInfo(
     val accessToken: String? = null,
 ) {
     companion object {
-        fun toDto(claims: Claims, accessToken: String, email: String): UserInfo {
-            return UserInfo(
-                key = claims["sub"].toString(),
-                email = email,
-                accessToken = accessToken,
-            )
-        }
+        fun toDto(claims: Claims, accessToken: String, email: String) = UserInfo(
+            key = claims["sub"].toString(),
+            email = email,
+            accessToken = accessToken,
+        )
 
-        fun toDto(userInfoEntity: UserInfoEntity, accessToken: String): UserInfo {
-            return UserInfo(
-                key = userInfoEntity.key!!,
-                email = userInfoEntity.email,
-                accessToken = accessToken,
-            )
-        }
+        fun toDto(userInfoEntity: UserInfoEntity, accessToken: String) = UserInfo(
+            key = userInfoEntity.key!!,
+            email = userInfoEntity.email,
+            accessToken = accessToken,
+        )
     }
 }

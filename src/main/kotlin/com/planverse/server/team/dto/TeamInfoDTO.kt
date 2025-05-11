@@ -21,58 +21,48 @@ data class TeamInfoDTO(
     var teamMemberInfos: List<TeamMemberInfoDTO>? = null,
 ) {
     companion object {
-        fun toEntity(teamInfoDTO: TeamInfoDTO): TeamInfoEntity {
-            return TeamInfoEntity(
-                id = teamInfoDTO.id,
-                key = teamInfoDTO.key,
-                name = teamInfoDTO.name,
-                description = teamInfoDTO.description,
-                private = teamInfoDTO.private,
-            )
-        }
+        fun toEntity(teamInfoDTO: TeamInfoDTO) = TeamInfoEntity(
+            id = teamInfoDTO.id,
+            key = teamInfoDTO.key,
+            name = teamInfoDTO.name,
+            description = teamInfoDTO.description,
+            private = teamInfoDTO.private,
+        )
 
-        fun toDto(teamInfoEntity: TeamInfoEntity): TeamInfoDTO {
-            return TeamInfoDTO(
-                teamInfoEntity.id,
-                teamInfoEntity.key!!,
-                teamInfoEntity.name,
-                teamInfoEntity.description,
-                teamInfoEntity.private,
-            )
-        }
+        fun toDto(teamInfoEntity: TeamInfoEntity) = TeamInfoDTO(
+            teamInfoEntity.id,
+            teamInfoEntity.key!!,
+            teamInfoEntity.name,
+            teamInfoEntity.description,
+            teamInfoEntity.private,
+        )
 
-        fun toDtoAndCreator(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO): TeamInfoDTO {
-            return TeamInfoDTO(
-                teamInfoEntity.id,
-                teamInfoEntity.key!!,
-                teamInfoEntity.name,
-                teamInfoEntity.description,
-                teamInfoEntity.private,
-                teamCreatorInfo = teamMemberInfoDTO,
-            )
-        }
+        fun toDtoAndCreator(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO) = TeamInfoDTO(
+            teamInfoEntity.id,
+            teamInfoEntity.key!!,
+            teamInfoEntity.name,
+            teamInfoEntity.description,
+            teamInfoEntity.private,
+            teamCreatorInfo = teamMemberInfoDTO,
+        )
 
-        fun toDtoAndMember(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO): TeamInfoDTO {
-            return TeamInfoDTO(
-                teamInfoEntity.id,
-                teamInfoEntity.key!!,
-                teamInfoEntity.name,
-                teamInfoEntity.description,
-                teamInfoEntity.private,
-                teamMemberInfo = teamMemberInfoDTO,
-            )
-        }
+        fun toDtoAndMember(teamInfoEntity: TeamInfoEntity, teamMemberInfoDTO: TeamMemberInfoDTO) = TeamInfoDTO(
+            teamInfoEntity.id,
+            teamInfoEntity.key!!,
+            teamInfoEntity.name,
+            teamInfoEntity.description,
+            teamInfoEntity.private,
+            teamMemberInfo = teamMemberInfoDTO,
+        )
 
-        fun toDtoAndCreatorAndMember(teamInfoEntity: TeamInfoEntity, teamCreatorInfo: TeamMemberInfoDTO, teamMemberInfoDTOs: List<TeamMemberInfoDTO>): TeamInfoDTO {
-            return TeamInfoDTO(
-                teamInfoEntity.id,
-                teamInfoEntity.key!!,
-                teamInfoEntity.name,
-                teamInfoEntity.description,
-                teamInfoEntity.private,
-                teamCreatorInfo = teamCreatorInfo,
-                teamMemberInfos = teamMemberInfoDTOs,
-            )
-        }
+        fun toDtoAndCreatorAndMember(teamInfoEntity: TeamInfoEntity, teamCreatorInfo: TeamMemberInfoDTO, teamMemberInfoDTOs: List<TeamMemberInfoDTO>) = TeamInfoDTO(
+            teamInfoEntity.id,
+            teamInfoEntity.key!!,
+            teamInfoEntity.name,
+            teamInfoEntity.description,
+            teamInfoEntity.private,
+            teamCreatorInfo = teamCreatorInfo,
+            teamMemberInfos = teamMemberInfoDTOs,
+        )
     }
 }

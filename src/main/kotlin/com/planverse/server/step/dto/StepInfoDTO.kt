@@ -12,14 +12,12 @@ data class StepInfoDTO(
     var sort: Int,
 ) {
     companion object {
-        fun toDto(stepInfoEntity: StepInfoEntity): StepInfoDTO {
-            return StepInfoDTO(
-                stepInfoEntity.id,
-                stepInfoEntity.projectInfoId,
-                stepInfoEntity.name,
-                stepInfoEntity.color,
-                stepInfoEntity.sort,
-            )
-        }
+        fun toDto(stepInfoEntity: StepInfoEntity) = StepInfoDTO(
+            stepInfoEntity.id,
+            stepInfoEntity.projectInfoId,
+            stepInfoEntity.name,
+            stepInfoEntity.color,
+            stepInfoEntity.sort,
+        )
     }
 }

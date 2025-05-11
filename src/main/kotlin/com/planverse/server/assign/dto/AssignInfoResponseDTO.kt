@@ -13,29 +13,23 @@ data class AssignInfoResponseDTO(
     var email: String? = null,
 ) {
     companion object {
-        fun toDto(assignInfoEntity: AssignInfoEntity): AssignInfoResponseDTO {
-            return AssignInfoResponseDTO(
-                assignInfoEntity.id,
-                assignInfoEntity.workflowInfoId,
-                assignInfoEntity.userInfoId,
-            )
-        }
+        fun toDto(assignInfoEntity: AssignInfoEntity) = AssignInfoResponseDTO(
+            assignInfoEntity.id,
+            assignInfoEntity.workflowInfoId,
+            assignInfoEntity.userInfoId,
+        )
 
-        fun toDto(assignInfoEntity: AssignInfoEntity, username: String, email: String): AssignInfoResponseDTO {
-            return AssignInfoResponseDTO(
-                assignInfoEntity.id,
-                assignInfoEntity.workflowInfoId,
-                assignInfoEntity.userInfoId,
-                username = username,
-                email = email
-            )
-        }
+        fun toDto(assignInfoEntity: AssignInfoEntity, username: String, email: String) = AssignInfoResponseDTO(
+            assignInfoEntity.id,
+            assignInfoEntity.workflowInfoId,
+            assignInfoEntity.userInfoId,
+            username = username,
+            email = email
+        )
 
-        fun toEntity(workflowInfoId: Long, userInfoId: Long): AssignInfoEntity {
-            return AssignInfoEntity(
-                workflowInfoId = workflowInfoId,
-                userInfoId = userInfoId,
-            )
-        }
+        fun toEntity(workflowInfoId: Long, userInfoId: Long) = AssignInfoEntity(
+            workflowInfoId = workflowInfoId,
+            userInfoId = userInfoId,
+        )
     }
 }

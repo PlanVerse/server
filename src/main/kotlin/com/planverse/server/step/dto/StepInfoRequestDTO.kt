@@ -21,24 +21,20 @@ data class StepInfoRequestDTO(
     var sort: Int,
 ) {
     companion object {
-        fun toDto(stepInfoEntity: StepInfoEntity): StepInfoRequestDTO {
-            return StepInfoRequestDTO(
-                stepInfoEntity.id,
-                stepInfoEntity.projectInfoId,
-                stepInfoEntity.name,
-                stepInfoEntity.color,
-                stepInfoEntity.sort,
-            )
-        }
-    }
-
-    fun toEntity(): StepInfoEntity {
-        return StepInfoEntity(
-            id = id,
-            projectInfoId = projectInfoId,
-            name = name,
-            color = color,
-            sort = sort,
+        fun toDto(stepInfoEntity: StepInfoEntity) = StepInfoRequestDTO(
+            stepInfoEntity.id,
+            stepInfoEntity.projectInfoId,
+            stepInfoEntity.name,
+            stepInfoEntity.color,
+            stepInfoEntity.sort,
         )
     }
+
+    fun toEntity() = StepInfoEntity(
+        id = id,
+        projectInfoId = projectInfoId,
+        name = name,
+        color = color,
+        sort = sort,
+    )
 }

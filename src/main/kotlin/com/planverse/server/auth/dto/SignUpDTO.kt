@@ -20,14 +20,12 @@ data class SignUpDTO(
     @field:Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$", message = "영문 숫자 특수기호 조합 8자리 이상 20자리 이하여야 합니다.")
     val pwd: String,
 ) {
-    fun toEntity(key: String, encodedPassword: String, role: SystemRole?): UserInfoEntity {
-        return UserInfoEntity(
-            key = key,
-            name = name,
-            email = email,
-            pwd = encodedPassword,
-            authentication = false,
-            role = role ?: SystemRole.ROLE_TEMP_USER
-        )
-    }
+    fun toEntity(key: String, encodedPassword: String, role: SystemRole?) = UserInfoEntity(
+        key = key,
+        name = name,
+        email = email,
+        pwd = encodedPassword,
+        authentication = false,
+        role = role ?: SystemRole.ROLE_TEMP_USER
+    )
 }
