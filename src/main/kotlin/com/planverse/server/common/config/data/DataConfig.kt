@@ -27,13 +27,11 @@ import javax.sql.DataSource
 @MapperScan(
     basePackages = [
         "com.planverse.server.*.mapper",
-        "com.planverse.server.*.*.mapper"
     ], sqlSessionTemplateRef = "sqlSessionTemplate"
 )
 @EnableJpaRepositories(
     basePackages = [
         "com.planverse.server.*.repository",
-        "com.planverse.server.*.*.repository"
     ]
 )
 class DataConfig {
