@@ -1,4 +1,4 @@
-package com.planverse.server.comment.controller
+package com.planverse.server.reply.controller
 
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.reply.service.ReplyInfoService
