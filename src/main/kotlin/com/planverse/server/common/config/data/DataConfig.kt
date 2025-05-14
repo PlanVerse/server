@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder
-import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -20,7 +19,6 @@ import org.springframework.orm.jpa.JpaTransactionManager
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter
 import org.springframework.transaction.PlatformTransactionManager
-import java.util.*
 import javax.sql.DataSource
 
 @Configuration
@@ -90,7 +88,7 @@ class DataConfig {
     @Primary
     @Bean("sqlSessionFactory")
     @Throws(Exception::class)
-    fun sqlSessionFactory(@Qualifier("dataSource") dataSource: DataSource, applicationContext: ApplicationContext): SqlSessionFactory? {
+    fun sqlSessionFactory(@Qualifier("dataSource") dataSource: DataSource): SqlSessionFactory? {
         val sqlSessionFactoryBean = SqlSessionFactoryBean()
         sqlSessionFactoryBean.setDataSource(dataSource)
         sqlSessionFactoryBean.setMapperLocations(*PathMatchingResourcePatternResolver().getResources("classpath*:mapper/**/*.xml"))
