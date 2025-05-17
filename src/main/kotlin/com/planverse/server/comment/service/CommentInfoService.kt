@@ -2,6 +2,7 @@ package com.planverse.server.comment.service
 
 import com.planverse.server.comment.dto.CommentInfoDTO
 import com.planverse.server.comment.dto.CommentInfoRequestDTO
+import com.planverse.server.comment.dto.CommentInfoUpdateRequestDTO
 import com.planverse.server.comment.repository.CommentInfoRepository
 import com.planverse.server.common.constant.Constant
 import com.planverse.server.common.constant.StatusCode
@@ -49,6 +50,17 @@ class CommentInfoService(
             }
 
             commentInfoRepository.save(commentInfoRequestDTO.toEntity())
+        }
+    }
+
+    @Transactional
+    fun modifyComment(userInfo: UserInfo, commentInfoUpdateRequestDTO: CommentInfoUpdateRequestDTO) {
+        commentInfoRepository.findByIdAndCreatedBy(commentInfoUpdateRequestDTO.id, userInfo.id!!).orElseThrow {
+            BaseException(StatusCode.COMMENT_NOT_FOUND)
+        }.let {
+            it.content = commentInfoUpdateRequestDTO.content
+
+            commentInfoRepository.save(it)
         }
     }
 }

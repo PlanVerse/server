@@ -36,6 +36,7 @@ enum class StatusCode(
     WORKFLOW_NOT_FOUND("2010", "워크플로우 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     WORKFLOW_DETAIL_NOT_FOUND("2011", "워크플로우 상세 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     WORKFLOW_STEP_NOT_FOUND("2012", "워크플로우 진행 단계 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    COMMENT_NOT_FOUND("2013", "댓글을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
 
     NOT_TEAM_MEMBER("3000", "팀에 소속되어있지 않습니다.", HttpStatus.BAD_REQUEST),
     NOT_TEAM_CREATOR("3001", "팀 생성자가 아닙니다.", HttpStatus.BAD_REQUEST),

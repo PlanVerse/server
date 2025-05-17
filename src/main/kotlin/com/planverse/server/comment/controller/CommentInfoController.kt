@@ -1,6 +1,7 @@
 package com.planverse.server.comment.controller
 
 import com.planverse.server.comment.dto.CommentInfoRequestDTO
+import com.planverse.server.comment.dto.CommentInfoUpdateRequestDTO
 import com.planverse.server.comment.service.CommentInfoService
 import com.planverse.server.common.dto.BaseResponse
 import com.planverse.server.user.dto.UserInfo
@@ -23,6 +24,13 @@ class CommentInfoController(
     @PostMapping
     fun createComment(userInfo: UserInfo, @RequestBody commentInfoRequestDTO: CommentInfoRequestDTO): BaseResponse<Any> {
         val res = commentInfoService.createComment(userInfo, commentInfoRequestDTO)
+
+        return BaseResponse.success(res)
+    }
+
+    @PutMapping
+    fun modifyComment(userInfo: UserInfo, @RequestBody commentInfoUpdateRequestDTO: CommentInfoUpdateRequestDTO): BaseResponse<Any> {
+        val res = commentInfoService.modifyComment(userInfo, commentInfoUpdateRequestDTO)
 
         return BaseResponse.success(res)
     }
