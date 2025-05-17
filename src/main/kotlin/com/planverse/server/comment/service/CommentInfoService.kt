@@ -9,6 +9,7 @@ import com.planverse.server.common.constant.StatusCode
 import com.planverse.server.common.exception.BaseException
 import com.planverse.server.project.repository.ProjectMemberInfoRepository
 import com.planverse.server.user.dto.UserInfo
+import com.planverse.server.user.repository.UserInfoRepository
 import com.planverse.server.workflow.repository.WorkflowInfoRepository
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Slice
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 @Transactional(readOnly = true)
 class CommentInfoService(
+    private val userInfoRepository: UserInfoRepository,
     private val projectMemberInfoRepository: ProjectMemberInfoRepository,
     private val workflowInfoRepository: WorkflowInfoRepository,
     private val commentInfoRepository: CommentInfoRepository,
@@ -33,7 +35,10 @@ class CommentInfoService(
             }
 
             commentInfoRepository.findAllByWorkflowInfoIdAndDeleteYn(workflowInfoId, Constant.DEL_N, pageable).map { commentInfo ->
-                CommentInfoDTO.toDTO(commentInfo)
+                val user = userInfoRepository.findById(commentInfo.createdBy!!).orElseThrow {
+                    BaseException(StatusCode.USER_NOT_FOUND)
+                }
+                CommentInfoDTO.toDTO(commentInfo, user.name, user.email)
             }
         }
     }

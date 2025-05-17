@@ -13,6 +13,9 @@ data class CommentInfoDTO(
     var workflowInfoId: Long? = null,
     @field:NotEmpty
     var content: Map<String, Any>? = emptyMap(),
+
+    var name: String? = null,
+    var email: String? = null,
 ) {
     companion object {
         fun toDTO(commentInfoEntity: CommentInfoEntity) = CommentInfoDTO(
@@ -20,6 +23,16 @@ data class CommentInfoDTO(
             key = commentInfoEntity.key,
             workflowInfoId = commentInfoEntity.workflowInfoId,
             content = commentInfoEntity.content
+        )
+
+
+        fun toDTO(commentInfoEntity: CommentInfoEntity, name: String, email: String) = CommentInfoDTO(
+            id = commentInfoEntity.id,
+            key = commentInfoEntity.key,
+            workflowInfoId = commentInfoEntity.workflowInfoId,
+            content = commentInfoEntity.content,
+            name = name,
+            email = email
         )
     }
 }
