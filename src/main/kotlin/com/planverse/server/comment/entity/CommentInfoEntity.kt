@@ -33,5 +33,5 @@ class CommentInfoEntity(
     @NotNull
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content", nullable = false)
-    var content: Map<String, Any>? = emptyMap()
+    var content: String? = null
 ) : BaseEntity()

@@ -11,7 +11,7 @@ data class CommentInfoUpdateRequestDTO (
     var id: Long,
     var workflowInfoId: Long,
     @field:NotEmpty
-    var content: Map<String, Any>,
+    var content: String,
 ) {
     fun toEntity() = CommentInfoEntity(
         id = id,

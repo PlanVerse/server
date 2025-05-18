@@ -12,7 +12,7 @@ data class CommentInfoDTO(
     var key: String? = null,
     var workflowInfoId: Long? = null,
     @field:NotEmpty
-    var content: Map<String, Any>? = emptyMap(),
+    var content: String? = null,
 
     var name: String? = null,
     var email: String? = null,

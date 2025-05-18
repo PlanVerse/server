@@ -12,7 +12,7 @@ data class CommentInfoRequestDTO (
     var key: String? = null,
     var workflowInfoId: Long,
     @field:NotEmpty
-    var content: Map<String, Any>,
+    var content: String,
 ) {
     fun toEntity() = CommentInfoEntity(
         id = id,
