@@ -31,7 +31,6 @@ class CommentInfoEntity(
     var workflowInfoId: Long,
 
     @NotNull
-    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "content", nullable = false)
     var content: String? = null
 ) : BaseEntity()
