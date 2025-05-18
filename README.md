@@ -53,10 +53,7 @@
 
 ## Need Attention
 
-- [ ] K8S 도입
-- [ ] zero-downtime deployment
 - [x] Netdata, Portainer 비교
-- [ ] WatchTower
 - [x] OCI(Oracle Cloud Infrastructure)
   - [x] instances 활용 - Cloud Config server 이전 완료
 - [x] Nexus 활용 방안 고민 - 미사용
